@@ -1,0 +1,154 @@
+definitions:
+  models.AuthLogin:
+    properties:
+      password:
+        type: string
+      username:
+        type: string
+    required:
+    - password
+    - username
+    type: object
+  models.Response:
+    properties:
+      body: {}
+      message:
+        type: string
+      status:
+        type: boolean
+    type: object
+info:
+  contact: {}
+  description: This is a api to app gestioncar
+  termsOfService: http://swagger.io/terms/
+  title: APP GESTIONCAR
+  version: "1.0"
+paths:
+  /auth/login:
+    post:
+      consumes:
+      - application/json
+      description: Login user required identifier and password
+      parameters:
+      - description: Credentials
+        in: body
+        name: credentials
+        required: true
+        schema:
+          $ref: '#/definitions/models.AuthLogin'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.Response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.Response'
+        "422":
+          description: Unprocessable Entity
+          schema:
+            $ref: '#/definitions/models.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.Response'
+      summary: Login user
+      tags:
+      - Auth
+  /auth/workplace_login/{workplace_id}:
+    get:
+      consumes:
+      - application/json
+      description: Login workplace required workplace_id
+      parameters:
+      - description: workplace_id
+        in: path
+        name: workplace_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.Response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.Response'
+        "422":
+          description: Unprocessable Entity
+          schema:
+            $ref: '#/definitions/models.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.Response'
+      summary: Login Workplace
+      tags:
+      - Auth
+  /workplace/get_all:
+    get:
+      consumes:
+      - application/json
+      description: Login user required identifier and password
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.Response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.Response'
+        "422":
+          description: Unprocessable Entity
+          schema:
+            $ref: '#/definitions/models.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.Response'
+      security:
+      - BearerAuth: []
+      summary: Login user
+      tags:
+      - Workplace
+securityDefinitions:
+  BearerAuth:
+    description: 'Type "Bearer" followed by a space and the JWT token. Example: "Bearer
+      eyJhbGciOiJIUz..."'
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"
