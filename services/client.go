@@ -45,7 +45,7 @@ func ClientGetByID(id string) (*models.Client, error) {
 	return client, nil
 }
 
-func ClientGetByName(name string) (*models.Client, error) {
+func ClientGetByName(name string) (*[]models.Client, error) {
 	client, err := repositories.Repo.GetClientByName(name)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
@@ -56,9 +56,9 @@ func ClientGetByName(name string) (*models.Client, error) {
 	return client, nil
 }
 
-func ClientUpdate(id string, clientUpdate *models.ClientCreate) (string, error) {
+func ClientUpdate(clientUpdate *models.ClientUpdate) (string, error) {
 	err := repositories.Repo.UpdateClient(&models.Client{
-		ID: id,
+		ID: clientUpdate.ID,
 		FirstName: clientUpdate.FirstName,
 		LastName:  clientUpdate.LastName,		
 		CUIL:      clientUpdate.CUIL,
@@ -71,7 +71,7 @@ func ClientUpdate(id string, clientUpdate *models.ClientCreate) (string, error) 
 		}
 		return "", models.ErrorResponse(500, "Error al actualizar cliente", err)
 	}
-	return id, nil
+	return clientUpdate.ID, nil
 }
 
 func ClientDelete(id string) (string, error) {

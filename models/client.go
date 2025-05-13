@@ -30,3 +30,17 @@ func (c *ClientCreate) Validate() error {
 	validate := validator.New()
 	return validate.Struct(c)
 }
+
+type ClientUpdate struct {
+	ID        string `json:"id" validate:"required"`
+	FirstName string `json:"first_name" validate:"required"`
+	LastName  string `json:"last_name" validate:"required"`
+	CUIL      string `json:"cuil" validate:"required"`		
+	DNI       string `json:"dni" validate:""`
+	Email     string `json:"email" validate:"required,email"`
+}
+
+func (c *ClientUpdate) Validate() error {
+	validate := validator.New()
+	return validate.Struct(c)
+}

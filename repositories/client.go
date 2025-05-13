@@ -12,9 +12,9 @@ func (r *Repository) GetClientByID(id string) (*models.Client, error) {
 	return &client, nil
 }
 
-func (r *Repository) GetClientByName(name string) (*models.Client, error) {
-	var client models.Client
-	if err := r.DB.Where("last_name LIKE ? OR first_name LIKE ?", "%"+name+"%", "%"+name+"%").First(&client).Error; err != nil {
+func (r *Repository) GetClientByName(name string) (*[]models.Client, error) {
+	var client []models.Client
+	if err := r.DB.Where("last_name LIKE ? OR first_name LIKE ?", "%"+name+"%", "%"+name+"%").Find(&client).Error; err != nil {
     return nil, err
 	}
 	return &client, nil
