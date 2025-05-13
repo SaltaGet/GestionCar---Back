@@ -24,16 +24,16 @@ func (r *Repository) GetMovementTypeByID(id string, workplace string) (*models.M
 	return nil, nil, fmt.Errorf("tipo de espacio no soportado")
 }
 
-func (r *Repository) GetAllMovementTypes(workplace string) ([]models.MovementTypeLaundry, []models.MovementTypeWorkshop, error) {
+func (r *Repository) GetAllMovementTypes(isIncome bool,workplace string) ([]models.MovementTypeLaundry, []models.MovementTypeWorkshop, error) {
 	if workplace == "laundry" {
 		var movementTypes []models.MovementTypeLaundry
-		if err := r.DB.Find(&movementTypes).Error; err != nil {
+		if err := r.DB.Where("is_income = ?", isIncome).Find(&movementTypes).Error; err != nil {
 			return nil, nil, err
 		}
 		return movementTypes, nil, nil
 	} else if workplace == "workshop" {
 		var movementTypes []models.MovementTypeWorkshop
-		if err := r.DB.Find(&movementTypes).Error; err != nil {
+		if err := r.DB.Where("is_income = ?", isIncome).Find(&movementTypes).Error; err != nil {
 			return nil, nil, err
 		}
 		return nil, movementTypes, nil

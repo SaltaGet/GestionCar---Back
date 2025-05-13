@@ -3,29 +3,58 @@ package models
 import "time"
 
 type IncomeLaundry struct {
-	ID        string    `gorm:"primaryKey" json:"id"`
-	Data      string    `gorm:"not null;size:100000" json:"data"`
-	Date      time.Time `gorm:"not null" json:"date"`
-	CreatedAt time.Time `gorm:"autoCreateTime" json:"created_at"`
-	UpdatedAt time.Time `gorm:"autoUpdateTime" json:"updated_at"`
+	ID                  string              `gorm:"primaryKey" json:"id"`
+	Ticket              string              `json:"ticket"`
+	Details             string              `json:"details"`
+	ClientID            string              `gorm:"not null" json:"client_id"`
+	VehicleID           string              `gorm:"not null" json:"vehicle_id"`
+	EmployeeID          string              `json:"employee_id"`
+	Amount              float32             `gorm:"not null" json:"amount"`
+	MovementTypeID      string              `gorm:"not null" json:"movement_type_id"`
+	CreatedAt           time.Time           `gorm:"autoCreateTime" json:"created_at"`
+	UpdatedAt           time.Time           `gorm:"autoUpdateTime" json:"updated_at"`
+	Client              Client              `gorm:"foreignKey:ClientID" json:"client"`
+	Vehicle             Vehicle             `gorm:"foreignKey:VehicleID" json:"vehicle"`
+	EmployeeLaundry     EmployeeLaundry     `gorm:"foreignKey:EmployeeID" json:"employee_laundry"`
+	MovementTypeLaundry MovementTypeLaundry `gorm:"foreignKey:MovementTypeID;references:ID" json:"movement_type_laundry"`
 }
 
 type IncomeWorkshop struct {
-	ID        string    `gorm:"primaryKey" json:"id"`
-	Data      string    `gorm:"not null;size:100000" json:"data"`
-	Date      time.Time `gorm:"not null" json:"date"`
-	CreatedAt time.Time `gorm:"autoCreateTime" json:"created_at"`
-	UpdatedAt time.Time `gorm:"autoUpdateTime" json:"updated_at"`
+	ID                   string               `gorm:"primaryKey" json:"id"`
+	Ticket               string               `json:"ticket"`
+	Details              string               `json:"details"`
+	ClientID             string               `gorm:"not null" json:"client_id"`
+	VehicleID            string               `json:"vehicle_id"`
+	EmployeeID           string               `json:"employee_id"`
+	Amount               float32              `json:"amount"`
+	MovementTypeID       string               `json:"movement_type_id"`
+	CreatedAt            time.Time            `gorm:"autoCreateTime" json:"created_at"`
+	UpdatedAt            time.Time            `gorm:"autoUpdateTime" json:"updated_at"`
+	Client               Client               `gorm:"foreignKey:ClientID" json:"client"`
+	Vehicle              Vehicle              `gorm:"foreignKey:VehicleID" json:"vehicle"`
+	EmployeeWorkshop     EmployeeWorkshop     `gorm:"foreignKey:EmployeeID" json:"employee_workshop"`
+	MovementTypeWorkshop MovementTypeWorkshop `gorm:"foreignKey:MovementTypeID;references:ID" json:"movement_type_workshop"`
 }
 
-type IncomeCreateLaundry struct {
-	ID         string           `json:"id"`
-	Services   []Service `json:"services"`
-	Details    string           `json:"details"`
-	ClientID   string           `json:"client_id"`
-	VehicleID  string           `json:"vehicle_id"`
-	EmployeeID string           `json:"employee_id"`
-	Amount     float32          `json:"amount"`
-	CreatedAt  time.Time        `json:"created_at"`
-	UpdatedAt  time.Time        `json:"updated_at"`
+type IncomeCreate struct {
+	Ticket         string   `json:"ticket" validate:"required"`
+	ServicesID     []string `json:"services_id" validate:"required,gt=0"`
+	Details        string   `json:"details" validate:"required"`
+	ClientID       string   `json:"client_id" validate:"required"`
+	VehicleID      string   `json:"vehicle_id" validate:"required"`
+	EmployeeID     string   `json:"employee_id"`
+	MovementTypeID string   `json:"movement_type_id" validate:"required"`
+	Amount         float32  `json:"amount" validate:"required"`
+}
+
+type IncomeUpdate struct {
+	ID             string   `json:"id"`
+	Ticket         string   `json:"ticket" validate:"required"`
+	ServicesID     []string `json:"services_id" validate:"required,gt=0"`
+	Details        string   `json:"details"`
+	ClientID       string   `json:"client_id" validate:"required"`
+	VehicleID      string   `json:"vehicle_id" validate:"required"`
+	EmployeeID     string   `json:"employee_id"`
+	MovementTypeID string   `json:"movement_type_id" validate:"required"`
+	Amount         float32  `json:"amount" validate:"required"`
 }

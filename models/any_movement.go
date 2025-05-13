@@ -3,41 +3,29 @@ package models
 import (
 	"database/sql/driver"
 	"encoding/json"
-	"errors"
-	"reflect"
+	"fmt"
 )
 
-type AnyMovement struct {
-	Type string      `json:"type"`
-	Data interface{} `json:"data"`
+type JSONMap map[string]interface{}
+
+func (j *JSONMap) Value() (driver.Value, error) {
+    return json.Marshal(j)
 }
 
-func NewAnyMovement(data interface{}) AnyMovement {
-	t := reflect.TypeOf(data)
-	if t.Kind() == reflect.Ptr {
-		t = t.Elem()
-	}
-	typeName := t.Name()
-
-	return AnyMovement{
-		Type: typeName,
-		Data: data,
-	}
+func (j *JSONMap) Scan(value interface{}) error {
+    bytes, ok := value.([]byte)
+    if !ok {
+        return fmt.Errorf("Scan source is not []byte")
+    }
+    return json.Unmarshal(bytes, j)
 }
 
-func (a *AnyMovement) Value() (driver.Value, error) {
-	return json.Marshal(a)
-}
-
-func (a *AnyMovement) Scan(value interface{}) error {
-	if value == nil {
-		return nil
-	}
-
-	bytes, ok := value.([]byte)
-	if !ok {
-		return errors.New("Scan source is not []byte")
-	}
-
-	return json.Unmarshal(bytes, a)
+func StructToJSONMap(s interface{}) (JSONMap, error) {
+    b, err := json.Marshal(s)
+    if err != nil {
+        return nil, err
+    }
+    var m JSONMap
+    err = json.Unmarshal(b, &m)
+    return m, err
 }

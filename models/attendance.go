@@ -61,3 +61,13 @@ func (e *AttendanceUpdate) Validate() error {
 	validate := validator.New()
 	return validate.Struct(e)
 }
+
+type DateBetween struct {
+    DateFrom string `json:"date_from" validate:"required,datetime=2006-01-02" example:"2022-01-01"`
+    DateTo   string `json:"date_to" validate:"required,datetime=2006-01-02" example:"2022-01-01"`
+}
+
+func (e *DateBetween) Validate() error {
+	validate := validator.New()
+	return validate.Struct(e)
+}

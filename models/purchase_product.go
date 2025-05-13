@@ -1,6 +1,10 @@
 package models
 
-import "time"
+import (
+	"time"
+
+	"github.com/go-playground/validator/v10"
+)
 
 type PurchaseProductLaundry struct {
 	ID        string  `gorm:"primaryKey" json:"id"`
@@ -28,4 +32,29 @@ type PurchasePartWorkshop struct {
 	UpdatedAt time.Time  `gorm:"autoUpdateTime" json:"updated_at"`
 	PartWorkshop PartWorkshop `gorm:"foreignKey:PartID;references:ID" json:"part"`
 	PurchaseOrderWorkshop PurchaseOrderWorkshop `gorm:"foreignKey:PurchaseOrderID;references:ID" json:"purchase_order"`
+}
+
+type PurchaseProductCreate struct {
+	ProductID string  `json:"product_id" validate:"required"`
+	ExpiredAt string  `json:"expired_at"`
+	UnitPrice  float32 `json:"unit_price" validate:"required"`
+	Quantity   int     `json:"quantity" validate:"required"`
+}
+
+func (p *PurchaseProductCreate) Validate() error {
+	validate := validator.New()
+	return validate.Struct(p)
+}
+
+type PurchaseProductUpdate struct {
+	ID        string  `json:"id" validate:"required"`
+	ProductID string  `json:"product_id" validate:"required"`
+	ExpiredAt string  `json:"expired_at"`
+	UnitPrice  float32 `json:"unit_price" validate:"required"`
+	Quantity   int     `json:"quantity" validate:"required"`
+}
+
+func (p *PurchaseProductUpdate) Validate() error {
+	validate := validator.New()
+	return validate.Struct(p)
 }

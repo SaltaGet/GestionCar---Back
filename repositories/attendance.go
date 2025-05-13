@@ -126,13 +126,13 @@ func (r *Repository) DeleteAttendance(id string, workplace string) error {
 func (r *Repository) GetAttendancesByDate(date_start string, date_end string, workplace string) (*[]models.AttendanceLaundry, *[]models.AttendanceWorkshop, error) {
 	if workplace == "laundry" {
 		var attendances []models.AttendanceLaundry
-		if err := r.DB.Where("date >= ? AND date <= ?", date_start, date_end).Find(&attendances).Error; err != nil {
+		if err := r.DB.Where("DATE(created_at) >= ? AND DATE(created_at) <= ?", date_start, date_end).Find(&attendances).Error; err != nil {
 			return nil, nil, err
 		}
 		return &attendances, nil, nil
 	} else if workplace == "workshop" {
 		var attendances []models.AttendanceWorkshop
-		if err := r.DB.Where("date >= ? AND date <= ?", date_start, date_end).Find(&attendances).Error; err != nil {
+		if err := r.DB.Where("DATE(created_at) >= ? AND DATE(created_at) <= ?", date_start, date_end).Find(&attendances).Error; err != nil {
 			return nil, nil, err
 		}
 		return nil, &attendances, nil

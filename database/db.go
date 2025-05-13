@@ -18,36 +18,44 @@ func Connect(uri string) (*gorm.DB, error) {
 		return nil, err
 	}
 
-	db.AutoMigrate(&models.User{}, &models.Client{}, &models.Vehicle{}, &models.Workplace{}, &models.Role{}, &models.AuditLog{})
+	db.AutoMigrate(
+		&models.User{}, 
+		&models.Client{}, 
+		&models.Vehicle{}, 
+		&models.Workplace{}, 
+		&models.Role{}, 
+		&models.AuditLog{},
+	)
+	
 	db.AutoMigrate(
 		&models.AttendanceLaundry{},
-		// &laundry.ClientLaundry{},
-		&models.DailyMovementsLaundry{},
 		&models.EmployeeLaundry{},
+		&models.ExpenseResumeLaundry{},
 		&models.ExpenseLaundry{},
+		&models.IncomeResumeLaundry{},
 		&models.IncomeLaundry{},
+		&models.IncomeServiceLaundry{},
 		&models.MovementTypeLaundry{},
 		&models.ProductLaundry{},
 		&models.PurchaseOrderLaundry{},
 		&models.PurchaseProductLaundry{},
 		&models.ServiceLaundry{},
 		&models.SupplierLaundry{},
-		// &laundry.VehicleLaundry{},
 	)
 	db.AutoMigrate(
 		&models.AttendanceWorkshop{},
-		// &workshop.ClientWorkshop{},
-		&models.DailyMovementsWorkshop{},
 		&models.EmployeeWorkshop{},
+		&models.ExpenseResumeWorkshop{},
 		&models.ExpenseWorkshop{},
+		&models.IncomeResumeWorkshop{},
 		&models.IncomeWorkshop{},
+		&models.IncomeServiceWorkshop{},
 		&models.MovementTypeWorkshop{},
 		&models.PartWorkshop{},
 		&models.PurchaseOrderWorkshop{},
 		&models.PurchasePartWorkshop{},
 		&models.ServiceWorkshop{},
 		&models.SupplierWorkshop{},
-		// &workshop.VehicleWorkshop{},
 	)
 
 	var email string
