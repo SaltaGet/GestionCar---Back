@@ -77,11 +77,11 @@ func (r *Repository) CreateSupplier(supplierCreate *models.SupplierCreate, workp
 	return supplierID, nil
 }
 
-func (r *Repository) UpdateSupplier(id string, supplierUpdate *models.SupplierUpdate, workplace string) error {
+func (r *Repository) UpdateSupplier(supplierUpdate *models.SupplierUpdate, workplace string) error {
 	switch workplace {
 	case "laundry":
 		var supplierLaundry models.SupplierLaundry
-		if err := r.DB.Where("id = ?", id).First(&supplierLaundry).Error; err != nil {
+		if err := r.DB.Where("id = ?", supplierUpdate.ID).First(&supplierLaundry).Error; err != nil {
 			return err
 		}
 		supplierLaundry.Name = supplierUpdate.Name
@@ -93,7 +93,7 @@ func (r *Repository) UpdateSupplier(id string, supplierUpdate *models.SupplierUp
 		}
 	case "workshop":
 		var supplierWorkshop models.SupplierWorkshop
-		if err := r.DB.Where("id = ?", id).First(&supplierWorkshop).Error; err != nil {
+		if err := r.DB.Where("id = ?", supplierUpdate.ID).First(&supplierWorkshop).Error; err != nil {
 			return err
 		}
 		supplierWorkshop.Name = supplierUpdate.Name

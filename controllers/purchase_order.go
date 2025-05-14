@@ -6,6 +6,22 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
+// PurchaseOrderGetByID godoc
+// @Summary     Get Purchase Order By ID
+// @Description Retrieves a specific purchase order by its ID.
+//              Returns either a laundry or workshop purchase order based on the workplace context.
+// @Tags        purchase_order
+// @Accept      json
+// @Produce     json
+// @Param       id   path      string  true  "ID of Purchase Order"
+// @Success     200  {object}  models.Response{body=models.PurchaseOrderLaundry} "Laundry order obtained successfully"
+// @Success     200  {object}  models.Response{body=models.PurchaseOrderWorkshop} "Workshop order obtained successfully"
+// @Failure     400  {object}  models.Response "ID is required"
+// @Failure     400  {object}  models.Response "Workplace is required"
+// @Failure     404  {object}  models.Response "Purchase order not found"
+// @Failure     500  {object}  models.Response "Internal server error"
+// @Router      /purchase_order/{id} [get]
+// @Security    BearerAuth
 func PurchaseOrderGetByID(c *fiber.Ctx) error {
 	id := c.Params("id")
 	if id == "" {
@@ -56,6 +72,18 @@ func PurchaseOrderGetByID(c *fiber.Ctx) error {
 	})
 }
 
+// PurchaseOrderGetAll godoc
+// @Summary     Get All Purchase Orders
+// @Description Get All Purchase Orders
+// @Tags        purchase_order
+// @Accept      json
+// @Produce     json
+// @Success     200 {object} models.Response{body=[]models.PurchaseOrderLaundry} "Purchase Orders obtained with success"
+// @Success     200 {object} models.Response{body=[]models.PurchaseOrderWorkshop} "Workshop orders obtained with success"
+// @Failure     400 {object} models.Response "Workplace is required"
+// @Failure     500 {object} models.Response "Internal server error"
+// @Router      /purchase_order [get]
+// @Security    BearerAuth
 func PurchaseOrderGetAll(c *fiber.Ctx) error {
 	workplace := c.Locals("workplace").(*models.Workplace)
 	if workplace == nil {
@@ -97,6 +125,20 @@ func PurchaseOrderGetAll(c *fiber.Ctx) error {
 	})
 }
 
+// PurchaseOrderCreate godoc
+// @Summary     Create Purchase Order
+// @Description Creates a purchase order, either for laundry or workshop.
+//              Returns the ID of the created purchase order.
+// @Tags        purchase_order
+// @Accept      json
+// @Produce     json
+// @Param       purchaseOrderCreate body     models.PurchaseOrderCreate true  "Purchase order creation data"
+// @Success     200                 {object} models.Response{body=string} "Purchase order created successfully"
+// @Failure     400                 {object} models.Response            "Invalid request"
+// @Failure     400                 {object} models.Response            "Workplace is required"
+// @Failure     500                 {object} models.Response            "Internal server error"
+// @Router      /purchase_order     [post]
+// @Security    BearerAuth
 func PurchaseOrderCreate(c *fiber.Ctx) error {
 	var purchaseOrderCreate models.PurchaseOrderCreate
 	if err := c.BodyParser(&purchaseOrderCreate); err != nil {
@@ -146,6 +188,20 @@ func PurchaseOrderCreate(c *fiber.Ctx) error {
 	})
 }
 
+// PurchaseOrderUpdate godoc
+// @Summary     Update Purchase Order
+// @Description Updates an existing purchase order with new details.
+//              Validates the request body and workplace context.
+//              Returns a success message if the update is successful.
+// @Tags        purchase_order
+// @Accept      json
+// @Produce     json
+// @Param       purchaseOrderUpdate body models.PurchaseOrderUpdate true "Purchase order update data"
+// @Success     200 {object} models.Response "Purchase order updated successfully"
+// @Failure     400 {object} models.Response "Invalid request or workplace required"
+// @Failure     500 {object} models.Response "Internal server error"
+// @Router      /purchase_order [put]
+// @Security    BearerAuth
 func PurchaseOrderUpdate(c *fiber.Ctx) error {
 	var purchaseOrderUpdate models.PurchaseOrderUpdate
 	if err := c.BodyParser(&purchaseOrderUpdate); err != nil {
@@ -195,6 +251,20 @@ func PurchaseOrderUpdate(c *fiber.Ctx) error {
 	})
 }
 
+// PurchaseOrderDelete godoc
+// @Summary     Delete Purchase Order
+// @Description Deletes a specific purchase order by its ID.
+//              Returns a success message if the deletion is successful.
+// @Tags        purchase_order
+// @Accept      json
+// @Produce     json
+// @Param       id   path      string  true  "ID of Purchase Order"
+// @Success     200  {object}  models.Response "Purchase order deleted successfully"
+// @Failure     400  {object}  models.Response "ID is required"
+// @Failure     400  {object}  models.Response "Workplace is required"
+// @Failure     500  {object}  models.Response "Internal server error"
+// @Router      /purchase_order/{id} [delete]
+// @Security    BearerAuth
 func PurchaseOrderDelete(c *fiber.Ctx) error {
 	id := c.Params("id")
 	if id == "" {

@@ -6,6 +6,20 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
+
+// GetEmployeeByID godoc
+// @Summary     Get Employee By ID
+// @Description Get Employee By ID
+// @Tags        employee
+// @Accept      json
+// @Produce     json
+// @Param       id   path      string  true  "ID of Employee"
+// @Success     200  {object}  models.Response
+// @Failure     400  {object}  models.Response
+// @Failure     404  {object}  models.Response
+// @Failure     500  {object}  models.Response
+// @Router      /employee/{id} [get]
+// @Security    BearerAuth
 func GetEmployeeByID(c *fiber.Ctx) error {
 	id := c.Params("id")
 	if id == "" {
@@ -56,6 +70,18 @@ func GetEmployeeByID(c *fiber.Ctx) error {
 	})
 }
 
+// GetAllEmployees retrieves all employees for a specific workplace.
+// @Summary		Get all employees
+// @Description	Fetches all employees from the specified workplace, either in laundry or workshop.
+// @Tags			Employee
+// @Accept			json
+// @Produce		json
+// @Security		BearerAuth
+// @Success		200			{object}	models.Response{body=[]models.EmployeeLaundry} "List of laundry employees"
+// @Success		200			{object}	models.Response{body=[]models.EmployeeWorkshop} "List of workshop employees"
+// @Failure		400			{object}	models.Response "Workplace is required"
+// @Failure		500			{object}	models.Response "Internal server error"
+// @Router			/employee/get_all [get]
 func GetAllEmployees(c *fiber.Ctx) error {
 	workplace := c.Locals("workplace").(*models.Workplace)
 	if workplace == nil {
@@ -97,6 +123,19 @@ func GetAllEmployees(c *fiber.Ctx) error {
 	})
 }
 
+// GetEmployeeByName retrieves employees by their name from the specified workplace.
+// @Summary     Get Employee By Name
+// @Description Fetches employees from either laundry or workshop based on the provided name and workplace.
+// @Tags        Employee
+// @Accept      json
+// @Produce     json
+// @Param       name  query     string  true  "Name of the Employee"
+// @Success     200   {object}  models.Response{body=[]models.EmployeeLaundry} "List of laundry employees"
+// @Success     200   {object}  models.Response{body=[]models.EmployeeWorkshop} "List of workshop employees"
+// @Failure     400   {object}  models.Response "Invalid name or workplace"
+// @Failure     500   {object}  models.Response "Internal server error"
+// @Router      /employee/by-name [get]
+// @Security    BearerAuth
 func GetEmployeeByName(c *fiber.Ctx) error {
 	name := c.Query("name")
 	if name == "" || len(name) < 3 {
@@ -147,6 +186,18 @@ func GetEmployeeByName(c *fiber.Ctx) error {
 	})
 }
 
+// CreateEmployee creates an employee for a specific workplace.
+// @Summary		Create Employee
+// @Description	Creates an employee for either laundry or workshop based on the provided information.
+// @Tags			Employee
+// @Accept			json
+// @Produce		json
+// @Param			employeeCreate	body		models.EmployeeCreate	true	"Employee information"
+// @Success		200			{object}	models.Response{body=string} "Employee created"
+// @Failure		400			{object}	models.Response "Invalid request or workplace required"
+// @Failure		500			{object}	models.Response "Internal server error"
+// @Router			/employee [post]
+// @Security		BearerAuth
 func CreateEmployee(c *fiber.Ctx) error {
 	var employeeCreate models.EmployeeCreate
 	if err := c.BodyParser(&employeeCreate); err != nil {
@@ -196,6 +247,18 @@ func CreateEmployee(c *fiber.Ctx) error {
 	})
 }
 
+// UpdateEmployee updates an employee's information in the specified workplace.
+// @Summary     Update Employee
+// @Description Updates the details of an employee based on the provided data.
+// @Tags        employee
+// @Accept      json
+// @Produce     json
+// @Param       employeeUpdate  body      models.EmployeeUpdate  true  "Employee data to update"
+// @Success     200  {object}  models.Response  "Empleado editado con éxito"
+// @Failure     400  {object}  models.Response  "Invalid request or Workplace is required"
+// @Failure     500  {object}  models.Response  "Error interno"
+// @Router      /employee [put]
+// @Security    BearerAuth
 func UpdateEmployee(c *fiber.Ctx) error {
 	var employeeUpdate models.EmployeeUpdate
 	if err := c.BodyParser(&employeeUpdate); err != nil {
@@ -245,6 +308,18 @@ func UpdateEmployee(c *fiber.Ctx) error {
 	})
 }
 
+// DeleteEmployee deletes an employee by their ID from the specified workplace.
+// @Summary     Delete Employee
+// @Description Removes an employee from the database based on the provided ID and workplace context.
+// @Tags        Employee
+// @Accept      json
+// @Produce     json
+// @Param       id   path      string  true  "ID of the employee"
+// @Success     200  {object}  models.Response  "Empleado eliminado con éxito"
+// @Failure     400  {object}  models.Response  "ID is required or Workplace is required"
+// @Failure     500  {object}  models.Response  "Error interno"
+// @Router      /employee/{id} [delete]
+// @Security    BearerAuth
 func DeleteEmployee(c *fiber.Ctx) error {
 	id := c.Params("id")
 	if id == "" {

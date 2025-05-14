@@ -41,6 +41,7 @@ func (s *SupplierCreate) Validate() error {
 }
 
 type SupplierUpdate struct {
+	ID      string `json:"id" validate:"required"`
 	Name    string `json:"name" validate:"required"`
 	Address string `json:"address"`
 	Phone   string `json:"phone"`

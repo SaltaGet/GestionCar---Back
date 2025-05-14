@@ -54,8 +54,8 @@ func SupplierDeleteByID(id string, workplace string) error {
 	return nil
 }
 
-func SupplierUpdate(id string, supplierUpdate *models.SupplierUpdate, workplace string) error {
-	err := repositories.Repo.UpdateSupplier(id, supplierUpdate, workplace)
+func SupplierUpdate(supplierUpdate *models.SupplierUpdate, workplace string) error {
+	err := repositories.Repo.UpdateSupplier(supplierUpdate, workplace)
 	if err != nil {
 		return models.ErrorResponse(500, "Error al actualizar proveedor", err)
 	}

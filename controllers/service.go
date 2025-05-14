@@ -120,6 +120,19 @@ func ServiceGetAll(c *fiber.Ctx) error {
 	})
 }
 
+// ServiceCreate godoc
+// @Summary     Create Service
+// @Description Creates a service and returns its ID.
+// @Tags        services
+// @Accept      json
+// @Produce     json
+// @Param       serviceCreate body     models.ServiceCreate true  "Service creation data"
+// @Success     200             {object} models.Response{body=string} "Service created successfully"
+// @Failure     400             {object} models.Response       "Invalid request"
+// @Failure     400             {object} models.Response       "Workplace is required"
+// @Failure     500             {object} models.Response       "Internal server error"
+// @Router      /services      [post]
+// @Security    BearerAuth
 func ServiceCreate(c *fiber.Ctx) error {
 	var serviceCreate models.ServiceCreate
 	if err := c.BodyParser(&serviceCreate); err != nil {
@@ -169,6 +182,19 @@ func ServiceCreate(c *fiber.Ctx) error {
 	})
 }
 
+// ServiceUpdate updates the information of a service.
+//
+// @Summary     Update Service
+// @Description Updates the details of a service based on the provided data.
+// @Tags        services
+// @Accept      json
+// @Produce     json
+// @Param       serviceUpdate  body      models.ServiceUpdate  true  "Service data to update"
+// @Success     200  {object}  models.Response  "Servicio editado con éxito"
+// @Failure     400  {object}  models.Response  "Invalid request or Workplace is required"
+// @Failure     500  {object}  models.Response  "Error interno"
+// @Router      /services [put]
+// @Security    BearerAuth
 func ServiceUpdate(c *fiber.Ctx) error {
 	var serviceUpdate models.ServiceUpdate
 	if err := c.BodyParser(&serviceUpdate); err != nil {
@@ -218,6 +244,18 @@ func ServiceUpdate(c *fiber.Ctx) error {
 	})
 }
 
+// ServiceDeleteByID deletes a service by its ID for a specific workplace.
+// @Summary     Delete Service
+// @Description Deletes a service based on the provided ID and workplace context.
+// @Tags        services
+// @Accept      json
+// @Produce     json
+// @Param       id   path      string  true  "ID of the service"
+// @Success     200  {object}  models.Response  "Servicio eliminado con éxito"
+// @Failure     400  {object}  models.Response  "ID is required or Workplace is required"
+// @Failure     500  {object}  models.Response  "Error interno"
+// @Router      /services/{id} [delete]
+// @Security    BearerAuth
 func ServiceDeleteByID(c *fiber.Ctx) error {
 	id := c.Params("id")
 	if id == "" {

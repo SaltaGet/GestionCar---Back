@@ -6,6 +6,20 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
+// ProductGetByID retrieves a product by its ID for a specific workplace.
+// @Summary     Get Product By ID
+// @Description Get a product or part by its ID within a specified workplace.
+// @Tags        product
+// @Accept      json
+// @Produce     json
+// @Param       id   path      string  true  "ID of the product"
+// @Success     200  {object}  models.Response{body=models.ProductLaundry} "Product obtained with success"
+// @Success     200  {object}  models.Response{body=models.PartWorkshop} "Part obtained with success"
+// @Failure     400  {object}  models.Response "ID is required or Workplace is required"
+// @Failure     500  {object}  models.Response "Internal server error"
+// @Router      /product/{id} [get]
+// @Security    BearerAuth
+
 func ProductGetByID(c *fiber.Ctx) error {
 	id := c.Params("id")
 	if id == "" {
@@ -56,6 +70,18 @@ func ProductGetByID(c *fiber.Ctx) error {
 	})
 }
 
+// ProductGetAll godoc
+// @Summary     Get All Products
+// @Description Get All Products
+// @Tags        product
+// @Accept      json
+// @Produce     json
+// @Success     200 {object} models.Response{body=[]models.Laundry} "Products obtained with success"
+// @Success     200 {object} models.Response{body=[]models.Workshop} "Workshop parts obtained with success"
+// @Failure     400 {object} models.Response "Workplace is required"
+// @Failure     500 {object} models.Response "Internal server error"
+// @Router      /product [get]
+// @Security    BearerAuth
 func ProductGetAll(c *fiber.Ctx) error {
 	workplace := c.Locals("workplace").(*models.Workplace)
 	if workplace == nil {
@@ -97,6 +123,19 @@ func ProductGetAll(c *fiber.Ctx) error {
 	})
 }
 
+// ProductGetByName retrieves products by their name from the specified workplace.
+// @Summary     Get Product By Name
+// @Description Fetches products from either laundry or workshop based on the provided name and workplace.
+// @Tags        Product
+// @Accept      json
+// @Produce     json
+// @Param       name  query     string  true  "Name of the Product"
+// @Success     200   {object}  models.Response{body=[]models.ProductLaundry} "List of laundry products"
+// @Success     200   {object}  models.Response{body=[]models.PartWorkshop} "List of workshop parts"
+// @Failure     400   {object}  models.Response "Invalid name or workplace"
+// @Failure     500   {object}  models.Response "Internal server error"
+// @Router      /product/by-name [get]
+// @Security    BearerAuth
 func ProductGetByName(c *fiber.Ctx) error {
 	name := c.Query("name")
 	if name == "" || len(name) < 3 {
@@ -147,6 +186,20 @@ func ProductGetByName(c *fiber.Ctx) error {
 	})
 }
 
+
+// ProductGetByIdentifier godoc
+// @Summary     Get Products by identifier
+// @Description Get Products by identifier
+// @Tags        product
+// @Accept      json
+// @Produce     json
+// @Param       identifier query string true "Identifier of product"
+// @Success     200 {object} models.Response{body=[]models.Laundry} "Products obtained with success"
+// @Success     200 {object} models.Response{body=[]models.Workshop} "Workshop parts obtained with success"
+// @Failure     400 {object} models.Response "Workplace is required"
+// @Failure     500 {object} models.Response "Internal server error"
+// @Router      /product/identifier [get]
+// @Security    BearerAuth
 func ProductGetByIdentifier(c *fiber.Ctx) error {
 	name := c.Query("identifier")
 	if name == "" || len(name) < 3 {
@@ -197,6 +250,20 @@ func ProductGetByIdentifier(c *fiber.Ctx) error {
 	})
 }
 
+// ProductUpdateStock godoc
+// @Summary     Update Product Stock
+// @Description Updates the stock of a product based on the given method (add, subtract, update).
+// @Tags        product
+// @Accept      json
+// @Produce     json
+// @Param       id      path      string            true  "ID of the product"
+// @Param       method  query     string            true  "Method of stock update (add, subtract, update)"
+// @Param       stock   body      models.StockUpdate true  "Stock update details"
+// @Success     200     {object}  models.Response   "Product stock updated successfully"
+// @Failure     400     {object}  models.Response   "Invalid request or missing required parameters"
+// @Failure     500     {object}  models.Response   "Internal server error"
+// @Router      /product/{id}/stock [put]
+// @Security    BearerAuth
 func ProductUpdateStock(c *fiber.Ctx) error {
 	id := c.Params("id")
 	if id == "" {
@@ -264,6 +331,19 @@ func ProductUpdateStock(c *fiber.Ctx) error {
 	})
 }
 
+// ProductUpdate godoc
+// @Summary     Update Product
+// @Description Updates the given product and returns the updated product.
+// @Tags        product
+// @Accept      json
+// @Produce     json
+// @Param       id      path      string            true  "ID of the product"
+// @Param       product body      models.ProductUpdate true  "Product update details"
+// @Success     200     {object}  models.Response   "Product updated successfully"
+// @Failure     400     {object}  models.Response   "Invalid request or missing required parameters"
+// @Failure     500     {object}  models.Response   "Internal server error"
+// @Router      /product/{id} [put]
+// @Security    BearerAuth
 func ProductUpdate(c *fiber.Ctx) error {
 	var productUpdate models.ProductUpdate
 	if err := c.BodyParser(&productUpdate); err != nil {
@@ -313,6 +393,18 @@ func ProductUpdate(c *fiber.Ctx) error {
 	})
 }
 
+// ProductDelete godoc
+// @Summary     Delete Product
+// @Description Deletes the given product with the given id.
+// @Tags        product
+// @Accept      json
+// @Produce     json
+// @Param       id   path      string     true  "ID of the product"
+// @Success     200  {object}  models.Response  "Product deleted with success"
+// @Failure     400  {object}  models.Response  "Invalid request or missing required parameters"
+// @Failure     500  {object}  models.Response  "Internal server error"
+// @Router      /product/{id} [delete]
+// @Security    BearerAuth
 func ProductDelete(c *fiber.Ctx) error {
 	id := c.Params("id")
 	if id == "" {
@@ -355,6 +447,18 @@ func ProductDelete(c *fiber.Ctx) error {
 	})
 }
 
+// ProductCreate godoc
+// @Summary     Create Product
+// @Description Creates a new product in the specified workplace.
+// @Tags        product
+// @Accept      json
+// @Produce     json
+// @Param       product body      models.ProductCreate true "Details of the product to create"
+// @Success     200     {object}  models.Response      "Product created successfully"
+// @Failure     400     {object}  models.Response      "Invalid request or validation error"
+// @Failure     500     {object}  models.Response      "Internal server error"
+// @Router      /product [post]
+// @Security    BearerAuth
 func ProductCreate(c *fiber.Ctx) error {
 	var productCreate models.ProductCreate
 	if err := c.BodyParser(&productCreate); err != nil {
