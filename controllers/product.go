@@ -1,116 +1,406 @@
 package controllers
 
 import (
-	"errors"
-
 	"github.com/DanielChachagua/GestionCar/models"
-	"github.com/DanielChachagua/GestionCar/repositories"
-	"gorm.io/gorm"
+	"github.com/DanielChachagua/GestionCar/services"
+	"github.com/gofiber/fiber/v2"
 )
 
-func ProductGetByID(id string, workplace string) (*models.ProductLaundry, *models.PartWorkshop, error) {
-	product, part, err := repositories.Repo.GetElementByID(id, workplace)
-	if err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, nil, models.ErrorResponse(404, "Empleado no encontrado", err)
-		}
-		return nil, nil, models.ErrorResponse(500, "Error al actualizar cliente", err)
+func ProductGetByID(c *fiber.Ctx) error {
+	id := c.Params("id")
+	if id == "" {
+		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
+			Status:  false,
+			Body:    nil,
+			Message: "ID is required",
+		})
 	}
-	return product, part, nil
+
+	workplace := c.Locals("workplace").(*models.Workplace)
+	if workplace == nil {
+		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
+			Status:  false,
+			Body:    nil,
+			Message: "Workplace is required",
+		})
+	}
+
+	laundry, workshop, err := services.ProductGetByID(id, workplace.Identifier)
+	if err != nil {
+		if errResp, ok := err.(*models.ErrorStruc); ok {
+			return c.Status(errResp.StatusCode).JSON(models.Response{
+				Status:  false,
+				Body:    nil,
+				Message: errResp.Message,
+			})
+		}
+		return c.Status(fiber.StatusInternalServerError).JSON(models.Response{
+			Status:  false,
+			Body:    nil,
+			Message: "Error interno",
+		})
+	}
+
+	if laundry != nil {
+		return c.Status(200).JSON(models.Response{
+		Status:  true,
+		Body:    laundry,
+		Message: "Producto obtenido con éxito",
+	})
+	}
+
+	return c.Status(200).JSON(models.Response{
+		Status:  true,
+		Body:    workshop,
+		Message: "Parte obtenida con éxito",
+	})
 }
 
-func ProductGetByIdentifier(identifier string, workplace string) (*[]models.ProductLaundry, *[]models.PartWorkshop, error) {
-	product, part, err := repositories.Repo.GetElementsByIdentifier(identifier, workplace)
-	if err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, nil, models.ErrorResponse(404, "Empleado no encontrado", err)
-		}
-		return nil, nil, models.ErrorResponse(500, "Error al actualizar cliente", err)
+func ProductGetAll(c *fiber.Ctx) error {
+	workplace := c.Locals("workplace").(*models.Workplace)
+	if workplace == nil {
+		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
+			Status:  false,
+			Body:    nil,
+			Message: "Workplace is required",
+		})
 	}
-	return product, part, nil
+
+	laundry, workshop, err := services.ProductGetAll(workplace.Identifier)
+	if err != nil {
+		if errResp, ok := err.(*models.ErrorStruc); ok {
+			return c.Status(errResp.StatusCode).JSON(models.Response{
+				Status:  false,
+				Body:    nil,
+				Message: errResp.Message,
+			})
+		}
+		return c.Status(fiber.StatusInternalServerError).JSON(models.Response{
+			Status:  false,
+			Body:    nil,
+			Message: "Error interno",
+		})
+	}
+
+	if laundry != nil {
+		return c.Status(200).JSON(models.Response{
+			Status:  true,
+			Body:    laundry,
+			Message: "Productos obtenidos con éxito",
+		})
+	}
+
+	return c.Status(200).JSON(models.Response{
+		Status:  true,
+		Body:    workshop,
+		Message: "Partes obtenidas con éxito",
+	})
 }
 
-func ProductGetAll(workplace string) (*[]models.ProductLaundry, *[]models.PartWorkshop, error) {
-	product, part, err := repositories.Repo.GetAllElements(workplace)
-	if err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, nil, models.ErrorResponse(404, "Empleado no encontrado", err)
-		}
-		return nil, nil, models.ErrorResponse(500, "Error al actualizar cliente", err)
+func ProductGetByName(c *fiber.Ctx) error {
+	name := c.Query("name")
+	if name == "" || len(name) < 3 {
+		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
+			Status:  false,
+			Body:    nil,
+			Message: "El valor no debe de ser vacio o menor a 3 caracteres",
+		})
 	}
-	return product, part, nil
+
+	workplace := c.Locals("workplace").(*models.Workplace)
+	if workplace == nil {
+		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
+			Status:  false,
+			Body:    nil,
+			Message: "Workplace is required",
+		})
+	}
+
+	laundry, workshop, err := services.ProductGetByName(name, workplace.Identifier)
+	if err != nil {
+		if errResp, ok := err.(*models.ErrorStruc); ok {
+			return c.Status(errResp.StatusCode).JSON(models.Response{
+				Status:  false,
+				Body:    nil,
+				Message: errResp.Message,
+			})
+		}
+		return c.Status(fiber.StatusInternalServerError).JSON(models.Response{
+			Status:  false,
+			Body:    nil,
+			Message: "Error interno",
+		})
+	}
+
+	if laundry != nil {
+		return c.Status(200).JSON(models.Response{
+			Status:  true,
+			Body:    laundry,
+			Message: "Productos obtenidos con éxito",
+		})
+	}
+
+	return c.Status(200).JSON(models.Response{
+		Status:  true,
+		Body:    workshop,
+		Message: "Partes obtenidas con éxito",
+	})
 }
 
-func ProductGetByName(name string, workplace string) (*[]models.ProductLaundry, *[]models.PartWorkshop, error) {
-	product, part, err := repositories.Repo.GetAllElementsByName(name, workplace)
-	if err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, nil, models.ErrorResponse(404, "Empleado no encontrado", err)
-		}
-		return nil, nil, models.ErrorResponse(500, "Error al actualizar cliente", err)
+func ProductGetByIdentifier(c *fiber.Ctx) error {
+	name := c.Query("identifier")
+	if name == "" || len(name) < 3 {
+		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
+			Status:  false,
+			Body:    nil,
+			Message: "El valor no debe de ser vacio o menor a 3 caracteres",
+		})
 	}
-	return product, part, nil
+
+	workplace := c.Locals("workplace").(*models.Workplace)
+	if workplace == nil {
+		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
+			Status:  false,
+			Body:    nil,
+			Message: "Workplace is required",
+		})
+	}
+
+	laundry, workshop, err := services.ProductGetByIdentifier(name, workplace.Identifier)
+	if err != nil {
+		if errResp, ok := err.(*models.ErrorStruc); ok {
+			return c.Status(errResp.StatusCode).JSON(models.Response{
+				Status:  false,
+				Body:    nil,
+				Message: errResp.Message,
+			})
+		}
+		return c.Status(fiber.StatusInternalServerError).JSON(models.Response{
+			Status:  false,
+			Body:    nil,
+			Message: "Error interno",
+		})
+	}
+
+	if laundry != nil {
+		return c.Status(200).JSON(models.Response{
+			Status:  true,
+			Body:    laundry,
+			Message: "Productos obtenidos con éxito",
+		})
+	}
+
+	return c.Status(200).JSON(models.Response{
+		Status:  true,
+		Body:    workshop,
+		Message: "Partes obtenidas con éxito",
+	})
 }
 
-func ProductCreate(product *models.ProductCreate, workplace string) (string, error) {
-	id, err := repositories.Repo.CreateElement(product, workplace)
-	if err != nil {
-		return "", models.ErrorResponse(500, "Error al actualizar cliente", err)
+func ProductUpdateStock(c *fiber.Ctx) error {
+	id := c.Params("id")
+	if id == "" {
+		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
+			Status:  false,
+			Body:    nil,
+			Message: "ID is required",
+		})
 	}
-	return id, nil
+
+	method := c.Query("method")
+	if method == "" {
+		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
+			Status:  false,
+			Body:    nil,
+			Message: "Method is required",
+		})
+	}
+
+	var stockUpdate models.StockUpdate
+	if err := c.BodyParser(&stockUpdate); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
+			Status:  false,
+			Body:    nil,
+			Message: "Invalid request",
+		})
+	}
+	if err := stockUpdate.Validate(); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
+			Status:  false,
+			Body:    nil,
+			Message: err.Error(),
+		})
+	}
+
+	workplace := c.Locals("workplace").(*models.Workplace)
+	if workplace == nil {
+		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
+			Status:  false,
+			Body:    nil,
+			Message: "Workplace is required",
+		})
+	}
+
+	err := services.ProductUpdateStock(id, &stockUpdate, method, workplace.Identifier)
+	if err != nil {
+		if errResp, ok := err.(*models.ErrorStruc); ok {
+			return c.Status(errResp.StatusCode).JSON(models.Response{
+				Status:  false,
+				Body:    nil,
+				Message: errResp.Message,
+			})
+		}
+		return c.Status(fiber.StatusInternalServerError).JSON(models.Response{
+			Status:  false,
+			Body:    nil,
+			Message: "Error interno",
+		})
+	}
+
+	return c.Status(200).JSON(models.Response{
+		Status:  true,
+		Body:    nil,
+		Message: "Producto actualizado con éxito",
+	})
 }
 
-func ProductUpdate(product *models.ProductUpdate, workplace string) error {
-	err := repositories.Repo.UpdateElement(product, workplace)
-	if err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return models.ErrorResponse(404, "Empleado no encontrado", err)
-		}
-		return models.ErrorResponse(500, "Error al actualizar cliente", err)
+func ProductUpdate(c *fiber.Ctx) error {
+	var productUpdate models.ProductUpdate
+	if err := c.BodyParser(&productUpdate); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
+			Status:  false,
+			Body:    nil,
+			Message: "Invalid request",
+		})
 	}
-	return nil
+	if err := productUpdate.Validate(); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
+			Status:  false,
+			Body:    nil,
+			Message: err.Error(),
+		})
+	}
+
+	workplace := c.Locals("workplace").(*models.Workplace)
+	if workplace == nil {
+		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
+			Status:  false,
+			Body:    nil,
+			Message: "Workplace is required",
+		})
+	}
+
+	err := services.ProductUpdate(&productUpdate, workplace.Identifier)
+	if err != nil {
+		if errResp, ok := err.(*models.ErrorStruc); ok {
+			return c.Status(errResp.StatusCode).JSON(models.Response{
+				Status:  false,
+				Body:    nil,
+				Message: errResp.Message,
+			})
+		}
+		return c.Status(fiber.StatusInternalServerError).JSON(models.Response{
+			Status:  false,
+			Body:    nil,
+			Message: "Error interno",
+		})
+	}
+
+	return c.Status(200).JSON(models.Response{
+		Status:  true,
+		Body:    nil,
+		Message: "Producto actualizado con éxito",
+	})
 }
 
-func ProductUpdateStock(id string, stock *models.StockUpdate, method string, workplace string) error {
-	product, part, err := repositories.Repo.GetElementByID(id, workplace)
+func ProductDelete(c *fiber.Ctx) error {
+	id := c.Params("id")
+	if id == "" {
+		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
+			Status:  false,
+			Body:    nil,
+			Message: "ID is required",
+		})
+	}
+
+	workplace := c.Locals("workplace").(*models.Workplace)
+	if workplace == nil {
+		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
+			Status:  false,
+			Body:    nil,
+			Message: "Workplace is required",
+		})
+	}
+
+	err := services.ProductDelete(id, workplace.Identifier)
 	if err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return models.ErrorResponse(404, "Elemento no encontrado", err)
+		if errResp, ok := err.(*models.ErrorStruc); ok {
+			return c.Status(errResp.StatusCode).JSON(models.Response{
+				Status:  false,
+				Body:    nil,
+				Message: errResp.Message,
+			})
 		}
-		return models.ErrorResponse(500, "Error al actualizar cliente", err)
+		return c.Status(fiber.StatusInternalServerError).JSON(models.Response{
+			Status:  false,
+			Body:    nil,
+			Message: "Error interno",
+		})
 	}
-	switch method {
-	case "update":
-		if stock.Stock < 0 {
-			return models.ErrorResponse(400, "El stock no puede ser negativo", nil)
-		}
-		return repositories.Repo.UpdateStock(stock.Stock, id, workplace)
-	case "add":
-		if stock.Stock <= 0{
-			return models.ErrorResponse(400, "El stock debe ser mayor a 0", nil)
-		}
-		return repositories.Repo.AddToStock(id, stock.Stock, workplace)
-	case "subtract":
-		if stock.Stock <= 0{
-			return models.ErrorResponse(400, "El stock debe ser mayor a 0", nil)
-		}
-		if (part != nil && part.Stock < stock.Stock) || (product != nil && product.Stock < stock.Stock) {
-			return models.ErrorResponse(400, "El stock no puede ser negativo", nil)
-		}
-		return repositories.Repo.SubtractFromStockToStock(id, stock.Stock, workplace)
-	
-	default:
-		return models.ErrorResponse(500, "Método de actualización no soportado", err)
-	}
+
+	return c.Status(200).JSON(models.Response{
+		Status:  true,
+		Body:    nil,
+		Message: "Producto eliminado con éxito",
+	})
 }
 
-func ProductDelete(id string, workplace string) error {
-	err := repositories.Repo.DeleteElement(id, workplace)
-	if err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return models.ErrorResponse(404, "Empleado no encontrado", err)
-		}
-		return models.ErrorResponse(500, "Error al actualizar cliente", err)
+func ProductCreate(c *fiber.Ctx) error {
+	var productCreate models.ProductCreate
+	if err := c.BodyParser(&productCreate); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
+			Status:  false,
+			Body:    nil,
+			Message: "Invalid request",
+		})
 	}
-	return nil
+	if err := productCreate.Validate(); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
+			Status:  false,
+			Body:    nil,
+			Message: err.Error(),
+		})
+	}
+
+	workplace := c.Locals("workplace").(*models.Workplace)
+	if workplace == nil {
+		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
+			Status:  false,
+			Body:    nil,
+			Message: "Workplace is required",
+		})
+	}
+
+	productCreated, err := services.ProductCreate(&productCreate, workplace.Identifier)
+	if err != nil {
+		if errResp, ok := err.(*models.ErrorStruc); ok {
+			return c.Status(errResp.StatusCode).JSON(models.Response{
+				Status:  false,
+				Body:    nil,
+				Message: errResp.Message,
+			})
+		}
+		return c.Status(fiber.StatusInternalServerError).JSON(models.Response{
+			Status:  false,
+			Body:    nil,
+			Message: "Error interno",
+		})
+	}
+
+	return c.Status(200).JSON(models.Response{
+		Status:  true,
+		Body:    productCreated,
+		Message: "Producto creado con éxito",
+	})
 }
+

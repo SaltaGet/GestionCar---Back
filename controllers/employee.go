@@ -66,7 +66,7 @@ func GetAllEmployees(c *fiber.Ctx) error {
 		})
 	}
 
-	laundries, workshops, err := services.GetAllAttendances(workplace.Identifier)
+	laundry, workshop, err := services.GetAllEmployees(workplace.Identifier)
 	if err != nil {
 		if errResp, ok := err.(*models.ErrorStruc); ok {
 			return c.Status(errResp.StatusCode).JSON(models.Response{
@@ -82,35 +82,28 @@ func GetAllEmployees(c *fiber.Ctx) error {
 		})
 	}
 
-	if laundries != nil {
+	if laundry != nil {
 		return c.Status(200).JSON(models.Response{
 			Status:  true,
-			Body:    laundries,
-			Message: "Asistencia obtenida con éxito",
+			Body:    laundry,
+			Message: "Empleados obtenidos con éxito",
 		})
 	}
 
 	return c.Status(200).JSON(models.Response{
 		Status:  true,
-		Body:    workshops,
-		Message: "Asistencia obtenida con éxito",
+		Body:    workshop,
+		Message: "Empleados obtenidos con éxito",
 	})
 }
 
 func GetEmployeeByName(c *fiber.Ctx) error {
-	var dateBeetwen models.DateBetween
-	if err := c.BodyParser(&dateBeetwen); err != nil {
+	name := c.Query("name")
+	if name == "" || len(name) < 3 {
 		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
 			Status:  false,
 			Body:    nil,
-			Message: "Invalid request",
-		})
-	}
-	if err := dateBeetwen.Validate(); err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
-			Status:  false,
-			Body:    nil,
-			Message: err.Error(),
+			Message: "El valor no debe de ser vacio o menor a 3 caracteres",
 		})
 	}
 
@@ -123,7 +116,7 @@ func GetEmployeeByName(c *fiber.Ctx) error {
 		})
 	}
 
-	laundries, workshops, err := services.GetAllAttendancesByDate(dateBeetwen.DateFrom, dateBeetwen.DateTo,workplace.Identifier)
+	laundry, workshop, err := services.GetEmployeeByName(name, workplace.Identifier)
 	if err != nil {
 		if errResp, ok := err.(*models.ErrorStruc); ok {
 			return c.Status(errResp.StatusCode).JSON(models.Response{
@@ -139,31 +132,31 @@ func GetEmployeeByName(c *fiber.Ctx) error {
 		})
 	}
 
-	if laundries != nil {
+	if laundry != nil {
 		return c.Status(200).JSON(models.Response{
 			Status:  true,
-			Body:    laundries,
-			Message: "Asistencias obtenidas con éxito",
+			Body:    laundry,
+			Message: "Empleados obtenidos con éxito",
 		})
 	}
 
 	return c.Status(200).JSON(models.Response{
 		Status:  true,
-		Body:    workshops,
-		Message: "Asistencias obtenidas con éxito",
+		Body:    workshop,
+		Message: "Empleados obtenidos con éxito",
 	})
 }
 
 func CreateEmployee(c *fiber.Ctx) error {
-	var attendanceCreate models.AttendanceCreate
-	if err := c.BodyParser(&attendanceCreate); err != nil {
+	var employeeCreate models.EmployeeCreate
+	if err := c.BodyParser(&employeeCreate); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
 			Status:  false,
 			Body:    nil,
 			Message: "Invalid request",
 		})
 	}
-	if err := attendanceCreate.Validate(); err != nil {
+	if err := employeeCreate.Validate(); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
 			Status:  false,
 			Body:    nil,
@@ -180,7 +173,7 @@ func CreateEmployee(c *fiber.Ctx) error {
 		})
 	}
 
-	id, err := services.CreateAttendance(&attendanceCreate, workplace.Identifier)
+	id, err := services.CreateEmployee(&employeeCreate, workplace.Identifier)
 	if err != nil {
 		if errResp, ok := err.(*models.ErrorStruc); ok {
 			return c.Status(errResp.StatusCode).JSON(models.Response{
@@ -199,20 +192,20 @@ func CreateEmployee(c *fiber.Ctx) error {
 	return c.Status(200).JSON(models.Response{
 		Status:  true,
 		Body:    id,
-		Message: "Asistencia creada con éxito",
+		Message: "Empleado creado con éxito",
 	})
 }
 
 func UpdateEmployee(c *fiber.Ctx) error {
-	var attendanceUpdate models.AttendanceUpdate
-	if err := c.BodyParser(&attendanceUpdate); err != nil {
+	var employeeUpdate models.EmployeeUpdate
+	if err := c.BodyParser(&employeeUpdate); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
 			Status:  false,
 			Body:    nil,
 			Message: "Invalid request",
 		})
 	}
-	if err := attendanceUpdate.Validate(); err != nil {
+	if err := employeeUpdate.Validate(); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
 			Status:  false,
 			Body:    nil,
@@ -229,7 +222,7 @@ func UpdateEmployee(c *fiber.Ctx) error {
 		})
 	}
 
-	err := services.UpdateAttendance(&attendanceUpdate, workplace.Identifier)
+	err := services.UpdateEmployee(&employeeUpdate, workplace.Identifier)
 	if err != nil {
 		if errResp, ok := err.(*models.ErrorStruc); ok {
 			return c.Status(errResp.StatusCode).JSON(models.Response{
@@ -248,13 +241,12 @@ func UpdateEmployee(c *fiber.Ctx) error {
 	return c.Status(200).JSON(models.Response{
 		Status:  true,
 		Body:    nil,
-		Message: "Asistencia editada con éxito",
+		Message: "Empleado editado con éxito",
 	})
 }
 
 func DeleteEmployee(c *fiber.Ctx) error {
 	id := c.Params("id")
-
 	if id == "" {
 		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
 			Status:  false,
@@ -272,7 +264,7 @@ func DeleteEmployee(c *fiber.Ctx) error {
 		})
 	}
 
-	err := services.DeleteAttendance(id, workplace.Identifier)
+	err := services.DeleteEmployee(id, workplace.Identifier)
 	if err != nil {
 		if errResp, ok := err.(*models.ErrorStruc); ok {
 			return c.Status(errResp.StatusCode).JSON(models.Response{
@@ -291,7 +283,7 @@ func DeleteEmployee(c *fiber.Ctx) error {
 	return c.Status(200).JSON(models.Response{
 		Status:  true,
 		Body:    nil,
-		Message: "Asistencia eliminada con éxito",
+		Message: "Empleado eliminado con éxito",
 	})
 }
 

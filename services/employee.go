@@ -27,7 +27,7 @@ func GetEmployeeByName(name string, workplace string) (*[]models.EmployeeLaundry
 	return employeesLaundry, employeesWorkshop, nil
 }
 
-func GetAllEmployees(workplace string) ([]models.EmployeeLaundry, []models.EmployeeWorkshop, error) {
+func GetAllEmployees(workplace string) (*[]models.EmployeeLaundry, *[]models.EmployeeWorkshop, error) {
 	employeesLaundry, employeesWorkshop, err := repositories.Repo.GetAllEmployees(workplace)
 	if err != nil {
 		return nil, nil, models.ErrorResponse(500, "Error al actualizar cliente", err)

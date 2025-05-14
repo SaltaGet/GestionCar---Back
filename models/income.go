@@ -1,6 +1,10 @@
 package models
 
-import "time"
+import (
+	"time"
+
+	"github.com/go-playground/validator/v10"
+)
 
 type IncomeLaundry struct {
 	ID                  string              `gorm:"primaryKey" json:"id"`
@@ -47,6 +51,11 @@ type IncomeCreate struct {
 	Amount         float32  `json:"amount" validate:"required"`
 }
 
+func (i *IncomeCreate) Validate() error {
+	validate := validator.New()
+	return validate.Struct(i)
+}
+
 type IncomeUpdate struct {
 	ID             string   `json:"id"`
 	Ticket         string   `json:"ticket" validate:"required"`
@@ -57,4 +66,9 @@ type IncomeUpdate struct {
 	EmployeeID     string   `json:"employee_id"`
 	MovementTypeID string   `json:"movement_type_id" validate:"required"`
 	Amount         float32  `json:"amount" validate:"required"`
+}
+
+func (i *IncomeUpdate) Validate() error {
+	validate := validator.New()
+	return validate.Struct(i)
 }

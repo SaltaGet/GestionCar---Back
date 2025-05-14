@@ -24,19 +24,19 @@ func (r *Repository) GetEmployeeByID(id string, workplace string) (*models.Emplo
 	return nil, nil, fmt.Errorf("tipo de espacio no soportado")
 }
 
-func (r *Repository) GetAllEmployees(workplace string) ([]models.EmployeeLaundry, []models.EmployeeWorkshop, error) {
+func (r *Repository) GetAllEmployees(workplace string) (*[]models.EmployeeLaundry, *[]models.EmployeeWorkshop, error) {
 	if workplace == "laundry" {
 		var employees []models.EmployeeLaundry
 		if err := r.DB.Find(&employees).Error; err != nil {
 			return nil, nil, err
 		}
-		return employees, nil, nil
+		return &employees, nil, nil
 	} else	if workplace == "workshop" {
 		var employees []models.EmployeeWorkshop
 		if err := r.DB.Find(&employees).Error; err != nil {
 			return nil, nil, err
 		}
-		return nil, employees, nil
+		return nil, &employees, nil
 	}
 	return nil, nil, fmt.Errorf("tipo de espacio no soportado")
 }

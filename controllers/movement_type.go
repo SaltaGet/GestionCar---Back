@@ -1,60 +1,247 @@
 package controllers
 
 import (
-	"errors"
-
 	"github.com/DanielChachagua/GestionCar/models"
-	"github.com/DanielChachagua/GestionCar/repositories"
-	"gorm.io/gorm"
+	"github.com/DanielChachagua/GestionCar/services"
+	"github.com/gofiber/fiber/v2"
 )
 
-func MovementTypeCreate(movementType *models.MovementTypeCreate, workplace string) (string, error) {
-	id, err := repositories.Repo.CreateMovementType(movementType, workplace)
-	if err != nil {
-		return "", models.ErrorResponse(500, "Error al actualizar cliente", err)
+func GetMovementTypeByID(c *fiber.Ctx) error {
+	id := c.Params("id")
+	if id == "" {
+		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
+			Status:  false,
+			Body:    nil,
+			Message: "ID is required",
+		})
 	}
-	return id, nil
-}
 
-func MovementTypeUpdate(movementType *models.MovementTypeUpdate, workplace string) error {
-	err := repositories.Repo.UpdateMovementType(movementType, workplace)
+	workplace := c.Locals("workplace").(*models.Workplace)
+	if workplace == nil {
+		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
+			Status:  false,
+			Body:    nil,
+			Message: "Workplace is required",
+		})
+	}
 
+	laundry, workshop, err := services.GetMovementTypeByID(id, workplace.Identifier)
 	if err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return models.ErrorResponse(404, "Empleado no encontrado", err)
+		if errResp, ok := err.(*models.ErrorStruc); ok {
+			return c.Status(errResp.StatusCode).JSON(models.Response{
+				Status:  false,
+				Body:    nil,
+				Message: errResp.Message,
+			})
 		}
-		return models.ErrorResponse(500, "Error al actualizar cliente", err)
+		return c.Status(fiber.StatusInternalServerError).JSON(models.Response{
+			Status:  false,
+			Body:    nil,
+			Message: "Error interno",
+		})
 	}
 
-	return nil
+	if laundry != nil {
+		return c.Status(200).JSON(models.Response{
+			Status:  true,
+			Body:    laundry,
+			Message: "Movimiento obtenido con éxito",
+		})
+	}
+
+	return c.Status(200).JSON(models.Response{
+		Status:  true,
+		Body:    workshop,
+		Message: "Movimiento obtenido con éxito",
+	})
 }
 
-func MovementTypeDelete(id string, workplace string) error {
-	err := repositories.Repo.DeleteMovementType(id, workplace)
+func GetAllMovementTypes(c *fiber.Ctx) error {
+	var isIncome bool
+	if err := c.QueryParser(&isIncome); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
+			Status:  false,
+			Body:    nil,
+			Message: "Invalid request",
+		})
+	}
+
+	workplace := c.Locals("workplace").(*models.Workplace)
+	if workplace == nil {
+		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
+			Status:  false,
+			Body:    nil,
+			Message: "Workplace is required",
+		})
+	}
+
+	laundry, workshop, err := services.GetAllMovementTypes(isIncome, workplace.Identifier)
 	if err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return models.ErrorResponse(404, "Empleado no encontrado", err)
+		if errResp, ok := err.(*models.ErrorStruc); ok {
+			return c.Status(errResp.StatusCode).JSON(models.Response{
+				Status:  false,
+				Body:    nil,
+				Message: errResp.Message,
+			})
 		}
-		return models.ErrorResponse(500, "Error al actualizar cliente", err)
+		return c.Status(fiber.StatusInternalServerError).JSON(models.Response{
+			Status:  false,
+			Body:    nil,
+			Message: "Error interno",
+		})
 	}
-	return nil
+
+	if laundry != nil {
+		return c.Status(200).JSON(models.Response{
+			Status:  true,
+			Body:    laundry,
+			Message: "Movimientos obtenidos con éxito",
+		})
+	}
+
+	return c.Status(200).JSON(models.Response{
+		Status:  true,
+		Body:    workshop,
+		Message: "Movimientos obtenidos con éxito",
+	})
 }
 
-func GetMovementTypeByID(id string, workplace string) (*models.MovementTypeLaundry, *models.MovementTypeWorkshop, error) {
-	movementTypeLaundry, movementTypeWorkshop, err := repositories.Repo.GetMovementTypeByID(id, workplace)
+func MovementTypeCreate(c *fiber.Ctx) error {
+	var movementCreate models.MovementTypeCreate
+	if err := c.BodyParser(&movementCreate); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
+			Status:  false,
+			Body:    nil,
+			Message: "Invalid request",
+		})
+	}
+	if err := movementCreate.Validate(); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
+			Status:  false,
+			Body:    nil,
+			Message: err.Error(),
+		})
+	}
+
+	workplace := c.Locals("workplace").(*models.Workplace)
+	if workplace == nil {
+		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
+			Status:  false,
+			Body:    nil,
+			Message: "Workplace is required",
+		})
+	}
+
+	id, err := services.MovementTypeCreate(&movementCreate, workplace.Identifier)
 	if err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, nil, models.ErrorResponse(404, "Empleado no encontrado", err)
+		if errResp, ok := err.(*models.ErrorStruc); ok {
+			return c.Status(errResp.StatusCode).JSON(models.Response{
+				Status:  false,
+				Body:    nil,
+				Message: errResp.Message,
+			})
 		}
-		return nil, nil, models.ErrorResponse(500, "Error al actualizar cliente", err)
+		return c.Status(fiber.StatusInternalServerError).JSON(models.Response{
+			Status:  false,
+			Body:    nil,
+			Message: "Error interno",
+		})
 	}
-	return movementTypeLaundry, movementTypeWorkshop, nil
+
+	return c.Status(200).JSON(models.Response{
+		Status:  true,
+		Body:    id,
+		Message: "Movimiento creado con éxito",
+	})
 }
 
-func GetAllMovementTypes(isIncome bool ,workplace string) (*[]models.MovementTypeLaundry, *[]models.MovementTypeWorkshop, error) {
-	movementTypesLaundry, movementTypesWorkshop, err := repositories.Repo.GetAllMovementTypes(isIncome, workplace)
-	if err != nil {
-		return nil, nil, models.ErrorResponse(500, "Error al actualizar cliente", err)
+func MovementTypeUpdate(c *fiber.Ctx) error {
+	var movementUpdate models.MovementTypeUpdate
+	if err := c.BodyParser(&movementUpdate); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
+			Status:  false,
+			Body:    nil,
+			Message: "Invalid request",
+		})
 	}
-	return &movementTypesLaundry, &movementTypesWorkshop, nil
+	if err := movementUpdate.Validate(); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
+			Status:  false,
+			Body:    nil,
+			Message: err.Error(),
+		})
+	}
+
+	workplace := c.Locals("workplace").(*models.Workplace)
+	if workplace == nil {
+		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
+			Status:  false,
+			Body:    nil,
+			Message: "Workplace is required",
+		})
+	}
+
+	err := services.MovementTypeUpdate(&movementUpdate, workplace.Identifier)
+	if err != nil {
+		if errResp, ok := err.(*models.ErrorStruc); ok {
+			return c.Status(errResp.StatusCode).JSON(models.Response{
+				Status:  false,
+				Body:    nil,
+				Message: errResp.Message,
+			})
+		}
+		return c.Status(fiber.StatusInternalServerError).JSON(models.Response{
+			Status:  false,
+			Body:    nil,
+			Message: "Error interno",
+		})
+	}
+
+	return c.Status(200).JSON(models.Response{
+		Status:  true,
+		Body:    nil,
+		Message: "Movimiento editado con éxito",
+	})
+}
+
+func MovementTypeDelete(c *fiber.Ctx) error {
+	id := c.Params("id")
+	if id == "" {
+		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
+			Status:  false,
+			Body:    nil,
+			Message: "ID is required",
+		})
+	}
+
+	workplace := c.Locals("workplace").(*models.Workplace)
+	if workplace == nil {
+		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
+			Status:  false,
+			Body:    nil,
+			Message: "Workplace is required",
+		})
+	}
+
+	err := services.MovementTypeDelete(id, workplace.Identifier)
+	if err != nil {
+		if errResp, ok := err.(*models.ErrorStruc); ok {
+			return c.Status(errResp.StatusCode).JSON(models.Response{
+				Status:  false,
+				Body:    nil,
+				Message: errResp.Message,
+			})
+		}
+		return c.Status(fiber.StatusInternalServerError).JSON(models.Response{
+			Status:  false,
+			Body:    nil,
+			Message: "Error interno",
+		})
+	}
+
+	return c.Status(200).JSON(models.Response{
+		Status:  true,
+		Body:    nil,
+		Message: "Movimiento eliminado con éxito",
+	})
 }

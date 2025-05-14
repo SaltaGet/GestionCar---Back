@@ -1,68 +1,280 @@
 package controllers
 
 import (
-	"errors"
-
 	"github.com/DanielChachagua/GestionCar/models"
-	"github.com/DanielChachagua/GestionCar/repositories"
-	"gorm.io/gorm"
+	"github.com/DanielChachagua/GestionCar/services"
+	"github.com/gofiber/fiber/v2"
 )
 
-func GetExpenseByID(id string, workplace string) (*models.ExpenseLaundry, *models.ExpenseWorkshop, error) {
-	laundries, workshops, err := repositories.Repo.GetExpenseByID(id, workplace)
+func GetExpenseByID(c *fiber.Ctx) error {
+	id := c.Params("id")
+	if id == "" {
+		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
+			Status:  false,
+			Body:    nil,
+			Message: "ID is required",
+		})
+	}
+
+	workplace := c.Locals("workplace").(*models.Workplace)
+	if workplace == nil {
+		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
+			Status:  false,
+			Body:    nil,
+			Message: "Workplace is required",
+		})
+	}
+
+	laundry, workshop, err := services.GetExpenseByID(id, workplace.Identifier)
 	if err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, nil, models.ErrorResponse(404, "Movimiento no encontrado", err)
+		if errResp, ok := err.(*models.ErrorStruc); ok {
+			return c.Status(errResp.StatusCode).JSON(models.Response{
+				Status:  false,
+				Body:    nil,
+				Message: errResp.Message,
+			})
 		}
-		return nil, nil, models.ErrorResponse(500, "Error al buscar movimiento", err)
+		return c.Status(fiber.StatusInternalServerError).JSON(models.Response{
+			Status:  false,
+			Body:    nil,
+			Message: "Error interno",
+		})
 	}
 
-	return laundries, workshops, nil
-}
-
-func GetAllExpenses(workplace string) (*[]models.ExpenseLaundry, *[]models.ExpenseWorkshop, error) {
-	laundries, workshops, err := repositories.Repo.GetAllExpenses(workplace)
-	
-	if err != nil {
-		return nil, nil, models.ErrorResponse(500, "Error al buscar movimientos", err)
+	if laundry != nil {
+		return c.Status(200).JSON(models.Response{
+			Status:  true,
+			Body:    laundry,
+			Message: "Egreso obtenido con éxito",
+		})
 	}
 
-	return laundries, workshops, nil
+	return c.Status(200).JSON(models.Response{
+		Status:  true,
+		Body:    workshop,
+		Message: "Egreso obtenido con éxito",
+	})
 }
 
-func GetExpenseToday(workplace string) (*[]models.ExpenseLaundry, *[]models.ExpenseWorkshop, error) {
-	laundries, workshops, err := repositories.Repo.GetExpenseToday(workplace)
-	
-	if err != nil {
-		return nil, nil, models.ErrorResponse(500, "Error al buscar movimientos", err)
+func GetAllExpenses(c *fiber.Ctx) error {
+	workplace := c.Locals("workplace").(*models.Workplace)
+	if workplace == nil {
+		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
+			Status:  false,
+			Body:    nil,
+			Message: "Workplace is required",
+		})
 	}
 
-	return laundries, workshops, nil
-}
-
-func CreateExpense(expense *models.ExpenseCreate, workplace string) (string, error) {
-	laundryID, err := repositories.Repo.CreateExpense(expense, "laundry")
+	laundry, workshop, err := services.GetAllExpenses(workplace.Identifier)
 	if err != nil {
-		return "", models.ErrorResponse(500, "Error al crear movimiento", err)
-	}
-	return laundryID, nil
-}
-
-func UpdateExpense(expense *models.ExpenseUpdate, workplace string) error {
-	err := repositories.Repo.UpdateExpense(expense, workplace)
-	if err != nil {
-		return models.ErrorResponse(500, "Error al actualizar movimiento", err)
-	}
-	return nil
-}
-
-func DeleteExpense(id string, workplace string) error {
-	err := repositories.Repo.DeleteExpenseByID(id, workplace)
-	if err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return models.ErrorResponse(404, "Movimiento no encontrado", err)
+		if errResp, ok := err.(*models.ErrorStruc); ok {
+			return c.Status(errResp.StatusCode).JSON(models.Response{
+				Status:  false,
+				Body:    nil,
+				Message: errResp.Message,
+			})
 		}
-		return models.ErrorResponse(500, "Error al eliminar movimiento", err)
+		return c.Status(fiber.StatusInternalServerError).JSON(models.Response{
+			Status:  false,
+			Body:    nil,
+			Message: "Error interno",
+		})
 	}
-	return nil
+
+	if laundry != nil {
+		return c.Status(200).JSON(models.Response{
+			Status:  true,
+			Body:    laundry,
+			Message: "Egresos obtenidos con éxito",
+		})
+	}
+
+	return c.Status(200).JSON(models.Response{
+		Status:  true,
+		Body:    workshop,
+		Message: "Egresos obtenidos con éxito",
+	})
 }
+
+func GetExpenseToday(c *fiber.Ctx) error {
+	workplace := c.Locals("workplace").(*models.Workplace)
+	if workplace == nil {
+		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
+			Status:  false,
+			Body:    nil,
+			Message: "Workplace is required",
+		})
+	}
+
+	laundry, workshop, err := services.GetExpenseToday(workplace.Identifier)
+	if err != nil {
+		if errResp, ok := err.(*models.ErrorStruc); ok {
+			return c.Status(errResp.StatusCode).JSON(models.Response{
+				Status:  false,
+				Body:    nil,
+				Message: errResp.Message,
+			})
+		}
+		return c.Status(fiber.StatusInternalServerError).JSON(models.Response{
+			Status:  false,
+			Body:    nil,
+			Message: "Error interno",
+		})
+	}
+
+	if laundry != nil {
+		return c.Status(200).JSON(models.Response{
+			Status:  true,
+			Body:    laundry,
+			Message: "Egresos obtenidos con éxito",
+		})
+	}
+
+	return c.Status(200).JSON(models.Response{
+		Status:  true,
+		Body:    workshop,
+		Message: "Egresos obtenidos con éxito",
+	})
+}
+
+func CreateExpense(c *fiber.Ctx) error {
+	var expenseCreate models.ExpenseCreate
+	if err := c.BodyParser(&expenseCreate); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
+			Status:  false,
+			Body:    nil,
+			Message: "Invalid request",
+		})
+	}
+	if err := expenseCreate.Validate(); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
+			Status:  false,
+			Body:    nil,
+			Message: err.Error(),
+		})
+	}
+
+	workplace := c.Locals("workplace").(*models.Workplace)
+	if workplace == nil {
+		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
+			Status:  false,
+			Body:    nil,
+			Message: "Workplace is required",
+		})
+	}
+
+	id, err := services.CreateExpense(&expenseCreate, workplace.Identifier)
+	if err != nil {
+		if errResp, ok := err.(*models.ErrorStruc); ok {
+			return c.Status(errResp.StatusCode).JSON(models.Response{
+				Status:  false,
+				Body:    nil,
+				Message: errResp.Message,
+			})
+		}
+		return c.Status(fiber.StatusInternalServerError).JSON(models.Response{
+			Status:  false,
+			Body:    nil,
+			Message: "Error interno",
+		})
+	}
+
+	return c.Status(200).JSON(models.Response{
+		Status:  true,
+		Body:    id,
+		Message: "Egreso creado con éxito",
+	})
+}
+
+func UpdateExpense(c *fiber.Ctx) error {
+	var expenseUpdate models.ExpenseUpdate
+	if err := c.BodyParser(&expenseUpdate); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
+			Status:  false,
+			Body:    nil,
+			Message: "Invalid request",
+		})
+	}
+	if err := expenseUpdate.Validate(); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
+			Status:  false,
+			Body:    nil,
+			Message: err.Error(),
+		})
+	}
+
+	workplace := c.Locals("workplace").(*models.Workplace)
+	if workplace == nil {
+		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
+			Status:  false,
+			Body:    nil,
+			Message: "Workplace is required",
+		})
+	}
+
+	err := services.UpdateExpense(&expenseUpdate, workplace.Identifier)
+	if err != nil {
+		if errResp, ok := err.(*models.ErrorStruc); ok {
+			return c.Status(errResp.StatusCode).JSON(models.Response{
+				Status:  false,
+				Body:    nil,
+				Message: errResp.Message,
+			})
+		}
+		return c.Status(fiber.StatusInternalServerError).JSON(models.Response{
+			Status:  false,
+			Body:    nil,
+			Message: "Error interno",
+		})
+	}
+
+	return c.Status(200).JSON(models.Response{
+		Status:  true,
+		Body:    nil,
+		Message: "Egreso editado con éxito",
+	})
+}
+
+func DeleteExpense(c *fiber.Ctx) error {
+	id := c.Params("id")
+	if id == "" {
+		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
+			Status:  false,
+			Body:    nil,
+			Message: "ID is required",
+		})
+	}
+
+	workplace := c.Locals("workplace").(*models.Workplace)
+	if workplace == nil {
+		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
+			Status:  false,
+			Body:    nil,
+			Message: "Workplace is required",
+		})
+	}
+
+	err := services.DeleteExpense(id, workplace.Identifier)
+	if err != nil {
+		if errResp, ok := err.(*models.ErrorStruc); ok {
+			return c.Status(errResp.StatusCode).JSON(models.Response{
+				Status:  false,
+				Body:    nil,
+				Message: errResp.Message,
+			})
+		}
+		return c.Status(fiber.StatusInternalServerError).JSON(models.Response{
+			Status:  false,
+			Body:    nil,
+			Message: "Error interno",
+		})
+	}
+
+	return c.Status(200).JSON(models.Response{
+		Status:  true,
+		Body:    nil,
+		Message: "Egreso eliminado con éxito",
+	})
+}
+
