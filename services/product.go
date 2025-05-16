@@ -12,7 +12,7 @@ func ProductGetByID(id string, workplace string) (*models.ProductLaundry, *model
 	product, part, err := repositories.Repo.GetElementByID(id, workplace)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, nil, models.ErrorResponse(404, "Empleado no encontrado", err)
+			return nil, nil, models.ErrorResponse(404, "Elemento no encontrado", err)
 		}
 		return nil, nil, models.ErrorResponse(500, "Error al actualizar cliente", err)
 	}
@@ -23,7 +23,7 @@ func ProductGetByIdentifier(identifier string, workplace string) (*[]models.Prod
 	product, part, err := repositories.Repo.GetElementsByIdentifier(identifier, workplace)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, nil, models.ErrorResponse(404, "Empleado no encontrado", err)
+			return nil, nil, models.ErrorResponse(404, "Elemento no encontrado", err)
 		}
 		return nil, nil, models.ErrorResponse(500, "Error al actualizar cliente", err)
 	}
@@ -34,7 +34,7 @@ func ProductGetAll(workplace string) (*[]models.ProductLaundry, *[]models.PartWo
 	product, part, err := repositories.Repo.GetAllElements(workplace)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, nil, models.ErrorResponse(404, "Empleado no encontrado", err)
+			return nil, nil, models.ErrorResponse(404, "Elemento no encontrado", err)
 		}
 		return nil, nil, models.ErrorResponse(500, "Error al actualizar cliente", err)
 	}
@@ -45,9 +45,9 @@ func ProductGetByName(name string, workplace string) (*[]models.ProductLaundry, 
 	product, part, err := repositories.Repo.GetAllElementsByName(name, workplace)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, nil, models.ErrorResponse(404, "Empleado no encontrado", err)
+			return nil, nil, models.ErrorResponse(404, "Elemento no encontrado", err)
 		}
-		return nil, nil, models.ErrorResponse(500, "Error al actualizar cliente", err)
+		return nil, nil, models.ErrorResponse(500, "Error al obtener productos", err)
 	}
 	return product, part, nil
 }
@@ -55,7 +55,7 @@ func ProductGetByName(name string, workplace string) (*[]models.ProductLaundry, 
 func ProductCreate(product *models.ProductCreate, workplace string) (string, error) {
 	id, err := repositories.Repo.CreateElement(product, workplace)
 	if err != nil {
-		return "", models.ErrorResponse(500, "Error al actualizar cliente", err)
+		return "", models.ErrorResponse(500, "Error al crear producto", err)
 	}
 	return id, nil
 }
@@ -64,7 +64,7 @@ func ProductUpdate(product *models.ProductUpdate, workplace string) error {
 	err := repositories.Repo.UpdateElement(product, workplace)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return models.ErrorResponse(404, "Empleado no encontrado", err)
+			return models.ErrorResponse(404, "Elemento no encontrado", err)
 		}
 		return models.ErrorResponse(500, "Error al actualizar cliente", err)
 	}
@@ -77,7 +77,7 @@ func ProductUpdateStock(id string, stock *models.StockUpdate, method string, wor
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return models.ErrorResponse(404, "Elemento no encontrado", err)
 		}
-		return models.ErrorResponse(500, "Error al actualizar cliente", err)
+		return models.ErrorResponse(500, "Error al actualizar stock", err)
 	}
 	switch method {
 	case "update":
@@ -108,9 +108,9 @@ func ProductDelete(id string, workplace string) error {
 	err := repositories.Repo.DeleteElement(id, workplace)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return models.ErrorResponse(404, "Empleado no encontrado", err)
+			return models.ErrorResponse(404, "Producto no encontrado", err)
 		}
-		return models.ErrorResponse(500, "Error al actualizar cliente", err)
+		return models.ErrorResponse(500, "Error al eliminar producto", err)
 	}
 	return nil
 }

@@ -7,18 +7,21 @@ import (
 )
 
 // SupplierGetByID godoc
-// @Summary     Get Supplier By ID
-// @Description Get a supplier by its ID within a specified workplace.
-// @Tags        supplier
-// @Accept      json
-// @Produce     json
-// @Param       id   path      string  true  "ID of the supplier"
-// @Success     200  {object}  models.Response{body=models.SupplierLaundry} "Supplier obtained with success"
-// @Success     200  {object}  models.Response{body=models.SupplierWorkshop} "Workshop supplier obtained with success"
-// @Failure     400  {object}  models.Response "ID is required or Workplace is required"
-// @Failure     500  {object}  models.Response "Internal server error"
-// @Router      /supplier/{id} [get]
-// @Security    BearerAuth
+//	@Summary		Get Supplier By ID
+//	@Description	Get a supplier by its ID within a specified workplace.
+//	@Tags			Supplier
+//	@Accept			json
+//	@Produce		json
+//	@Security		BearerAuth
+//	@Param			X-Workplace-Token	header		string											true	"Workplace Token"
+//	@Param			id					path		string											true	"ID of the supplier"
+//	@Success		200					{object}	models.Response{body=models.SupplierLaundry}	"Supplier obtained with success"
+//	@Failure		400					{object}	models.Response									"Bad Request"
+//	@Failure		401					{object}	models.Response									"Auth is required"
+//	@Failure		403					{object}	models.Response									"Not Authorized"
+//	@Failure		404					{object}	models.Response									"Supplier not found"
+//	@Failure		500					{object}	models.Response									"Internal server error"
+//	@Router			/supplier/{id} [get]
 func SupplierGetByID(c *fiber.Ctx) error {
 	id := c.Params("id")
 	if id == "" {
@@ -70,17 +73,19 @@ func SupplierGetByID(c *fiber.Ctx) error {
 }
 
 // SupplierGetAll godoc
-// @Summary     Get All Suppliers
-// @Description Get All Suppliers
-// @Tags        supplier
-// @Accept      json
-// @Produce     json
-// @Success     200 {object} models.Response{body=[]models.SupplierLaundry} "Suppliers obtained with success"
-// @Success     200 {object} models.Response{body=[]models.SupplierWorkshop} "Workshop suppliers obtained with success"
-// @Failure     400 {object} models.Response "Workplace is required"
-// @Failure     500 {object} models.Response "Internal server error"
-// @Router      /supplier [get]
-// @Security    BearerAuth
+//	@Summary		Get All Suppliers
+//	@Description	Get All Suppliers
+//	@Tags			Supplier
+//	@Accept			json
+//	@Produce		json
+//	@Security		BearerAuth
+//	@Param			X-Workplace-Token	header		string											true	"Workplace Token"
+//	@Success		200					{object}	models.Response{body=[]models.SupplierLaundry}	"Suppliers obtained with success"
+//	@Failure		400					{object}	models.Response									"Bad Request"
+//	@Failure		401					{object}	models.Response									"Auth is required"
+//	@Failure		403					{object}	models.Response									"Not Authorized"
+//	@Failure		500					{object}	models.Response									"Internal server error"
+//	@Router			/supplier/get_all [get]
 func SupplierGetAll(c *fiber.Ctx) error {
 	workplace := c.Locals("workplace").(*models.Workplace)
 	if workplace == nil {
@@ -122,19 +127,22 @@ func SupplierGetAll(c *fiber.Ctx) error {
 	})
 }
 
-// SupplierGetByName retrieves suppliers by their name from the specified workplace.
-// @Summary     Get Supplier By Name
-// @Description Fetches suppliers from either laundry or workshop based on the provided name and workplace.
-// @Tags        Supplier
-// @Accept      json
-// @Produce     json
-// @Param       name  query     string  true  "Name of the Supplier"
-// @Success     200   {object}  models.Response{body=[]models.SupplierLaundry} "List of laundry suppliers"
-// @Success     200   {object}  models.Response{body=[]models.SupplierWorkshop} "List of workshop suppliers"
-// @Failure     400   {object}  models.Response "Invalid name or workplace"
-// @Failure     500   {object}  models.Response "Internal server error"
-// @Router      /supplier/by-name [get]
-// @Security    BearerAuth
+// SupplierGetByName godoc
+//	@Summary		Get Supplier By Name
+//	@Description	Fetches suppliers from either laundry or workshop based on the provided name and workplace.
+//	@Tags			Supplier
+//	@Accept			json
+//	@Produce		json
+//	@Security		BearerAuth
+//	@Param			X-Workplace-Token	header		string											true	"Workplace Token"
+//	@Param			name				query		string											true	"Name of the Supplier"
+//	@Success		200					{object}	models.Response{body=[]models.SupplierLaundry}	"List of suppliers"
+//	@Failure		400					{object}	models.Response									"Bad Request"
+//	@Failure		401					{object}	models.Response									"Auth is required"
+//	@Failure		403					{object}	models.Response									"Not Authorized"
+//	@Failure		500					{object}	models.Response									"Internal server error"
+//	@Router			/supplier/get_by_name [get]
+//	@Security		BearerAuth
 func SupplierGetByName(c *fiber.Ctx) error {
 	name := c.Query("name")
 	if name == "" || len(name) < 3 {
@@ -186,17 +194,21 @@ func SupplierGetByName(c *fiber.Ctx) error {
 }
 
 // SupplierCreate godoc
-// @Summary     Create Supplier
-// @Description Creates a new supplier within the specified workplace.
-// @Tags        supplier
-// @Accept      json
-// @Produce     json
-// @Param       supplier body      models.SupplierCreate true "Details of the supplier to create"
-// @Success     200     {object}  models.Response{body=string} "Supplier created successfully"
-// @Failure     400     {object}  models.Response      "Invalid request or validation error"
-// @Failure     500     {object}  models.Response      "Internal server error"
-// @Router      /supplier [post]
-// @Security    BearerAuth
+//	@Summary		Create Supplier
+//	@Description	Creates a new supplier within the specified workplace.
+//	@Tags			Supplier
+//	@Accept			json
+//	@Produce		json
+//	@Security		BearerAuth
+//	@Param			X-Workplace-Token	header		string							true	"Workplace Token"
+//	@Param			supplier			body		models.SupplierCreate			true	"Details of the supplier to create"
+//	@Success		200					{object}	models.Response{body=string}	"Supplier created successfully"
+//	@Failure		400					{object}	models.Response					"Bad Request"
+//	@Failure		401					{object}	models.Response					"Auth is required"
+//	@Failure		403					{object}	models.Response					"Not Authorized"
+//	@Failure		422					{object}	models.Response					"Model is invalid"
+//	@Failure		500					{object}	models.Response					"Internal server error"
+//	@Router			/supplier/create [post]
 func SupplierCreate(c *fiber.Ctx) error {
 	var supplierCreate models.SupplierCreate
 	if err := c.BodyParser(&supplierCreate); err != nil {
@@ -247,18 +259,23 @@ func SupplierCreate(c *fiber.Ctx) error {
 }
 
 // SupplierUpdate godoc
-// @Summary     Update Supplier
-// @Description Update a supplier's information from the specified workplace.
-// @Tags        supplier
-// @Accept      json
-// @Produce     json
-// @Param       id   path      string  true  "ID of the Supplier"
-// @Param       body body      models.SupplierUpdate  true  "Supplier information"
-// @Success     200  {object}  models.Response "Supplier updated with success"
-// @Failure     400  {object}  models.Response "Invalid request or Validation error"
-// @Failure     500  {object}  models.Response "Internal server error"
-// @Router      /supplier/{id} [put]
-// @Security    BearerAuth
+//	@Summary		Update Supplier
+//	@Description	Update a supplier's information from the specified workplace.
+//	@Tags			Supplier
+//	@Accept			json
+//	@Produce		json
+//	@Security		BearerAuth
+//	@Param			X-Workplace-Token	header		string					true	"Workplace Token"
+//	@Param			id					path		string					true	"ID of the Supplier"
+//	@Param			body				body		models.SupplierUpdate	true	"Supplier information"
+//	@Success		200					{object}	models.Response			"Supplier updated with success"
+//	@Failure		400					{object}	models.Response			"Bad Request"
+//	@Failure		401					{object}	models.Response			"Auth is required"
+//	@Failure		403					{object}	models.Response			"Not Authorized"
+//	@Failure		404					{object}	models.Response			"Supplier not found"
+//	@Failure		422					{object}	models.Response			"Model is invalid"
+//	@Failure		500					{object}	models.Response			"Internal server error"
+//	@Router			/supplier/update/{id} [put]
 func SupplierUpdate(c *fiber.Ctx) error {
 	var supplierUpdate models.SupplierUpdate
 	if err := c.BodyParser(&supplierUpdate); err != nil {
@@ -308,18 +325,22 @@ func SupplierUpdate(c *fiber.Ctx) error {
 	})
 }
 
-// SupplierDeleteByID deletes a supplier by its ID for a specific workplace.
-// @Summary     Delete Supplier
-// @Description Deletes a supplier based on the provided ID and workplace context.
-// @Tags        supplier
-// @Accept      json
-// @Produce     json
-// @Param       id   path      string  true  "ID of the supplier"
-// @Success     200  {object}  models.Response  "Supplier deleted with success"
-// @Failure     400  {object}  models.Response  "ID is required or Workplace is required"
-// @Failure     500  {object}  models.Response  "Internal server error"
-// @Router      /supplier/{id} [delete]
-// @Security    BearerAuth
+// SupplierDeleteByID godoc
+//	@Summary		Delete Supplier
+//	@Description	Deletes a supplier based on the provided ID and workplace context.
+//	@Tags			Supplier
+//	@Accept			json
+//	@Produce		json
+//	@Security		BearerAuth
+//	@Param			X-Workplace-Token	header		string			true	"Workplace Token"
+//	@Param			id					path		string			true	"ID of the supplier"
+//	@Success		200					{object}	models.Response	"Supplier deleted with success"
+//	@Failure		400					{object}	models.Response	"Bad Request"
+//	@Failure		401					{object}	models.Response	"Auth is required"
+//	@Failure		403					{object}	models.Response	"Not Authorized"
+//	@Failure		404					{object}	models.Response	"Supplier not found"
+//	@Failure		500					{object}	models.Response	"Internal server error"
+//	@Router			/supplier/delete/{id} [delete]
 func SupplierDeleteByID(c *fiber.Ctx) error {
 	id := c.Params("id")
 	if id == "" {

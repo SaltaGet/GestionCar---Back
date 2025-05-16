@@ -1,4 +1,97 @@
 definitions:
+  models.AttendanceCreate:
+    properties:
+      amount:
+        example: 1234.56
+        type: number
+      date:
+        example: "2022-01-01"
+        type: string
+      employee_id:
+        example: 123e4567-e89b-12d3-a456-426614174000
+        type: string
+      hours:
+        maximum: 24
+        type: integer
+      is_holiday:
+        default: false
+        example: false
+        type: boolean
+      role:
+        enum:
+        - presente
+        - tarde
+        - parcial
+        - ausente
+        type: string
+    required:
+    - amount
+    - date
+    - employee_id
+    type: object
+  models.AttendanceLaundry:
+    properties:
+      amount:
+        type: number
+      created_at:
+        type: string
+      date:
+        type: string
+      employee:
+        $ref: '#/definitions/models.EmployeeLaundry'
+      employee_id:
+        type: string
+      hours:
+        maximum: 24
+        type: integer
+      id:
+        type: string
+      is_holiday:
+        type: boolean
+      role:
+        enum:
+        - presente
+        - tarde
+        - parcial
+        - ausente
+        type: string
+      updated_at:
+        type: string
+    type: object
+  models.AttendanceUpdate:
+    properties:
+      amount:
+        example: 1234.56
+        type: number
+      date:
+        example: "2022-01-01"
+        type: string
+      employee_id:
+        example: 123e4567-e89b-12d3-a456-426614174000
+        type: string
+      hours:
+        maximum: 24
+        type: integer
+      id:
+        example: 123e4567-e89b-12d3-a456-426614174000
+        type: string
+      is_holiday:
+        default: false
+        example: false
+        type: boolean
+      role:
+        enum:
+        - presente
+        - tarde
+        - parcial
+        - ausente
+        type: string
+    required:
+    - amount
+    - date
+    - employee_id
+    - id
+    type: object
   models.AuthLogin:
     properties:
       password:
@@ -9,6 +102,465 @@ definitions:
     - password
     - username
     type: object
+  models.Client:
+    properties:
+      created_at:
+        type: string
+      cuil:
+        type: string
+      dni:
+        type: string
+      email:
+        type: string
+      first_name:
+        type: string
+      id:
+        type: string
+      last_name:
+        type: string
+      updated_at:
+        type: string
+      vehicles:
+        items:
+          $ref: '#/definitions/models.Vehicle'
+        type: array
+    type: object
+  models.ClientCreate:
+    properties:
+      cuil:
+        type: string
+      dni:
+        type: string
+      email:
+        type: string
+      first_name:
+        type: string
+      last_name:
+        type: string
+    required:
+    - cuil
+    - email
+    - first_name
+    - last_name
+    type: object
+  models.ClientUpdate:
+    properties:
+      cuil:
+        type: string
+      dni:
+        type: string
+      email:
+        type: string
+      first_name:
+        type: string
+      id:
+        type: string
+      last_name:
+        type: string
+    required:
+    - cuil
+    - email
+    - first_name
+    - id
+    - last_name
+    type: object
+  models.DateBetween:
+    properties:
+      date_from:
+        example: "2022-01-01"
+        type: string
+      date_to:
+        example: "2022-01-01"
+        type: string
+    required:
+    - date_from
+    - date_to
+    type: object
+  models.EmployeeCreate:
+    properties:
+      address:
+        type: string
+      email:
+        type: string
+      name:
+        type: string
+      phone:
+        type: string
+    required:
+    - address
+    - email
+    - name
+    - phone
+    type: object
+  models.EmployeeLaundry:
+    properties:
+      address:
+        type: string
+      created_at:
+        type: string
+      email:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+      phone:
+        type: string
+      updated_at:
+        type: string
+    type: object
+  models.EmployeeUpdate:
+    properties:
+      address:
+        type: string
+      email:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+      phone:
+        type: string
+    required:
+    - address
+    - email
+    - id
+    - name
+    - phone
+    type: object
+  models.ExpenseCreate:
+    properties:
+      amount:
+        type: number
+      details:
+        type: string
+      movement_type_id:
+        type: string
+      supplier_id:
+        type: string
+    required:
+    - amount
+    - details
+    - movement_type_id
+    type: object
+  models.ExpenseLaundry:
+    properties:
+      amount:
+        type: number
+      client:
+        $ref: '#/definitions/models.SupplierLaundry'
+      created_at:
+        type: string
+      details:
+        type: string
+      employee_id:
+        type: string
+      id:
+        type: string
+      movement_type_laundry:
+        $ref: '#/definitions/models.MovementTypeLaundry'
+      supplier_id:
+        type: string
+      updated_at:
+        type: string
+    type: object
+  models.ExpenseUpdate:
+    properties:
+      amount:
+        type: number
+      details:
+        type: string
+      id:
+        type: string
+      movement_type_id:
+        type: string
+      supplier_id:
+        type: string
+    required:
+    - amount
+    - details
+    - movement_type_id
+    type: object
+  models.IncomeCreate:
+    properties:
+      amount:
+        type: number
+      client_id:
+        type: string
+      details:
+        type: string
+      employee_id:
+        type: string
+      movement_type_id:
+        type: string
+      services_id:
+        items:
+          type: string
+        type: array
+      ticket:
+        type: string
+      vehicle_id:
+        type: string
+    required:
+    - amount
+    - client_id
+    - details
+    - movement_type_id
+    - services_id
+    - ticket
+    - vehicle_id
+    type: object
+  models.IncomeLaundry:
+    properties:
+      amount:
+        type: number
+      client:
+        $ref: '#/definitions/models.Client'
+      client_id:
+        type: string
+      created_at:
+        type: string
+      details:
+        type: string
+      employee_id:
+        type: string
+      employee_laundry:
+        $ref: '#/definitions/models.EmployeeLaundry'
+      id:
+        type: string
+      movement_type_id:
+        type: string
+      movement_type_laundry:
+        $ref: '#/definitions/models.MovementTypeLaundry'
+      ticket:
+        type: string
+      updated_at:
+        type: string
+      vehicle:
+        $ref: '#/definitions/models.Vehicle'
+      vehicle_id:
+        type: string
+    type: object
+  models.IncomeUpdate:
+    properties:
+      amount:
+        type: number
+      client_id:
+        type: string
+      details:
+        type: string
+      employee_id:
+        type: string
+      id:
+        type: string
+      movement_type_id:
+        type: string
+      services_id:
+        items:
+          type: string
+        type: array
+      ticket:
+        type: string
+      vehicle_id:
+        type: string
+    required:
+    - amount
+    - client_id
+    - movement_type_id
+    - services_id
+    - ticket
+    - vehicle_id
+    type: object
+  models.MovementTypeCreate:
+    properties:
+      is_income:
+        type: boolean
+      name:
+        type: string
+    type: object
+  models.MovementTypeLaundry:
+    properties:
+      created_at:
+        type: string
+      id:
+        type: string
+      is_income:
+        type: boolean
+      name:
+        type: string
+      updated_at:
+        type: string
+    type: object
+  models.MovementTypeUpdate:
+    properties:
+      id:
+        type: string
+      is_income:
+        type: boolean
+      name:
+        type: string
+    type: object
+  models.ProductCreate:
+    properties:
+      identifier:
+        type: string
+      name:
+        type: string
+    required:
+    - identifier
+    - name
+    type: object
+  models.ProductLaundry:
+    properties:
+      created_at:
+        type: string
+      id:
+        type: string
+      identifier:
+        type: string
+      name:
+        type: string
+      stock:
+        type: integer
+      updated_at:
+        type: string
+    type: object
+  models.ProductUpdate:
+    properties:
+      id:
+        type: string
+      identifier:
+        type: string
+      name:
+        type: string
+    required:
+    - id
+    - name
+    type: object
+  models.PurchaseOrderCreate:
+    properties:
+      amount:
+        type: number
+      order_date:
+        type: string
+      order_number:
+        type: string
+      purchase_products:
+        items:
+          $ref: '#/definitions/models.PurchaseProductCreate'
+        type: array
+      supplier_id:
+        type: string
+    required:
+    - amount
+    - order_date
+    - order_number
+    - purchase_products
+    type: object
+  models.PurchaseOrderLaundry:
+    properties:
+      amount:
+        type: number
+      created_at:
+        type: string
+      id:
+        type: string
+      order_date:
+        type: string
+      order_number:
+        type: string
+      purchase_products:
+        items:
+          $ref: '#/definitions/models.PurchaseProductLaundry'
+        type: array
+      supplier:
+        $ref: '#/definitions/models.SupplierLaundry'
+      supplier_id:
+        type: string
+      updated_at:
+        type: string
+    type: object
+  models.PurchaseOrderUpdate:
+    properties:
+      amount:
+        type: number
+      id:
+        type: string
+      order_date:
+        type: string
+      order_number:
+        type: string
+      purchase_products:
+        items:
+          $ref: '#/definitions/models.PurchaseProductUpdate'
+        type: array
+      supplier_id:
+        type: string
+    required:
+    - amount
+    - id
+    - order_date
+    - order_number
+    - purchase_products
+    type: object
+  models.PurchaseProductCreate:
+    properties:
+      expired_at:
+        type: string
+      product_id:
+        type: string
+      quantity:
+        type: integer
+      unit_price:
+        type: number
+    required:
+    - product_id
+    - quantity
+    - unit_price
+    type: object
+  models.PurchaseProductLaundry:
+    properties:
+      created_at:
+        type: string
+      expired_at:
+        type: string
+      id:
+        type: string
+      product:
+        $ref: '#/definitions/models.ProductLaundry'
+      product_id:
+        type: string
+      purchase_order:
+        $ref: '#/definitions/models.PurchaseOrderLaundry'
+      purchase_order_id:
+        type: string
+      quantity:
+        type: integer
+      total_price:
+        type: number
+      unit_price:
+        type: number
+      updated_at:
+        type: string
+    type: object
+  models.PurchaseProductUpdate:
+    properties:
+      expired_at:
+        type: string
+      id:
+        type: string
+      product_id:
+        type: string
+      quantity:
+        type: integer
+      unit_price:
+        type: number
+    required:
+    - id
+    - product_id
+    - quantity
+    - unit_price
+    type: object
   models.Response:
     properties:
       body: {}
@@ -17,6 +569,189 @@ definitions:
       status:
         type: boolean
     type: object
+  models.ServiceCreate:
+    properties:
+      name:
+        type: string
+    required:
+    - name
+    type: object
+  models.ServiceLaundry:
+    properties:
+      created_at:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+      updated_at:
+        type: string
+    type: object
+  models.ServiceUpdate:
+    properties:
+      id:
+        type: string
+      name:
+        type: string
+    required:
+    - name
+    type: object
+  models.StockUpdate:
+    properties:
+      stock:
+        type: integer
+    required:
+    - stock
+    type: object
+  models.SupplierCreate:
+    properties:
+      address:
+        type: string
+      email:
+        type: string
+      name:
+        type: string
+      phone:
+        type: string
+    required:
+    - name
+    type: object
+  models.SupplierLaundry:
+    properties:
+      address:
+        type: string
+      created_at:
+        type: string
+      email:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+      phone:
+        type: string
+      updated_at:
+        type: string
+    type: object
+  models.SupplierUpdate:
+    properties:
+      address:
+        type: string
+      email:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+      phone:
+        type: string
+    required:
+    - id
+    - name
+    type: object
+  models.UserCreate:
+    properties:
+      email:
+        type: string
+      first_name:
+        type: string
+      last_name:
+        type: string
+      password:
+        type: string
+      role:
+        enum:
+        - admin_laundry
+        - admin_workshop
+        - employee_laundry
+        - employee_workshop
+        type: string
+      username:
+        type: string
+    required:
+    - email
+    - first_name
+    - last_name
+    - password
+    - role
+    - username
+    type: object
+  models.Vehicle:
+    properties:
+      brand:
+        type: string
+      client:
+        $ref: '#/definitions/models.Client'
+      client_id:
+        type: string
+      color:
+        type: string
+      created_at:
+        type: string
+      domain:
+        type: string
+      id:
+        type: string
+      model:
+        type: string
+      updated_at:
+        type: string
+      year:
+        type: string
+    type: object
+  models.VehicleCreate:
+    properties:
+      brand:
+        example: Toyota
+        type: string
+      client_id:
+        example: 123e4567-e89b-12d3-a456-426614174000
+        type: string
+      color:
+        example: Red
+        type: string
+      domain:
+        example: ABC123
+        type: string
+      model:
+        example: Corolla
+        type: string
+      year:
+        example: "2020"
+        type: string
+    required:
+    - brand
+    - client_id
+    - color
+    - domain
+    type: object
+  models.VehicleUpdate:
+    properties:
+      brand:
+        example: Toyota
+        type: string
+      client_id:
+        example: 123e4567-e89b-12d3-a456-426614174000
+        type: string
+      color:
+        example: Red
+        type: string
+      domain:
+        example: ABC123
+        type: string
+      id:
+        example: 123e4567-e89b-12d3-a456-426614174000
+        type: string
+      model:
+        example: Corolla
+        type: string
+      year:
+        example: "2020"
+        type: string
+    required:
+    - client_id
+    - id
+    type: object
 info:
   contact: {}
   description: This is a api to app gestioncar
@@ -24,6 +759,361 @@ info:
   title: APP GESTIONCAR
   version: "1.0"
 paths:
+  /attendance/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Get Attendance by ID
+      parameters:
+      - description: Workplace Token
+        in: header
+        name: X-Workplace-Token
+        required: true
+        type: string
+      - description: ID of Attendance
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.Response'
+            - properties:
+                body:
+                  $ref: '#/definitions/models.AttendanceLaundry'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.Response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.Response'
+      security:
+      - BearerAuth: []
+      summary: Get Attendance By ID
+      tags:
+      - Attendance
+  /attendance/create:
+    post:
+      consumes:
+      - application/json
+      description: Create Attendance by given workplace
+      parameters:
+      - description: Workplace Token
+        in: header
+        name: X-Workplace-Token
+        required: true
+        type: string
+      - description: Employee body
+        in: body
+        name: attendanceCreate
+        required: true
+        schema:
+          $ref: '#/definitions/models.AttendanceCreate'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.Response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.Response'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/models.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.Response'
+        "422":
+          description: Unprocessable Entity
+          schema:
+            $ref: '#/definitions/models.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.Response'
+      security:
+      - BearerAuth: []
+      summary: Create Attendance
+      tags:
+      - Attendance
+  /attendance/delete/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete Attendance by ID
+      parameters:
+      - description: Workplace Token
+        in: header
+        name: X-Workplace-Token
+        required: true
+        type: string
+      - description: ID of Attendance
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.Response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.Response'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/models.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.Response'
+        "422":
+          description: Unprocessable Entity
+          schema:
+            $ref: '#/definitions/models.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.Response'
+      security:
+      - BearerAuth: []
+      summary: Delete Attendance
+      tags:
+      - Attendance
+  /attendance/get_all:
+    get:
+      consumes:
+      - application/json
+      description: Get all attendances by workplace required auth token
+      parameters:
+      - description: Workplace Token
+        in: header
+        name: X-Workplace-Token
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.Response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.Response'
+        "422":
+          description: Unprocessable Entity
+          schema:
+            $ref: '#/definitions/models.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.Response'
+      security:
+      - BearerAuth: []
+      summary: Get all attendances
+      tags:
+      - Attendance
+  /attendance/get_by_date:
+    post:
+      consumes:
+      - application/json
+      description: Retrieve all attendances within a specified date range for a given
+        workplace
+      parameters:
+      - description: Workplace Token
+        in: header
+        name: X-Workplace-Token
+        required: true
+        type: string
+      - description: Date Between
+        in: body
+        name: dateFrom
+        required: true
+        schema:
+          $ref: '#/definitions/models.DateBetween'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.Response'
+            - properties:
+                body:
+                  items:
+                    $ref: '#/definitions/models.AttendanceLaundry'
+                  type: array
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.Response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.Response'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/models.Response'
+        "422":
+          description: Unprocessable Entity
+          schema:
+            $ref: '#/definitions/models.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.Response'
+      security:
+      - BearerAuth: []
+      summary: Get all attendances within a date range
+      tags:
+      - Attendance
+  /attendance/get_by_employee/{employee_id}:
+    get:
+      consumes:
+      - application/json
+      description: Get Attendance by Employee ID
+      parameters:
+      - description: Workplace Token
+        in: header
+        name: X-Workplace-Token
+        required: true
+        type: string
+      - description: ID of Employee
+        in: path
+        name: employee_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.Response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.Response'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/models.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.Response'
+      security:
+      - BearerAuth: []
+      summary: Get Attendance By Employee ID
+      tags:
+      - Attendance
+  /attendance/update:
+    put:
+      consumes:
+      - application/json
+      description: Update Attendance by ID
+      parameters:
+      - description: Workplace Token
+        in: header
+        name: X-Workplace-Token
+        required: true
+        type: string
+      - description: Employee body
+        in: body
+        name: attendanceUpdate
+        required: true
+        schema:
+          $ref: '#/definitions/models.AttendanceUpdate'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.Response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.Response'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/models.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.Response'
+        "422":
+          description: Unprocessable Entity
+          schema:
+            $ref: '#/definitions/models.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.Response'
+      security:
+      - BearerAuth: []
+      summary: Update Attendance
+      tags:
+      - Attendance
   /auth/login:
     post:
       consumes:
@@ -104,14 +1194,71 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/models.Response'
+      security:
+      - BearerAuth: []
       summary: Login Workplace
       tags:
       - Auth
-  /workplace/get_all:
+  /client/{id}:
     get:
       consumes:
       - application/json
-      description: Login user required identifier and password
+      description: Get client by id
+      parameters:
+      - description: Id del cliente
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.Response'
+            - properties:
+                body:
+                  $ref: '#/definitions/models.Client'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.Response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.Response'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/models.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.Response'
+      security:
+      - BearerAuth: []
+      summary: Get client by id
+      tags:
+      - Client
+  /client/create:
+    post:
+      consumes:
+      - application/json
+      description: Create client
+      parameters:
+      - description: Información del cliente
+        in: body
+        name: clientCreate
+        required: true
+        schema:
+          $ref: '#/definitions/models.ClientCreate'
       produces:
       - application/json
       responses:
@@ -125,6 +1272,196 @@ paths:
             $ref: '#/definitions/models.Response'
         "401":
           description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.Response'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/models.Response'
+        "422":
+          description: Unprocessable Entity
+          schema:
+            $ref: '#/definitions/models.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.Response'
+      security:
+      - BearerAuth: []
+      summary: Create client
+      tags:
+      - Client
+  /client/delete/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete client by ID
+      parameters:
+      - description: Id del cliente
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.Response'
+            - properties:
+                body:
+                  $ref: '#/definitions/models.Client'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.Response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.Response'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/models.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.Response'
+      security:
+      - BearerAuth: []
+      summary: Delete client by ID
+      tags:
+      - Client
+  /client/get_all:
+    get:
+      consumes:
+      - application/json
+      description: Get All Clients
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.Response'
+            - properties:
+                body:
+                  items:
+                    $ref: '#/definitions/models.Client'
+                  type: array
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.Response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.Response'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/models.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.Response'
+      security:
+      - BearerAuth: []
+      summary: Get All Clients
+      tags:
+      - Client
+  /client/get_by_name:
+    get:
+      consumes:
+      - application/json
+      description: Get Client By Name
+      parameters:
+      - description: Name
+        in: query
+        name: name
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.Response'
+            - properties:
+                body:
+                  items:
+                    $ref: '#/definitions/models.Client'
+                  type: array
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.Response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.Response'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/models.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.Response'
+      security:
+      - BearerAuth: []
+      summary: Get Client By Name
+      tags:
+      - Client
+  /client/update:
+    put:
+      consumes:
+      - application/json
+      description: Actualizar un cliente
+      parameters:
+      - description: Cliente a actualizar
+        in: body
+        name: ClientUpdate
+        required: true
+        schema:
+          $ref: '#/definitions/models.ClientUpdate'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.Response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.Response'
+        "403":
+          description: Forbidden
           schema:
             $ref: '#/definitions/models.Response'
         "404":
@@ -141,7 +1478,3067 @@ paths:
             $ref: '#/definitions/models.Response'
       security:
       - BearerAuth: []
-      summary: Login user
+      summary: Actualizar un cliente
+      tags:
+      - Client
+  /employee/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Get Employee By ID
+      parameters:
+      - description: Workplace Token
+        in: header
+        name: X-Workplace-Token
+        required: true
+        type: string
+      - description: ID of Employee
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Employee obtained successfully
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.Response'
+            - properties:
+                body:
+                  $ref: '#/definitions/models.EmployeeLaundry'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.Response'
+        "401":
+          description: Auth is required
+          schema:
+            $ref: '#/definitions/models.Response'
+        "403":
+          description: Not Authorized
+          schema:
+            $ref: '#/definitions/models.Response'
+        "404":
+          description: Employee not found
+          schema:
+            $ref: '#/definitions/models.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.Response'
+      security:
+      - BearerAuth: []
+      summary: Get Employee By ID
+      tags:
+      - Employee
+  /employee/create:
+    post:
+      consumes:
+      - application/json
+      description: Creates an employee for either laundry or workshop based on the
+        provided information.
+      parameters:
+      - description: Workplace Token
+        in: header
+        name: X-Workplace-Token
+        required: true
+        type: string
+      - description: Employee information
+        in: body
+        name: employeeCreate
+        required: true
+        schema:
+          $ref: '#/definitions/models.EmployeeCreate'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Employee created
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.Response'
+            - properties:
+                body:
+                  type: string
+              type: object
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/models.Response'
+        "401":
+          description: Auth is required
+          schema:
+            $ref: '#/definitions/models.Response'
+        "403":
+          description: Not Authorized
+          schema:
+            $ref: '#/definitions/models.Response'
+        "422":
+          description: Model Invalid
+          schema:
+            $ref: '#/definitions/models.Response'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/models.Response'
+      security:
+      - BearerAuth: []
+      summary: Create Employee
+      tags:
+      - Employee
+  /employee/delete/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Removes an employee from the database based on the provided ID
+        and workplace context.
+      parameters:
+      - description: Workplace Token
+        in: header
+        name: X-Workplace-Token
+        required: true
+        type: string
+      - description: ID of the employee
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Empleado eliminado con éxito
+          schema:
+            $ref: '#/definitions/models.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.Response'
+        "401":
+          description: Auth is required
+          schema:
+            $ref: '#/definitions/models.Response'
+        "403":
+          description: Not Authorized
+          schema:
+            $ref: '#/definitions/models.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.Response'
+        "500":
+          description: Error interno
+          schema:
+            $ref: '#/definitions/models.Response'
+      security:
+      - BearerAuth: []
+      summary: Delete Employee
+      tags:
+      - Employee
+  /employee/get_all:
+    get:
+      consumes:
+      - application/json
+      description: Fetches all employees from the specified workplace, either in laundry
+        or workshop.
+      parameters:
+      - description: Workplace Token
+        in: header
+        name: X-Workplace-Token
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: List of employees
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.Response'
+            - properties:
+                body:
+                  items:
+                    $ref: '#/definitions/models.EmployeeLaundry'
+                  type: array
+              type: object
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/models.Response'
+        "401":
+          description: Auth is required
+          schema:
+            $ref: '#/definitions/models.Response'
+        "403":
+          description: Not Authorized
+          schema:
+            $ref: '#/definitions/models.Response'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/models.Response'
+      security:
+      - BearerAuth: []
+      summary: Get all employees
+      tags:
+      - Employee
+  /employee/get_by_name:
+    get:
+      consumes:
+      - application/json
+      description: Fetches employees from either laundry or workshop based on the
+        provided name and workplace.
+      parameters:
+      - description: Workplace Token
+        in: header
+        name: X-Workplace-Token
+        required: true
+        type: string
+      - description: Name of the Employee
+        in: query
+        name: name
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: List of laundry employees
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.Response'
+            - properties:
+                body:
+                  items:
+                    $ref: '#/definitions/models.EmployeeLaundry'
+                  type: array
+              type: object
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/models.Response'
+        "401":
+          description: Auth is required
+          schema:
+            $ref: '#/definitions/models.Response'
+        "403":
+          description: Not Authorized
+          schema:
+            $ref: '#/definitions/models.Response'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/models.Response'
+      security:
+      - BearerAuth: []
+      summary: Get Employee By Name
+      tags:
+      - Employee
+  /employee/update:
+    put:
+      consumes:
+      - application/json
+      description: Updates the details of an employee based on the provided data.
+      parameters:
+      - description: Workplace Token
+        in: header
+        name: X-Workplace-Token
+        required: true
+        type: string
+      - description: Employee data to update
+        in: body
+        name: employeeUpdate
+        required: true
+        schema:
+          $ref: '#/definitions/models.EmployeeUpdate'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Empleado editado con éxito
+          schema:
+            $ref: '#/definitions/models.Response'
+        "400":
+          description: Invalid request or Workplace is required
+          schema:
+            $ref: '#/definitions/models.Response'
+        "401":
+          description: Auth is required
+          schema:
+            $ref: '#/definitions/models.Response'
+        "403":
+          description: Not Authorized
+          schema:
+            $ref: '#/definitions/models.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.Response'
+        "422":
+          description: Model Invalid
+          schema:
+            $ref: '#/definitions/models.Response'
+        "500":
+          description: Error interno
+          schema:
+            $ref: '#/definitions/models.Response'
+      security:
+      - BearerAuth: []
+      summary: Update Employee
+      tags:
+      - Employee
+  /expense/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Get Expense By ID
+      parameters:
+      - description: Workplace Token
+        in: header
+        name: X-Workplace-Token
+        required: true
+        type: string
+      - description: ID of Expense
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Expense obtained successfully
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.Response'
+            - properties:
+                body:
+                  $ref: '#/definitions/models.ExpenseLaundry'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.Response'
+        "401":
+          description: Auth is required
+          schema:
+            $ref: '#/definitions/models.Response'
+        "403":
+          description: Not Authorized
+          schema:
+            $ref: '#/definitions/models.Response'
+        "404":
+          description: Expense not found
+          schema:
+            $ref: '#/definitions/models.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.Response'
+      security:
+      - BearerAuth: []
+      summary: Get Expense By ID
+      tags:
+      - Expense
+  /expense/create:
+    post:
+      consumes:
+      - application/json
+      description: Parses the request body to create a new expense entry for either
+        laundry or workshop.
+      parameters:
+      - description: Workplace Token
+        in: header
+        name: X-Workplace-Token
+        required: true
+        type: string
+      - description: Expense information
+        in: body
+        name: expenseCreate
+        required: true
+        schema:
+          $ref: '#/definitions/models.ExpenseCreate'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Expense created successfully
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.Response'
+            - properties:
+                body:
+                  type: string
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.Response'
+        "401":
+          description: Auth is required
+          schema:
+            $ref: '#/definitions/models.Response'
+        "403":
+          description: Not Authorized
+          schema:
+            $ref: '#/definitions/models.Response'
+        "422":
+          description: Model Invalid
+          schema:
+            $ref: '#/definitions/models.Response'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/models.Response'
+      security:
+      - BearerAuth: []
+      summary: Create Expense
+      tags:
+      - Expense
+  /expense/delete/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Deletes an expense based on the provided ID and workplace context.
+      parameters:
+      - description: Workplace Token
+        in: header
+        name: X-Workplace-Token
+        required: true
+        type: string
+      - description: ID of the expense
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Expense deleted successfully
+          schema:
+            $ref: '#/definitions/models.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.Response'
+        "401":
+          description: Auth is required
+          schema:
+            $ref: '#/definitions/models.Response'
+        "403":
+          description: Not Authorized
+          schema:
+            $ref: '#/definitions/models.Response'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/models.Response'
+      security:
+      - BearerAuth: []
+      summary: Delete Expense
+      tags:
+      - Expense
+  /expense/get_all:
+    get:
+      consumes:
+      - application/json
+      description: Fetches all expenses from the specified workplace, either in laundry
+        or workshop.
+      parameters:
+      - description: Workplace Token
+        in: header
+        name: X-Workplace-Token
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: List of expenses
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.Response'
+            - properties:
+                body:
+                  items:
+                    $ref: '#/definitions/models.ExpenseLaundry'
+                  type: array
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.Response'
+        "401":
+          description: Auth is required
+          schema:
+            $ref: '#/definitions/models.Response'
+        "403":
+          description: Not Authorized
+          schema:
+            $ref: '#/definitions/models.Response'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/models.Response'
+      security:
+      - BearerAuth: []
+      summary: Get all expenses
+      tags:
+      - Expense
+  /expense/get_today:
+    get:
+      consumes:
+      - application/json
+      description: Fetches all expenses from the specified workplace, either in laundry
+        or workshop, on the current day.
+      parameters:
+      - description: Workplace Token
+        in: header
+        name: X-Workplace-Token
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: List of laundry expenses
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.Response'
+            - properties:
+                body:
+                  items:
+                    $ref: '#/definitions/models.ExpenseLaundry'
+                  type: array
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.Response'
+        "401":
+          description: Auth is required
+          schema:
+            $ref: '#/definitions/models.Response'
+        "403":
+          description: Not Authorized
+          schema:
+            $ref: '#/definitions/models.Response'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/models.Response'
+      security:
+      - BearerAuth: []
+      summary: Get expense today
+      tags:
+      - Expense
+  /expense/update:
+    put:
+      consumes:
+      - application/json
+      description: Updates the details of an expense based on the provided data.
+      parameters:
+      - description: Workplace Token
+        in: header
+        name: X-Workplace-Token
+        required: true
+        type: string
+      - description: Expense data to update
+        in: body
+        name: expenseUpdate
+        required: true
+        schema:
+          $ref: '#/definitions/models.ExpenseUpdate'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Expense updated successfully
+          schema:
+            $ref: '#/definitions/models.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.Response'
+        "401":
+          description: Auth is required
+          schema:
+            $ref: '#/definitions/models.Response'
+        "403":
+          description: Not Authorized
+          schema:
+            $ref: '#/definitions/models.Response'
+        "422":
+          description: Model Invalid
+          schema:
+            $ref: '#/definitions/models.Response'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/models.Response'
+      security:
+      - BearerAuth: []
+      summary: Update Expense
+      tags:
+      - Expense
+  /income/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Fetches income details from either laundry or workshop based on
+        the provided ID and workplace context.
+      parameters:
+      - description: Workplace Token
+        in: header
+        name: X-Workplace-Token
+        required: true
+        type: string
+      - description: ID of the income
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Income details fetched successfully
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.Response'
+            - properties:
+                body:
+                  $ref: '#/definitions/models.IncomeLaundry'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.Response'
+        "401":
+          description: Auth is required
+          schema:
+            $ref: '#/definitions/models.Response'
+        "403":
+          description: Not Authorized
+          schema:
+            $ref: '#/definitions/models.Response'
+        "404":
+          description: Expense not found
+          schema:
+            $ref: '#/definitions/models.Response'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/models.Response'
+      security:
+      - BearerAuth: []
+      summary: Get Income By ID
+      tags:
+      - Income
+  /income/create:
+    post:
+      consumes:
+      - application/json
+      description: Parses the request body to create a new income entry for either
+        laundry or workshop.
+      parameters:
+      - description: Workplace Token
+        in: header
+        name: X-Workplace-Token
+        required: true
+        type: string
+      - description: Income information
+        in: body
+        name: incomeCreate
+        required: true
+        schema:
+          $ref: '#/definitions/models.IncomeCreate'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Income created successfully
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.Response'
+            - properties:
+                body:
+                  type: string
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.Response'
+        "401":
+          description: Auth is required
+          schema:
+            $ref: '#/definitions/models.Response'
+        "403":
+          description: Not Authorized
+          schema:
+            $ref: '#/definitions/models.Response'
+        "404":
+          description: Expense not found
+          schema:
+            $ref: '#/definitions/models.Response'
+        "422":
+          description: Model Invalid
+          schema:
+            $ref: '#/definitions/models.Response'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/models.Response'
+      security:
+      - BearerAuth: []
+      summary: Create Income
+      tags:
+      - Income
+  /income/delete/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Deletes an income entry based on the provided ID and workplace
+        context.
+      parameters:
+      - description: Workplace Token
+        in: header
+        name: X-Workplace-Token
+        required: true
+        type: string
+      - description: ID of the income
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Income deleted successfully
+          schema:
+            $ref: '#/definitions/models.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.Response'
+        "401":
+          description: Auth is required
+          schema:
+            $ref: '#/definitions/models.Response'
+        "403":
+          description: Not Authorized
+          schema:
+            $ref: '#/definitions/models.Response'
+        "404":
+          description: Expense not found
+          schema:
+            $ref: '#/definitions/models.Response'
+        "500":
+          description: Error interno
+          schema:
+            $ref: '#/definitions/models.Response'
+      security:
+      - BearerAuth: []
+      summary: Delete Income
+      tags:
+      - Income
+  /income/get_all:
+    get:
+      consumes:
+      - application/json
+      description: Fetches all incomes from the specified workplace, either in laundry
+        or workshop.
+      parameters:
+      - description: Workplace Token
+        in: header
+        name: X-Workplace-Token
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: List of incomes
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.Response'
+            - properties:
+                body:
+                  items:
+                    $ref: '#/definitions/models.IncomeLaundry'
+                  type: array
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.Response'
+        "401":
+          description: Auth is required
+          schema:
+            $ref: '#/definitions/models.Response'
+        "403":
+          description: Not Authorized
+          schema:
+            $ref: '#/definitions/models.Response'
+        "404":
+          description: Expense not found
+          schema:
+            $ref: '#/definitions/models.Response'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/models.Response'
+      security:
+      - BearerAuth: []
+      summary: Get all incomes
+      tags:
+      - Income
+  /income/get_today:
+    get:
+      consumes:
+      - application/json
+      description: Fetches all incomes from the specified workplace, either in laundry
+        or workshop, on the current day.
+      parameters:
+      - description: Workplace Token
+        in: header
+        name: X-Workplace-Token
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: List of laundry incomes
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.Response'
+            - properties:
+                body:
+                  items:
+                    $ref: '#/definitions/models.IncomeLaundry'
+                  type: array
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.Response'
+        "401":
+          description: Auth is required
+          schema:
+            $ref: '#/definitions/models.Response'
+        "403":
+          description: Not Authorized
+          schema:
+            $ref: '#/definitions/models.Response'
+        "404":
+          description: Expense not found
+          schema:
+            $ref: '#/definitions/models.Response'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/models.Response'
+      security:
+      - BearerAuth: []
+      summary: Get Income Today
+      tags:
+      - Income
+  /income/update:
+    put:
+      consumes:
+      - application/json
+      description: Updates the details of an income based on the provided data.
+      parameters:
+      - description: Workplace Token
+        in: header
+        name: X-Workplace-Token
+        required: true
+        type: string
+      - description: Income data to update
+        in: body
+        name: incomeUpdate
+        required: true
+        schema:
+          $ref: '#/definitions/models.IncomeUpdate'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Income updated successfully
+          schema:
+            $ref: '#/definitions/models.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.Response'
+        "401":
+          description: Auth is required
+          schema:
+            $ref: '#/definitions/models.Response'
+        "403":
+          description: Not Authorized
+          schema:
+            $ref: '#/definitions/models.Response'
+        "404":
+          description: Expense not found
+          schema:
+            $ref: '#/definitions/models.Response'
+        "422":
+          description: Model Invalid
+          schema:
+            $ref: '#/definitions/models.Response'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/models.Response'
+      security:
+      - BearerAuth: []
+      summary: Update Income
+      tags:
+      - Income
+  /movement/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Get Movement Type By ID
+      parameters:
+      - description: Workplace Token
+        in: header
+        name: X-Workplace-Token
+        required: true
+        type: string
+      - description: ID of the movement type
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Movement type details
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.Response'
+            - properties:
+                body:
+                  $ref: '#/definitions/models.MovementTypeLaundry'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.Response'
+        "401":
+          description: Auth is required
+          schema:
+            $ref: '#/definitions/models.Response'
+        "403":
+          description: Not Authorized
+          schema:
+            $ref: '#/definitions/models.Response'
+        "404":
+          description: Expense not found
+          schema:
+            $ref: '#/definitions/models.Response'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/models.Response'
+      security:
+      - BearerAuth: []
+      summary: Get Movement Type By ID
+      tags:
+      - Movement
+  /movement/create:
+    post:
+      consumes:
+      - application/json
+      description: This endpoint creates a new movement type based on the provided
+        JSON payload.
+      parameters:
+      - description: Workplace Token
+        in: header
+        name: X-Workplace-Token
+        required: true
+        type: string
+      - description: Movement Type Details
+        in: body
+        name: movementType
+        required: true
+        schema:
+          $ref: '#/definitions/models.MovementTypeCreate'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Movement created successfully
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.Response'
+            - properties:
+                body:
+                  type: string
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.Response'
+        "401":
+          description: Auth is required
+          schema:
+            $ref: '#/definitions/models.Response'
+        "403":
+          description: Not Authorized
+          schema:
+            $ref: '#/definitions/models.Response'
+        "404":
+          description: Expense not found
+          schema:
+            $ref: '#/definitions/models.Response'
+        "422":
+          description: Model invalid
+          schema:
+            $ref: '#/definitions/models.Response'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/models.Response'
+      security:
+      - BearerAuth: []
+      summary: Create Movement Type
+      tags:
+      - Movement
+  /movement/delete/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Deletes a movement type based on its ID.
+      parameters:
+      - description: Workplace Token
+        in: header
+        name: X-Workplace-Token
+        required: true
+        type: string
+      - description: ID of the movement type
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Movement type deleted successfully
+          schema:
+            $ref: '#/definitions/models.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.Response'
+        "401":
+          description: Auth is required
+          schema:
+            $ref: '#/definitions/models.Response'
+        "403":
+          description: Not Authorized
+          schema:
+            $ref: '#/definitions/models.Response'
+        "404":
+          description: Expense not found
+          schema:
+            $ref: '#/definitions/models.Response'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/models.Response'
+      security:
+      - BearerAuth: []
+      summary: Delete Movement Type
+      tags:
+      - Movement
+  /movement/get_all:
+    get:
+      consumes:
+      - application/json
+      description: Get all movement types from either laundry or workshop based on
+        the provided isIncome query parameter.
+      parameters:
+      - description: Workplace Token
+        in: header
+        name: X-Workplace-Token
+        required: true
+        type: string
+      - description: Is income movement type
+        in: query
+        name: isIncome
+        required: true
+        type: boolean
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: List of movement types
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.Response'
+            - properties:
+                body:
+                  items:
+                    $ref: '#/definitions/models.MovementTypeLaundry'
+                  type: array
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.Response'
+        "401":
+          description: Auth is required
+          schema:
+            $ref: '#/definitions/models.Response'
+        "403":
+          description: Not Authorized
+          schema:
+            $ref: '#/definitions/models.Response'
+        "404":
+          description: Expense not found
+          schema:
+            $ref: '#/definitions/models.Response'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/models.Response'
+      security:
+      - BearerAuth: []
+      summary: Get all movement types
+      tags:
+      - Movement
+  /movement/update:
+    put:
+      consumes:
+      - application/json
+      description: This endpoint updates a movement type based on the provided JSON
+        payload.
+      parameters:
+      - description: Workplace Token
+        in: header
+        name: X-Workplace-Token
+        required: true
+        type: string
+      - description: Movement Type Details
+        in: body
+        name: movementType
+        required: true
+        schema:
+          $ref: '#/definitions/models.MovementTypeUpdate'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Movement updated successfully
+          schema:
+            $ref: '#/definitions/models.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.Response'
+        "401":
+          description: Auth is required
+          schema:
+            $ref: '#/definitions/models.Response'
+        "403":
+          description: Not Authorized
+          schema:
+            $ref: '#/definitions/models.Response'
+        "404":
+          description: Expense not found
+          schema:
+            $ref: '#/definitions/models.Response'
+        "422":
+          description: Model invalid
+          schema:
+            $ref: '#/definitions/models.Response'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/models.Response'
+      security:
+      - BearerAuth: []
+      summary: Update Movement Type
+      tags:
+      - Movement
+  /product/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Get a product or part by its ID within a specified workplace.
+      parameters:
+      - description: Workplace Token
+        in: header
+        name: X-Workplace-Token
+        required: true
+        type: string
+      - description: ID of the product
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Product obtained with success
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.Response'
+            - properties:
+                body:
+                  $ref: '#/definitions/models.ProductLaundry'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.Response'
+        "401":
+          description: Auth is required
+          schema:
+            $ref: '#/definitions/models.Response'
+        "403":
+          description: Not Authorized
+          schema:
+            $ref: '#/definitions/models.Response'
+        "404":
+          description: Expense not found
+          schema:
+            $ref: '#/definitions/models.Response'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/models.Response'
+      security:
+      - BearerAuth: []
+      summary: Get Product By ID
+      tags:
+      - Product
+  /product/create:
+    post:
+      consumes:
+      - application/json
+      description: Creates a new product in the specified workplace.
+      parameters:
+      - description: Workplace Token
+        in: header
+        name: X-Workplace-Token
+        required: true
+        type: string
+      - description: Details of the product to create
+        in: body
+        name: product
+        required: true
+        schema:
+          $ref: '#/definitions/models.ProductCreate'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Product created successfully
+          schema:
+            $ref: '#/definitions/models.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.Response'
+        "401":
+          description: Auth is required
+          schema:
+            $ref: '#/definitions/models.Response'
+        "403":
+          description: Not Authorized
+          schema:
+            $ref: '#/definitions/models.Response'
+        "422":
+          description: Model invalid
+          schema:
+            $ref: '#/definitions/models.Response'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/models.Response'
+      security:
+      - BearerAuth: []
+      summary: Create Product
+      tags:
+      - Product
+  /product/delete/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Deletes the given product with the given id.
+      parameters:
+      - description: Workplace Token
+        in: header
+        name: X-Workplace-Token
+        required: true
+        type: string
+      - description: ID of the product
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Product deleted with success
+          schema:
+            $ref: '#/definitions/models.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.Response'
+        "401":
+          description: Auth is required
+          schema:
+            $ref: '#/definitions/models.Response'
+        "403":
+          description: Not Authorized
+          schema:
+            $ref: '#/definitions/models.Response'
+        "404":
+          description: Product not found
+          schema:
+            $ref: '#/definitions/models.Response'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/models.Response'
+      security:
+      - BearerAuth: []
+      summary: Delete Product
+      tags:
+      - Product
+  /product/get_all:
+    get:
+      consumes:
+      - application/json
+      description: Get All Products
+      parameters:
+      - description: Workplace Token
+        in: header
+        name: X-Workplace-Token
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Products obtained with success
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.Response'
+            - properties:
+                body:
+                  items:
+                    $ref: '#/definitions/models.ProductLaundry'
+                  type: array
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.Response'
+        "401":
+          description: Auth is required
+          schema:
+            $ref: '#/definitions/models.Response'
+        "403":
+          description: Not Authorized
+          schema:
+            $ref: '#/definitions/models.Response'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/models.Response'
+      security:
+      - BearerAuth: []
+      summary: Get All Products
+      tags:
+      - Product
+  /product/get_by_identifier:
+    get:
+      consumes:
+      - application/json
+      description: Get Products by identifier
+      parameters:
+      - description: Workplace Token
+        in: header
+        name: X-Workplace-Token
+        required: true
+        type: string
+      - description: Identifier of product
+        in: query
+        name: identifier
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Products obtained with success
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.Response'
+            - properties:
+                body:
+                  items:
+                    $ref: '#/definitions/models.ProductLaundry'
+                  type: array
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.Response'
+        "401":
+          description: Auth is required
+          schema:
+            $ref: '#/definitions/models.Response'
+        "403":
+          description: Not Authorized
+          schema:
+            $ref: '#/definitions/models.Response'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/models.Response'
+      security:
+      - BearerAuth: []
+      summary: Get Products by identifier
+      tags:
+      - Product
+  /product/get_by_name:
+    get:
+      consumes:
+      - application/json
+      description: Fetches products from either laundry or workshop based on the provided
+        name and workplace.
+      parameters:
+      - description: Workplace Token
+        in: header
+        name: X-Workplace-Token
+        required: true
+        type: string
+      - description: Name of the Product
+        in: query
+        name: name
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: List of products
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.Response'
+            - properties:
+                body:
+                  items:
+                    $ref: '#/definitions/models.ProductLaundry'
+                  type: array
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.Response'
+        "401":
+          description: Auth is required
+          schema:
+            $ref: '#/definitions/models.Response'
+        "403":
+          description: Not Authorized
+          schema:
+            $ref: '#/definitions/models.Response'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/models.Response'
+      security:
+      - BearerAuth: []
+      summary: Get Product By Name
+      tags:
+      - Product
+  /product/update/{id}:
+    put:
+      consumes:
+      - application/json
+      description: Updates the given product and returns the updated product.
+      parameters:
+      - description: Workplace Token
+        in: header
+        name: X-Workplace-Token
+        required: true
+        type: string
+      - description: ID of the product
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Product update details
+        in: body
+        name: product
+        required: true
+        schema:
+          $ref: '#/definitions/models.ProductUpdate'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Product updated successfully
+          schema:
+            $ref: '#/definitions/models.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.Response'
+        "401":
+          description: Auth is required
+          schema:
+            $ref: '#/definitions/models.Response'
+        "403":
+          description: Not Authorized
+          schema:
+            $ref: '#/definitions/models.Response'
+        "404":
+          description: Product not found
+          schema:
+            $ref: '#/definitions/models.Response'
+        "422":
+          description: Model invalid
+          schema:
+            $ref: '#/definitions/models.Response'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/models.Response'
+      security:
+      - BearerAuth: []
+      summary: Update Product
+      tags:
+      - Product
+  /product/update_stock/{id}:
+    put:
+      consumes:
+      - application/json
+      description: Updates the stock of a product based on the given method (add,
+        subtract, update).
+      parameters:
+      - description: Workplace Token
+        in: header
+        name: X-Workplace-Token
+        required: true
+        type: string
+      - description: ID of the product
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Method of stock update (add, subtract, update)
+        in: query
+        name: method
+        required: true
+        type: string
+      - description: Stock update details
+        in: body
+        name: stock
+        required: true
+        schema:
+          $ref: '#/definitions/models.StockUpdate'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Product stock updated successfully
+          schema:
+            $ref: '#/definitions/models.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.Response'
+        "401":
+          description: Auth is required
+          schema:
+            $ref: '#/definitions/models.Response'
+        "403":
+          description: Not Authorized
+          schema:
+            $ref: '#/definitions/models.Response'
+        "404":
+          description: Product not found
+          schema:
+            $ref: '#/definitions/models.Response'
+        "422":
+          description: Model invalid
+          schema:
+            $ref: '#/definitions/models.Response'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/models.Response'
+      security:
+      - BearerAuth: []
+      summary: Update Product Stock
+      tags:
+      - Product
+  /purchase_order/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Retrieves a specific purchase order by its ID.
+      parameters:
+      - description: Workplace Token
+        in: header
+        name: X-Workplace-Token
+        required: true
+        type: string
+      - description: ID of Purchase Order
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Laundry order obtained successfully
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.Response'
+            - properties:
+                body:
+                  $ref: '#/definitions/models.PurchaseOrderLaundry'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.Response'
+        "401":
+          description: Auth is required
+          schema:
+            $ref: '#/definitions/models.Response'
+        "403":
+          description: Not Authorized
+          schema:
+            $ref: '#/definitions/models.Response'
+        "404":
+          description: Purchase Order not found
+          schema:
+            $ref: '#/definitions/models.Response'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/models.Response'
+      security:
+      - BearerAuth: []
+      summary: Get Purchase Order By ID
+      tags:
+      - Purchase Order
+  /purchase_order/create:
+    post:
+      consumes:
+      - application/json
+      description: Creates a purchase order, either for laundry or workshop.
+      parameters:
+      - description: Workplace Token
+        in: header
+        name: X-Workplace-Token
+        required: true
+        type: string
+      - description: Purchase order creation data
+        in: body
+        name: purchaseOrderCreate
+        required: true
+        schema:
+          $ref: '#/definitions/models.PurchaseOrderCreate'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Purchase order created successfully
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.Response'
+            - properties:
+                body:
+                  type: string
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.Response'
+        "401":
+          description: Auth is required
+          schema:
+            $ref: '#/definitions/models.Response'
+        "403":
+          description: Not Authorized
+          schema:
+            $ref: '#/definitions/models.Response'
+        "422":
+          description: Model invalid
+          schema:
+            $ref: '#/definitions/models.Response'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/models.Response'
+      security:
+      - BearerAuth: []
+      - BearerAuth: []
+      summary: Create Purchase Order
+      tags:
+      - Purchase Order
+  /purchase_order/delete/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Deletes a specific purchase order by its ID.
+      parameters:
+      - description: Workplace Token
+        in: header
+        name: X-Workplace-Token
+        required: true
+        type: string
+      - description: ID of Purchase Order
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Purchase order deleted successfully
+          schema:
+            $ref: '#/definitions/models.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.Response'
+        "401":
+          description: Auth is required
+          schema:
+            $ref: '#/definitions/models.Response'
+        "403":
+          description: Not Authorized
+          schema:
+            $ref: '#/definitions/models.Response'
+        "404":
+          description: Purchase order not found
+          schema:
+            $ref: '#/definitions/models.Response'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/models.Response'
+      security:
+      - BearerAuth: []
+      summary: Delete Purchase Order
+      tags:
+      - Purchase Order
+  /purchase_order/get_all:
+    get:
+      consumes:
+      - application/json
+      description: Get All Purchase Orders
+      parameters:
+      - description: Workplace Token
+        in: header
+        name: X-Workplace-Token
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Purchase Orders obtained with success
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.Response'
+            - properties:
+                body:
+                  items:
+                    $ref: '#/definitions/models.PurchaseOrderLaundry'
+                  type: array
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.Response'
+        "401":
+          description: Auth is required
+          schema:
+            $ref: '#/definitions/models.Response'
+        "403":
+          description: Not Authorized
+          schema:
+            $ref: '#/definitions/models.Response'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/models.Response'
+      security:
+      - BearerAuth: []
+      - BearerAuth: []
+      summary: Get All Purchase Orders
+      tags:
+      - Purchase Order
+  /purchase_order/update:
+    put:
+      consumes:
+      - application/json
+      description: Updates an existing purchase order with new details.
+      parameters:
+      - description: Workplace Token
+        in: header
+        name: X-Workplace-Token
+        required: true
+        type: string
+      - description: Purchase order update data
+        in: body
+        name: purchaseOrderUpdate
+        required: true
+        schema:
+          $ref: '#/definitions/models.PurchaseOrderUpdate'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Purchase order updated successfully
+          schema:
+            $ref: '#/definitions/models.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.Response'
+        "401":
+          description: Auth is required
+          schema:
+            $ref: '#/definitions/models.Response'
+        "403":
+          description: Not Authorized
+          schema:
+            $ref: '#/definitions/models.Response'
+        "422":
+          description: Model invalid
+          schema:
+            $ref: '#/definitions/models.Response'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/models.Response'
+      security:
+      - BearerAuth: []
+      summary: Update Purchase Order
+      tags:
+      - Purchase Order
+  /purchase_product/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Deletes a specific purchase product.
+      parameters:
+      - description: Workplace Token
+        in: header
+        name: X-Workplace-Token
+        required: true
+        type: string
+      - description: ID of Purchase Product
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Purchase product deleted successfully
+          schema:
+            $ref: '#/definitions/models.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.Response'
+        "401":
+          description: Auth is required
+          schema:
+            $ref: '#/definitions/models.Response'
+        "403":
+          description: Not Authorized
+          schema:
+            $ref: '#/definitions/models.Response'
+        "404":
+          description: Purchase Product not found
+          schema:
+            $ref: '#/definitions/models.Response'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/models.Response'
+      security:
+      - BearerAuth: []
+      summary: Delete Purchase Product
+      tags:
+      - Purchase Product
+    get:
+      consumes:
+      - application/json
+      description: Retrieves a specific purchase product by its ID for a given workplace.
+      parameters:
+      - description: Workplace Token
+        in: header
+        name: X-Workplace-Token
+        required: true
+        type: string
+      - description: ID of the purchase product
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Product obtained successfully
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.Response'
+            - properties:
+                body:
+                  $ref: '#/definitions/models.PurchaseProductLaundry'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.Response'
+        "401":
+          description: Auth is required
+          schema:
+            $ref: '#/definitions/models.Response'
+        "403":
+          description: Not Authorized
+          schema:
+            $ref: '#/definitions/models.Response'
+        "404":
+          description: Purchase Product not found
+          schema:
+            $ref: '#/definitions/models.Response'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/models.Response'
+      security:
+      - BearerAuth: []
+      summary: Get Purchase Product By ID
+      tags:
+      - Purchase Product
+  /purchase_product/create:
+    post:
+      consumes:
+      - application/json
+      description: Creates a purchase product, either for laundry or workshop.
+      parameters:
+      - description: Workplace Token
+        in: header
+        name: X-Workplace-Token
+        required: true
+        type: string
+      - description: Purchase product creation data
+        in: body
+        name: purchaseProductCreate
+        required: true
+        schema:
+          $ref: '#/definitions/models.PurchaseProductCreate'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Purchase product created successfully
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.Response'
+            - properties:
+                body:
+                  type: string
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.Response'
+        "401":
+          description: Auth is required
+          schema:
+            $ref: '#/definitions/models.Response'
+        "403":
+          description: Not Authorized
+          schema:
+            $ref: '#/definitions/models.Response'
+        "422":
+          description: Model is invalid
+          schema:
+            $ref: '#/definitions/models.Response'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/models.Response'
+      security:
+      - BearerAuth: []
+      summary: Create Purchase Product
+      tags:
+      - Purchase Product
+  /purchase_product/get_purchase/{purchase_id}:
+    get:
+      consumes:
+      - application/json
+      description: Get All Products From Purchase Order
+      parameters:
+      - description: Workplace Token
+        in: header
+        name: X-Workplace-Token
+        required: true
+        type: string
+      - description: ID of Purchase Order
+        in: path
+        name: purchase_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Products obtained with success
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.Response'
+            - properties:
+                body:
+                  items:
+                    $ref: '#/definitions/models.PurchaseProductLaundry'
+                  type: array
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.Response'
+        "401":
+          description: Auth is required
+          schema:
+            $ref: '#/definitions/models.Response'
+        "403":
+          description: Not Authorized
+          schema:
+            $ref: '#/definitions/models.Response'
+        "404":
+          description: Purchase Order not found
+          schema:
+            $ref: '#/definitions/models.Response'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/models.Response'
+      security:
+      - BearerAuth: []
+      summary: Get All Products From Purchase Order
+      tags:
+      - Purchase Product
+  /purchase_product/update/{id}:
+    put:
+      consumes:
+      - application/json
+      description: Updates the given purchase product and returns a success message.
+      parameters:
+      - description: Workplace Token
+        in: header
+        name: X-Workplace-Token
+        required: true
+        type: string
+      - description: ID of the purchase product
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Purchase product update details
+        in: body
+        name: product
+        required: true
+        schema:
+          $ref: '#/definitions/models.PurchaseProductUpdate'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Purchase product updated successfully
+          schema:
+            $ref: '#/definitions/models.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.Response'
+        "401":
+          description: Auth is required
+          schema:
+            $ref: '#/definitions/models.Response'
+        "403":
+          description: Not Authorized
+          schema:
+            $ref: '#/definitions/models.Response'
+        "404":
+          description: Purchase Product not found
+          schema:
+            $ref: '#/definitions/models.Response'
+        "422":
+          description: Model is invalid
+          schema:
+            $ref: '#/definitions/models.Response'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/models.Response'
+      security:
+      - BearerAuth: []
+      summary: Update Purchase Product
+      tags:
+      - Purchase Product
+  /service/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Get a service by id
+      parameters:
+      - description: Workplace Token
+        in: header
+        name: X-Workplace-Token
+        required: true
+        type: string
+      - description: ID of the income to get
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.Response'
+            - properties:
+                body:
+                  $ref: '#/definitions/models.ServiceLaundry'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.Response'
+        "401":
+          description: Auth is required
+          schema:
+            $ref: '#/definitions/models.Response'
+        "403":
+          description: Not Authorized
+          schema:
+            $ref: '#/definitions/models.Response'
+        "404":
+          description: Service not found
+          schema:
+            $ref: '#/definitions/models.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.Response'
+      security:
+      - BearerAuth: []
+      summary: Get a service by id
+      tags:
+      - Service
+  /service/create:
+    post:
+      consumes:
+      - application/json
+      description: Creates a service and returns its ID.
+      parameters:
+      - description: Workplace Token
+        in: header
+        name: X-Workplace-Token
+        required: true
+        type: string
+      - description: Service creation data
+        in: body
+        name: serviceCreate
+        required: true
+        schema:
+          $ref: '#/definitions/models.ServiceCreate'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Service created successfully
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.Response'
+            - properties:
+                body:
+                  type: string
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.Response'
+        "401":
+          description: Auth is required
+          schema:
+            $ref: '#/definitions/models.Response'
+        "403":
+          description: Not Authorized
+          schema:
+            $ref: '#/definitions/models.Response'
+        "422":
+          description: Model is invalid
+          schema:
+            $ref: '#/definitions/models.Response'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/models.Response'
+      security:
+      - BearerAuth: []
+      summary: Create Service
+      tags:
+      - Service
+  /service/delete/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Deletes a service based on the provided ID and workplace context.
+      parameters:
+      - description: Workplace Token
+        in: header
+        name: X-Workplace-Token
+        required: true
+        type: string
+      - description: ID of the service
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Servicio eliminado con éxito
+          schema:
+            $ref: '#/definitions/models.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.Response'
+        "401":
+          description: Auth is required
+          schema:
+            $ref: '#/definitions/models.Response'
+        "403":
+          description: Not Authorized
+          schema:
+            $ref: '#/definitions/models.Response'
+        "404":
+          description: Service not found
+          schema:
+            $ref: '#/definitions/models.Response'
+        "500":
+          description: Error interno
+          schema:
+            $ref: '#/definitions/models.Response'
+      security:
+      - BearerAuth: []
+      summary: Delete Service
+      tags:
+      - Service
+  /service/get_all:
+    get:
+      consumes:
+      - application/json
+      description: Get all services from workplace
+      parameters:
+      - description: Workplace Token
+        in: header
+        name: X-Workplace-Token
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.Response'
+            - properties:
+                body:
+                  items:
+                    $ref: '#/definitions/models.ServiceLaundry'
+                  type: array
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.Response'
+        "401":
+          description: Auth is required
+          schema:
+            $ref: '#/definitions/models.Response'
+        "403":
+          description: Not Authorized
+          schema:
+            $ref: '#/definitions/models.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.Response'
+      security:
+      - BearerAuth: []
+      summary: Get all services from workplace
+      tags:
+      - Service
+  /service/update:
+    put:
+      consumes:
+      - application/json
+      description: Updates the details of a service based on the provided data.
+      parameters:
+      - description: Workplace Token
+        in: header
+        name: X-Workplace-Token
+        required: true
+        type: string
+      - description: Service data to update
+        in: body
+        name: serviceUpdate
+        required: true
+        schema:
+          $ref: '#/definitions/models.ServiceUpdate'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Servicio editado con éxito
+          schema:
+            $ref: '#/definitions/models.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.Response'
+        "401":
+          description: Auth is required
+          schema:
+            $ref: '#/definitions/models.Response'
+        "403":
+          description: Not Authorized
+          schema:
+            $ref: '#/definitions/models.Response'
+        "404":
+          description: Expense not found
+          schema:
+            $ref: '#/definitions/models.Response'
+        "422":
+          description: Model is invalid
+          schema:
+            $ref: '#/definitions/models.Response'
+        "500":
+          description: Error interno
+          schema:
+            $ref: '#/definitions/models.Response'
+      security:
+      - BearerAuth: []
+      - BearerAuth: []
+      summary: Update Service
+      tags:
+      - Service
+  /supplier/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Get a supplier by its ID within a specified workplace.
+      parameters:
+      - description: Workplace Token
+        in: header
+        name: X-Workplace-Token
+        required: true
+        type: string
+      - description: ID of the supplier
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Supplier obtained with success
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.Response'
+            - properties:
+                body:
+                  $ref: '#/definitions/models.SupplierLaundry'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.Response'
+        "401":
+          description: Auth is required
+          schema:
+            $ref: '#/definitions/models.Response'
+        "403":
+          description: Not Authorized
+          schema:
+            $ref: '#/definitions/models.Response'
+        "404":
+          description: Supplier not found
+          schema:
+            $ref: '#/definitions/models.Response'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/models.Response'
+      security:
+      - BearerAuth: []
+      summary: Get Supplier By ID
+      tags:
+      - Supplier
+  /supplier/create:
+    post:
+      consumes:
+      - application/json
+      description: Creates a new supplier within the specified workplace.
+      parameters:
+      - description: Workplace Token
+        in: header
+        name: X-Workplace-Token
+        required: true
+        type: string
+      - description: Details of the supplier to create
+        in: body
+        name: supplier
+        required: true
+        schema:
+          $ref: '#/definitions/models.SupplierCreate'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Supplier created successfully
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.Response'
+            - properties:
+                body:
+                  type: string
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.Response'
+        "401":
+          description: Auth is required
+          schema:
+            $ref: '#/definitions/models.Response'
+        "403":
+          description: Not Authorized
+          schema:
+            $ref: '#/definitions/models.Response'
+        "422":
+          description: Model is invalid
+          schema:
+            $ref: '#/definitions/models.Response'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/models.Response'
+      security:
+      - BearerAuth: []
+      summary: Create Supplier
+      tags:
+      - Supplier
+  /supplier/delete/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Deletes a supplier based on the provided ID and workplace context.
+      parameters:
+      - description: Workplace Token
+        in: header
+        name: X-Workplace-Token
+        required: true
+        type: string
+      - description: ID of the supplier
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Supplier deleted with success
+          schema:
+            $ref: '#/definitions/models.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.Response'
+        "401":
+          description: Auth is required
+          schema:
+            $ref: '#/definitions/models.Response'
+        "403":
+          description: Not Authorized
+          schema:
+            $ref: '#/definitions/models.Response'
+        "404":
+          description: Supplier not found
+          schema:
+            $ref: '#/definitions/models.Response'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/models.Response'
+      security:
+      - BearerAuth: []
+      summary: Delete Supplier
+      tags:
+      - Supplier
+  /supplier/get_all:
+    get:
+      consumes:
+      - application/json
+      description: Get All Suppliers
+      parameters:
+      - description: Workplace Token
+        in: header
+        name: X-Workplace-Token
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Suppliers obtained with success
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.Response'
+            - properties:
+                body:
+                  items:
+                    $ref: '#/definitions/models.SupplierLaundry'
+                  type: array
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.Response'
+        "401":
+          description: Auth is required
+          schema:
+            $ref: '#/definitions/models.Response'
+        "403":
+          description: Not Authorized
+          schema:
+            $ref: '#/definitions/models.Response'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/models.Response'
+      security:
+      - BearerAuth: []
+      summary: Get All Suppliers
+      tags:
+      - Supplier
+  /supplier/get_by_name:
+    get:
+      consumes:
+      - application/json
+      description: Fetches suppliers from either laundry or workshop based on the
+        provided name and workplace.
+      parameters:
+      - description: Workplace Token
+        in: header
+        name: X-Workplace-Token
+        required: true
+        type: string
+      - description: Name of the Supplier
+        in: query
+        name: name
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: List of suppliers
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.Response'
+            - properties:
+                body:
+                  items:
+                    $ref: '#/definitions/models.SupplierLaundry'
+                  type: array
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.Response'
+        "401":
+          description: Auth is required
+          schema:
+            $ref: '#/definitions/models.Response'
+        "403":
+          description: Not Authorized
+          schema:
+            $ref: '#/definitions/models.Response'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/models.Response'
+      security:
+      - BearerAuth: []
+      - BearerAuth: []
+      summary: Get Supplier By Name
+      tags:
+      - Supplier
+  /supplier/update/{id}:
+    put:
+      consumes:
+      - application/json
+      description: Update a supplier's information from the specified workplace.
+      parameters:
+      - description: Workplace Token
+        in: header
+        name: X-Workplace-Token
+        required: true
+        type: string
+      - description: ID of the Supplier
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Supplier information
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/models.SupplierUpdate'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Supplier updated with success
+          schema:
+            $ref: '#/definitions/models.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.Response'
+        "401":
+          description: Auth is required
+          schema:
+            $ref: '#/definitions/models.Response'
+        "403":
+          description: Not Authorized
+          schema:
+            $ref: '#/definitions/models.Response'
+        "404":
+          description: Supplier not found
+          schema:
+            $ref: '#/definitions/models.Response'
+        "422":
+          description: Model is invalid
+          schema:
+            $ref: '#/definitions/models.Response'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/models.Response'
+      security:
+      - BearerAuth: []
+      summary: Update Supplier
+      tags:
+      - Supplier
+  /user:
+    post:
+      consumes:
+      - application/json
+      description: Creates a new user.
+      parameters:
+      - description: User information
+        in: body
+        name: userCreate
+        required: true
+        schema:
+          $ref: '#/definitions/models.UserCreate'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.Response'
+        "401":
+          description: Auth is required
+          schema:
+            $ref: '#/definitions/models.Response'
+        "403":
+          description: Not Authorized
+          schema:
+            $ref: '#/definitions/models.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.Response'
+      security:
+      - BearerAuth: []
+      summary: Create User
+      tags:
+      - User
+  /vehicle/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Get Vehicle By ID
+      parameters:
+      - description: ID of Vehicle
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Vehicle retrieved successfully
+          schema:
+            $ref: '#/definitions/models.Vehicle'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.Response'
+        "401":
+          description: Auth is required
+          schema:
+            $ref: '#/definitions/models.Response'
+        "403":
+          description: Not Authorized
+          schema:
+            $ref: '#/definitions/models.Response'
+        "404":
+          description: Vehicle not found
+          schema:
+            $ref: '#/definitions/models.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.Response'
+      security:
+      - BearerAuth: []
+      summary: Get Vehicle By ID
+      tags:
+      - Vehicle
+  /vehicle/create:
+    post:
+      consumes:
+      - application/json
+      description: Create a new Vehicle
+      parameters:
+      - description: Vehicle information
+        in: body
+        name: vehicleCreate
+        required: true
+        schema:
+          $ref: '#/definitions/models.VehicleCreate'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.Response'
+        "401":
+          description: Auth is required
+          schema:
+            $ref: '#/definitions/models.Response'
+        "403":
+          description: Not Authorized
+          schema:
+            $ref: '#/definitions/models.Response'
+        "422":
+          description: Model is invalid
+          schema:
+            $ref: '#/definitions/models.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.Response'
+      security:
+      - BearerAuth: []
+      summary: Create Vehicle
+      tags:
+      - Vehicle
+  /vehicle/delete/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete Vehicle with the given ID.
+      parameters:
+      - description: ID of Vehicle
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Vehicle deleted successfully
+          schema:
+            $ref: '#/definitions/models.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.Response'
+        "401":
+          description: Auth is required
+          schema:
+            $ref: '#/definitions/models.Response'
+        "403":
+          description: Not Authorized
+          schema:
+            $ref: '#/definitions/models.Response'
+        "404":
+          description: Vehicle not found
+          schema:
+            $ref: '#/definitions/models.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.Response'
+      security:
+      - BearerAuth: []
+      summary: Delete Vehicle
+      tags:
+      - Vehicle
+  /vehicle/get_all:
+    get:
+      description: Fetches all vehicles stored in the system.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: List of vehicles retrieved successfully
+          schema:
+            items:
+              $ref: '#/definitions/models.Vehicle'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.Response'
+        "401":
+          description: Auth is required
+          schema:
+            $ref: '#/definitions/models.Response'
+        "403":
+          description: Not Authorized
+          schema:
+            $ref: '#/definitions/models.Response'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/models.Response'
+      security:
+      - BearerAuth: []
+      summary: Get all vehicles
+      tags:
+      - Vehicle
+  /vehicle/get_by_client/{client_id}:
+    get:
+      description: Fetches all vehicles that belong to the given client.
+      parameters:
+      - description: Client ID
+        in: path
+        name: client_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: List of vehicles retrieved successfully
+          schema:
+            items:
+              $ref: '#/definitions/models.Vehicle'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.Response'
+        "401":
+          description: Auth is required
+          schema:
+            $ref: '#/definitions/models.Response'
+        "403":
+          description: Not Authorized
+          schema:
+            $ref: '#/definitions/models.Response'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/models.Response'
+      security:
+      - BearerAuth: []
+      summary: Get Vehicles By Client ID
+      tags:
+      - Vehicle
+  /vehicle/get_by_domain:
+    get:
+      description: Fetches all vehicles that contain the given domain.
+      parameters:
+      - description: Domain string
+        in: query
+        name: domain
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: List of vehicles retrieved successfully
+          schema:
+            items:
+              $ref: '#/definitions/models.Vehicle'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.Response'
+        "401":
+          description: Auth is required
+          schema:
+            $ref: '#/definitions/models.Response'
+        "403":
+          description: Not Authorized
+          schema:
+            $ref: '#/definitions/models.Response'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/models.Response'
+      security:
+      - BearerAuth: []
+      summary: Get Vehicles By Domain
+      tags:
+      - Vehicle
+  /vehicle/update:
+    put:
+      consumes:
+      - application/json
+      description: Update Vehicle with the given ID.
+      parameters:
+      - description: VehicleUpdate
+        in: body
+        name: vehicleUpdate
+        required: true
+        schema:
+          $ref: '#/definitions/models.VehicleUpdate'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Vehicle updated successfully
+          schema:
+            $ref: '#/definitions/models.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.Response'
+        "401":
+          description: Auth is required
+          schema:
+            $ref: '#/definitions/models.Response'
+        "403":
+          description: Not Authorized
+          schema:
+            $ref: '#/definitions/models.Response'
+        "404":
+          description: Vehicle not found
+          schema:
+            $ref: '#/definitions/models.Response'
+        "422":
+          description: Model is invalid
+          schema:
+            $ref: '#/definitions/models.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.Response'
+      security:
+      - BearerAuth: []
+      summary: Update Vehicle
+      tags:
+      - Vehicle
+  /workplace/get_all:
+    get:
+      consumes:
+      - application/json
+      description: Workplace GetAll required auth token
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Workplaces obtenidos con éxito
+          schema:
+            $ref: '#/definitions/models.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.Response'
+        "401":
+          description: Auth is required
+          schema:
+            $ref: '#/definitions/models.Response'
+        "403":
+          description: Not Authorized
+          schema:
+            $ref: '#/definitions/models.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.Response'
+      security:
+      - BearerAuth: []
+      summary: Workplace GetAll
       tags:
       - Workplace
 securityDefinitions:

@@ -6,18 +6,22 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-// ServiceGetByID get a income by id
-//
-// @Summary Get a income by id
-// @Description Get a income by id
-// @Tags services
-// @Accept json
-// @Produce json
-// @Param id path string true "ID of the income to get"
-// @Success 200 {object} models.Response{body=models.Income}
-// @Failure 400 {object} models.Response
-// @Failure 500 {object} models.Response
-// @Router /services/{id} [get]
+// ServiceGetByID godoc
+//	@Summary		Get a service by id
+//	@Description	Get a service by id
+//	@Tags			Service
+//	@Accept			json
+//	@Produce		json
+//	@Security		BearerAuth
+//	@Param			X-Workplace-Token	header		string	true	"Workplace Token"
+//	@Param			id					path		string	true	"ID of the income to get"
+//	@Success		200					{object}	models.Response{body=models.ServiceLaundry}
+//	@Failure		400					{object}	models.Response	"Bad Request"
+//	@Failure		401					{object}	models.Response	"Auth is required"
+//	@Failure		403					{object}	models.Response	"Not Authorized"
+//	@Failure		404					{object}	models.Response	"Service not found"
+//	@Failure		500					{object}	models.Response
+//	@Router			/service/{id} [get]
 func ServiceGetByID(c *fiber.Ctx) error {
 	id := c.Params("id")
 	if id == "" {
@@ -68,17 +72,20 @@ func ServiceGetByID(c *fiber.Ctx) error {
 	})
 }
 
-// ServiceGetAll get all services from workplace
-//
-// @Summary Get all services from workplace
-// @Description Get all services from workplace
-// @Tags services
-// @Accept json
-// @Produce json
-// @Success 200 {object} models.Response{body=[]models.ServiceLaundry}
-// @Failure 400 {object} models.Response
-// @Failure 500 {object} models.Response
-// @Router /services [get]
+// ServiceGetAll godoc
+//	@Summary		Get all services from workplace
+//	@Description	Get all services from workplace
+//	@Tags			Service
+//	@Accept			json
+//	@Produce		json
+//	@Security		BearerAuth
+//	@Param			X-Workplace-Token	header		string	true	"Workplace Token"
+//	@Success		200					{object}	models.Response{body=[]models.ServiceLaundry}
+//	@Failure		400					{object}	models.Response	"Bad Request"
+//	@Failure		401					{object}	models.Response	"Auth is required"
+//	@Failure		403					{object}	models.Response	"Not Authorized"
+//	@Failure		500					{object}	models.Response
+//	@Router			/service/get_all [get]
 func ServiceGetAll(c *fiber.Ctx) error {
 	workplace := c.Locals("workplace").(*models.Workplace)
 	if workplace == nil {
@@ -121,18 +128,21 @@ func ServiceGetAll(c *fiber.Ctx) error {
 }
 
 // ServiceCreate godoc
-// @Summary     Create Service
-// @Description Creates a service and returns its ID.
-// @Tags        services
-// @Accept      json
-// @Produce     json
-// @Param       serviceCreate body     models.ServiceCreate true  "Service creation data"
-// @Success     200             {object} models.Response{body=string} "Service created successfully"
-// @Failure     400             {object} models.Response       "Invalid request"
-// @Failure     400             {object} models.Response       "Workplace is required"
-// @Failure     500             {object} models.Response       "Internal server error"
-// @Router      /services      [post]
-// @Security    BearerAuth
+//	@Summary		Create Service
+//	@Description	Creates a service and returns its ID.
+//	@Tags			Service
+//	@Accept			json
+//	@Produce		json
+//	@Security		BearerAuth
+//	@Param			X-Workplace-Token	header		string							true	"Workplace Token"
+//	@Param			serviceCreate		body		models.ServiceCreate			true	"Service creation data"
+//	@Success		200					{object}	models.Response{body=string}	"Service created successfully"
+//	@Failure		400					{object}	models.Response					"Bad Request"
+//	@Failure		401					{object}	models.Response					"Auth is required"
+//	@Failure		403					{object}	models.Response					"Not Authorized"
+//	@Failure		422					{object}	models.Response					"Model is invalid"
+//	@Failure		500					{object}	models.Response					"Internal server error"
+//	@Router			/service/create      [post]
 func ServiceCreate(c *fiber.Ctx) error {
 	var serviceCreate models.ServiceCreate
 	if err := c.BodyParser(&serviceCreate); err != nil {
@@ -182,19 +192,24 @@ func ServiceCreate(c *fiber.Ctx) error {
 	})
 }
 
-// ServiceUpdate updates the information of a service.
-//
-// @Summary     Update Service
-// @Description Updates the details of a service based on the provided data.
-// @Tags        services
-// @Accept      json
-// @Produce     json
-// @Param       serviceUpdate  body      models.ServiceUpdate  true  "Service data to update"
-// @Success     200  {object}  models.Response  "Servicio editado con éxito"
-// @Failure     400  {object}  models.Response  "Invalid request or Workplace is required"
-// @Failure     500  {object}  models.Response  "Error interno"
-// @Router      /services [put]
-// @Security    BearerAuth
+// ServiceUpdate godoc
+//	@Summary		Update Service
+//	@Description	Updates the details of a service based on the provided data.
+//	@Tags			Service
+//	@Accept			json
+//	@Produce		json
+//	@Security		BearerAuth
+//	@Param			X-Workplace-Token	header		string					true	"Workplace Token"
+//	@Param			serviceUpdate		body		models.ServiceUpdate	true	"Service data to update"
+//	@Success		200					{object}	models.Response			"Servicio editado con éxito"
+//	@Failure		400					{object}	models.Response			"Bad Request"
+//	@Failure		401					{object}	models.Response			"Auth is required"
+//	@Failure		403					{object}	models.Response			"Not Authorized"
+//	@Failure		404					{object}	models.Response			"Expense not found"
+//	@Failure		422					{object}	models.Response			"Model is invalid"
+//	@Failure		500					{object}	models.Response			"Error interno"
+//	@Router			/service/update [put]
+//	@Security		BearerAuth
 func ServiceUpdate(c *fiber.Ctx) error {
 	var serviceUpdate models.ServiceUpdate
 	if err := c.BodyParser(&serviceUpdate); err != nil {
@@ -244,18 +259,22 @@ func ServiceUpdate(c *fiber.Ctx) error {
 	})
 }
 
-// ServiceDeleteByID deletes a service by its ID for a specific workplace.
-// @Summary     Delete Service
-// @Description Deletes a service based on the provided ID and workplace context.
-// @Tags        services
-// @Accept      json
-// @Produce     json
-// @Param       id   path      string  true  "ID of the service"
-// @Success     200  {object}  models.Response  "Servicio eliminado con éxito"
-// @Failure     400  {object}  models.Response  "ID is required or Workplace is required"
-// @Failure     500  {object}  models.Response  "Error interno"
-// @Router      /services/{id} [delete]
-// @Security    BearerAuth
+// ServiceDeleteByID godoc
+//	@Summary		Delete Service
+//	@Description	Deletes a service based on the provided ID and workplace context.
+//	@Tags			Service
+//	@Accept			json
+//	@Produce		json
+//	@Security		BearerAuth
+//	@Param			X-Workplace-Token	header		string			true	"Workplace Token"
+//	@Param			id					path		string			true	"ID of the service"
+//	@Success		200					{object}	models.Response	"Servicio eliminado con éxito"
+//	@Failure		400					{object}	models.Response	"Bad Request"
+//	@Failure		401					{object}	models.Response	"Auth is required"
+//	@Failure		403					{object}	models.Response	"Not Authorized"
+//	@Failure		404					{object}	models.Response	"Service not found"
+//	@Failure		500					{object}	models.Response	"Error interno"
+//	@Router			/service/delete/{id} [delete]
 func ServiceDeleteByID(c *fiber.Ctx) error {
 	id := c.Params("id")
 	if id == "" {

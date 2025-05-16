@@ -8,18 +8,21 @@ import (
 
 
 // GetEmployeeByID godoc
-// @Summary     Get Employee By ID
-// @Description Get Employee By ID
-// @Tags        employee
-// @Accept      json
-// @Produce     json
-// @Param       id   path      string  true  "ID of Employee"
-// @Success     200  {object}  models.Response
-// @Failure     400  {object}  models.Response
-// @Failure     404  {object}  models.Response
-// @Failure     500  {object}  models.Response
-// @Router      /employee/{id} [get]
-// @Security    BearerAuth
+//	@Summary		Get Employee By ID
+//	@Description	Get Employee By ID
+//	@Tags			Employee
+//	@Accept			json
+//	@Produce		json
+//	@Security		BearerAuth
+//	@Param			X-Workplace-Token	header		string											true	"Workplace Token"
+//	@Param			id					path		string											true	"ID of Employee"
+//	@Success		200					{object}	models.Response{body=models.EmployeeLaundry}	"Employee obtained successfully"
+//	@Failure		400					{object}	models.Response									"Bad Request"
+//	@Failure		401					{object}	models.Response									"Auth is required"
+//	@Failure		403					{object}	models.Response									"Not Authorized"
+//	@Failure		404					{object}	models.Response									"Employee not found"
+//	@Failure		500					{object}	models.Response
+//	@Router			/employee/{id} [get]
 func GetEmployeeByID(c *fiber.Ctx) error {
 	id := c.Params("id")
 	if id == "" {
@@ -70,18 +73,20 @@ func GetEmployeeByID(c *fiber.Ctx) error {
 	})
 }
 
-// GetAllEmployees retrieves all employees for a specific workplace.
-// @Summary		Get all employees
-// @Description	Fetches all employees from the specified workplace, either in laundry or workshop.
-// @Tags			Employee
-// @Accept			json
-// @Produce		json
-// @Security		BearerAuth
-// @Success		200			{object}	models.Response{body=[]models.EmployeeLaundry} "List of laundry employees"
-// @Success		200			{object}	models.Response{body=[]models.EmployeeWorkshop} "List of workshop employees"
-// @Failure		400			{object}	models.Response "Workplace is required"
-// @Failure		500			{object}	models.Response "Internal server error"
-// @Router			/employee/get_all [get]
+// GetAllEmployees godoc
+//	@Summary		Get all employees
+//	@Description	Fetches all employees from the specified workplace, either in laundry or workshop.
+//	@Tags			Employee
+//	@Accept			json
+//	@Produce		json
+//	@Security		BearerAuth
+//	@Param			X-Workplace-Token	header		string											true	"Workplace Token"
+//	@Success		200					{object}	models.Response{body=[]models.EmployeeLaundry}	"List of employees"
+//	@Failure		400					{object}	models.Response									"Bad request"
+//	@Failure		401					{object}	models.Response									"Auth is required"
+//	@Failure		403					{object}	models.Response									"Not Authorized"
+//	@Failure		500					{object}	models.Response									"Internal server error"
+//	@Router			/employee/get_all [get]
 func GetAllEmployees(c *fiber.Ctx) error {
 	workplace := c.Locals("workplace").(*models.Workplace)
 	if workplace == nil {
@@ -123,19 +128,21 @@ func GetAllEmployees(c *fiber.Ctx) error {
 	})
 }
 
-// GetEmployeeByName retrieves employees by their name from the specified workplace.
-// @Summary     Get Employee By Name
-// @Description Fetches employees from either laundry or workshop based on the provided name and workplace.
-// @Tags        Employee
-// @Accept      json
-// @Produce     json
-// @Param       name  query     string  true  "Name of the Employee"
-// @Success     200   {object}  models.Response{body=[]models.EmployeeLaundry} "List of laundry employees"
-// @Success     200   {object}  models.Response{body=[]models.EmployeeWorkshop} "List of workshop employees"
-// @Failure     400   {object}  models.Response "Invalid name or workplace"
-// @Failure     500   {object}  models.Response "Internal server error"
-// @Router      /employee/by-name [get]
-// @Security    BearerAuth
+// GetEmployeeByName godoc
+//	@Summary		Get Employee By Name
+//	@Description	Fetches employees from either laundry or workshop based on the provided name and workplace.
+//	@Tags			Employee
+//	@Accept			json
+//	@Produce		json
+//	@Security		BearerAuth
+//	@Param			X-Workplace-Token	header		string											true	"Workplace Token"
+//	@Param			name				query		string											true	"Name of the Employee"
+//	@Success		200					{object}	models.Response{body=[]models.EmployeeLaundry}	"List of laundry employees"
+//	@Failure		400					{object}	models.Response									"Bad request"
+//	@Failure		401					{object}	models.Response									"Auth is required"
+//	@Failure		403					{object}	models.Response									"Not Authorized"
+//	@Failure		500					{object}	models.Response									"Internal server error"
+//	@Router			/employee/get_by_name [get]
 func GetEmployeeByName(c *fiber.Ctx) error {
 	name := c.Query("name")
 	if name == "" || len(name) < 3 {
@@ -186,18 +193,22 @@ func GetEmployeeByName(c *fiber.Ctx) error {
 	})
 }
 
-// CreateEmployee creates an employee for a specific workplace.
-// @Summary		Create Employee
-// @Description	Creates an employee for either laundry or workshop based on the provided information.
-// @Tags			Employee
-// @Accept			json
-// @Produce		json
-// @Param			employeeCreate	body		models.EmployeeCreate	true	"Employee information"
-// @Success		200			{object}	models.Response{body=string} "Employee created"
-// @Failure		400			{object}	models.Response "Invalid request or workplace required"
-// @Failure		500			{object}	models.Response "Internal server error"
-// @Router			/employee [post]
-// @Security		BearerAuth
+// CreateEmployee godoc
+//	@Summary		Create Employee
+//	@Description	Creates an employee for either laundry or workshop based on the provided information.
+//	@Tags			Employee
+//	@Accept			json
+//	@Produce		json
+//	@Security		BearerAuth
+//	@Param			X-Workplace-Token	header		string							true	"Workplace Token"
+//	@Param			employeeCreate		body		models.EmployeeCreate			true	"Employee information"
+//	@Success		200					{object}	models.Response{body=string}	"Employee created"
+//	@Failure		400					{object}	models.Response					"Bad request"
+//	@Failure		401					{object}	models.Response					"Auth is required"
+//	@Failure		403					{object}	models.Response					"Not Authorized"
+//	@Failure		422					{object}	models.Response					"Model Invalid"
+//	@Failure		500					{object}	models.Response					"Internal server error"
+//	@Router			/employee/create [post]
 func CreateEmployee(c *fiber.Ctx) error {
 	var employeeCreate models.EmployeeCreate
 	if err := c.BodyParser(&employeeCreate); err != nil {
@@ -247,18 +258,23 @@ func CreateEmployee(c *fiber.Ctx) error {
 	})
 }
 
-// UpdateEmployee updates an employee's information in the specified workplace.
-// @Summary     Update Employee
-// @Description Updates the details of an employee based on the provided data.
-// @Tags        employee
-// @Accept      json
-// @Produce     json
-// @Param       employeeUpdate  body      models.EmployeeUpdate  true  "Employee data to update"
-// @Success     200  {object}  models.Response  "Empleado editado con éxito"
-// @Failure     400  {object}  models.Response  "Invalid request or Workplace is required"
-// @Failure     500  {object}  models.Response  "Error interno"
-// @Router      /employee [put]
-// @Security    BearerAuth
+// UpdateEmployee godoc
+//	@Summary		Update Employee
+//	@Description	Updates the details of an employee based on the provided data.
+//	@Tags			Employee
+//	@Accept			json
+//	@Produce		json
+//	@Security		BearerAuth
+//	@Param			X-Workplace-Token	header		string					true	"Workplace Token"
+//	@Param			employeeUpdate		body		models.EmployeeUpdate	true	"Employee data to update"
+//	@Success		200					{object}	models.Response			"Empleado editado con éxito"
+//	@Failure		400					{object}	models.Response			"Invalid request or Workplace is required"
+//	@Failure		401					{object}	models.Response			"Auth is required"
+//	@Failure		403					{object}	models.Response			"Not Authorized"
+//	@Failure		404					{object}	models.Response			"Not Found"
+//	@Failure		422					{object}	models.Response			"Model Invalid"
+//	@Failure		500					{object}	models.Response			"Error interno"
+//	@Router			/employee/update [put]
 func UpdateEmployee(c *fiber.Ctx) error {
 	var employeeUpdate models.EmployeeUpdate
 	if err := c.BodyParser(&employeeUpdate); err != nil {
@@ -308,18 +324,22 @@ func UpdateEmployee(c *fiber.Ctx) error {
 	})
 }
 
-// DeleteEmployee deletes an employee by their ID from the specified workplace.
-// @Summary     Delete Employee
-// @Description Removes an employee from the database based on the provided ID and workplace context.
-// @Tags        Employee
-// @Accept      json
-// @Produce     json
-// @Param       id   path      string  true  "ID of the employee"
-// @Success     200  {object}  models.Response  "Empleado eliminado con éxito"
-// @Failure     400  {object}  models.Response  "ID is required or Workplace is required"
-// @Failure     500  {object}  models.Response  "Error interno"
-// @Router      /employee/{id} [delete]
-// @Security    BearerAuth
+// DeleteEmployee godoc
+//	@Summary		Delete Employee
+//	@Description	Removes an employee from the database based on the provided ID and workplace context.
+//	@Tags			Employee
+//	@Accept			json
+//	@Produce		json
+//	@Security		BearerAuth
+//	@Param			X-Workplace-Token	header		string			true	"Workplace Token"
+//	@Param			id					path		string			true	"ID of the employee"
+//	@Success		200					{object}	models.Response	"Empleado eliminado con éxito"
+//	@Failure		400					{object}	models.Response	"Bad Request"
+//	@Failure		401					{object}	models.Response	"Auth is required"
+//	@Failure		403					{object}	models.Response	"Not Authorized"
+//	@Failure		404					{object}	models.Response	"Not Found"
+//	@Failure		500					{object}	models.Response	"Error interno"
+//	@Router			/employee/delete/{id} [delete]
 func DeleteEmployee(c *fiber.Ctx) error {
 	id := c.Params("id")
 	if id == "" {

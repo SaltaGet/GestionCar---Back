@@ -84,6 +84,7 @@ func (r *Repository) CreateElement(element *models.ProductCreate, workplace stri
 			ID:         newID,
 			Identifier: element.Identifier,
 			Name:       element.Name,
+			Stock: 0,
 		}).Error; err != nil {
 			return "", err
 		}

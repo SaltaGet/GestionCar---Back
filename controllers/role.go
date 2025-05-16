@@ -6,19 +6,19 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-// GetRolesWorkplace retrieves all roles associated with a user and their workplace.
-// @Summary     Retrieve roles for a user in a specific workplace
-// @Description This function fetches roles based on the user's role and workplace identifier
+// GetRolesWorkplace godoc
+//	@Summary		Retrieve roles for a user in a specific workplace
+//	@Description	This function fetches roles based on the user's role and workplace identifier
 //              from the context. It requires both user and workplace information to be present
 //              in the request context.
-// @Tags        roles
-// @Accept      json
-// @Produce     json
-// @Param       user  context  models.User      true  "User information from context"
-// @Param       workplace  context  models.Workplace  true  "Workplace information from context"
-// @Success     200  {object}  models.Response  "Roles retrieved successfully"
-// @Failure     400  {object}  models.Response  "Bad request if user or workplace is missing"
-// @Failure     500  {object}  models.Response  "Internal server error on failure"
+//	@Tags			Role
+//	@Accept			json
+//	@Produce		json
+//	@Security		BearerAuth
+//	@Param			X-Workplace-Token	header		string			true	"Workplace Token"
+//	@Success		200					{object}	models.Response	"Roles retrieved successfully"
+//	@Failure		400					{object}	models.Response	"Bad request if user or workplace is missing"
+//	@Failure		500					{object}	models.Response	"Internal server error on failure"
 func GetRolesWorkplace( c*fiber.Ctx) error {
 	user := c.Locals("user").(*models.User)
 	if user == nil {

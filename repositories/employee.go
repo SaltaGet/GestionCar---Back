@@ -75,7 +75,7 @@ func (r *Repository) UpdateEmployee(employeeUpdate *models.EmployeeUpdate, workp
 	switch workplace{
 	case "laundry":
 		var employee models.EmployeeLaundry
-		if err := r.DB.Where("id = ?", employee.ID).First(&employee).Error; err != nil {
+		if err := r.DB.Where("id = ?", employeeUpdate.ID).First(&employee).Error; err != nil {
 			return err
 		}
 		employee.Name = employeeUpdate.Name
@@ -124,13 +124,13 @@ func (r *Repository) DeleteEmployee(id string, workplace string) error {
 func (r *Repository) GetEmployeeByName(name string, workplace string) (*[]models.EmployeeLaundry, *[]models.EmployeeWorkshop, error) {
 	if workplace == "laundry" {
 		var employees []models.EmployeeLaundry
-		if err := r.DB.Where("last_name LIKE ? OR first_name LIKE ?", "%"+name+"%", "%"+name+"%").Find(&employees).Error; err != nil {
+		if err := r.DB.Where("name LIKE ?", "%"+name+"%").Find(&employees).Error; err != nil {
 			return nil, nil, err
 		}
 		return &employees, nil, nil
 	} else	if workplace == "workshop" {
 		var employees []models.EmployeeWorkshop
-		if err := r.DB.Where("last_name LIKE ? OR first_name LIKE ?", "%"+name+"%", "%"+name+"%").Find(&employees).Error; err != nil {
+		if err := r.DB.Where("name LIKE ?", "%"+name+"%").Find(&employees).Error; err != nil {
 			return nil, nil, err
 		}
 		return nil, &employees, nil

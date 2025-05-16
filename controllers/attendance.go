@@ -7,21 +7,22 @@ import (
 )
 
 // GetAttendanceByID godoc
-// @Summary     Get Attendance By ID
-// @Description Get Attendance by ID
-// @Tags        attendance
-// @Accept      json
-// @Produce     json
-// @Param       id   path      string  true  "ID of Attendance"
-// @Success     200  {object}  models.Response{body=models.AttendanceLaundry}
-// @Failure     400  {object}  models.Response
-// @Failure     404  {object}  models.Response
-// @Failure     500  {object}  models.Response
-// @Router      /attendance/{id} [get]
-// @Security    BearerAuth
+//	@Summary		Get Attendance By ID
+//	@Description	Get Attendance by ID
+//	@Tags			Attendance
+//	@Accept			json
+//	@Produce		json
+//	@Security		BearerAuth
+//	@Param			X-Workplace-Token	header		string	true	"Workplace Token"
+//	@Param			id					path		string	true	"ID of Attendance"
+//	@Success		200					{object}	models.Response{body=models.AttendanceLaundry}
+//	@Failure		400					{object}	models.Response
+//	@Failure		401					{object}	models.Response
+//	@Failure		404					{object}	models.Response
+//	@Failure		500					{object}	models.Response
+//	@Router			/attendance/{id} [get]
 func GetAttendanceByID(c *fiber.Ctx) error {
 	id := c.Params("id")
-
 	if id == "" {
 		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
 			Status:  false,
@@ -71,19 +72,20 @@ func GetAttendanceByID(c *fiber.Ctx) error {
 }
 
 // GetAllAttendances godoc
-// @Summary		Get all attendances
-// @Description	Get all attendances by workplace required auth token
-// @Tags			Attendance
-// @Accept			json
-// @Produce		json
-// @Security		BearerAuth
-// @Success		200			{object}	models.Response
-// @Failure		400			{object}	models.Response
-// @Failure		401			{object}	models.Response
-// @Failure		422			{object}	models.Response
-// @Failure		404			{object}	models.Response
-// @Failure		500			{object}	models.Response
-// @Router			/attendance/get_all [get]
+//	@Summary		Get all attendances
+//	@Description	Get all attendances by workplace required auth token
+//	@Tags			Attendance
+//	@Accept			json
+//	@Produce		json
+//	@Security		BearerAuth
+//	@Param			X-Workplace-Token	header		string	true	"Workplace Token"
+//	@Success		200					{object}	models.Response
+//	@Failure		400					{object}	models.Response
+//	@Failure		401					{object}	models.Response
+//	@Failure		422					{object}	models.Response
+//	@Failure		404					{object}	models.Response
+//	@Failure		500					{object}	models.Response
+//	@Router			/attendance/get_all [get]
 func GetAllAttendances(c *fiber.Ctx) error {
 	workplace := c.Locals("workplace").(*models.Workplace)
 	if workplace == nil {
@@ -126,18 +128,21 @@ func GetAllAttendances(c *fiber.Ctx) error {
 }
 
 // GetAllAttendancesByDate godoc
-// @Summary		Get all attendances within a date range
-// @Description	Retrieve all attendances within a specified date range for a given workplace
-// @Tags			Attendance
-// @Accept			json
-// @Produce		json
-// @Param       dateFrom  body      string  true  "Start date"
-// @Param       dateTo    body      string  true  "End date"
-// @Success     200       {object}  models.Response{body=[]models.AttendanceLaundry}
-// @Failure     400       {object}  models.Response
-// @Failure     500       {object}  models.Response
-// @Router      /attendance/by-date [get]
-// @Security    BearerAuth
+//	@Summary		Get all attendances within a date range
+//	@Description	Retrieve all attendances within a specified date range for a given workplace
+//	@Tags			Attendance
+//	@Accept			json
+//	@Produce		json
+//	@Security		BearerAuth
+//	@Param			X-Workplace-Token	header		string				true	"Workplace Token"
+//	@Param			dateFrom			body		models.DateBetween	true	"Date Between"
+//	@Success		200					{object}	models.Response{body=[]models.AttendanceLaundry}
+//	@Failure		400					{object}	models.Response
+//	@Failure		401					{object}	models.Response
+//	@Failure		403					{object}	models.Response
+//	@Failure		422					{object}	models.Response
+//	@Failure		500					{object}	models.Response
+//	@Router			/attendance/get_by_date [post]
 func GetAllAttendancesByDate(c *fiber.Ctx) error {
 	var dateBeetwen models.DateBetween
 	if err := c.BodyParser(&dateBeetwen); err != nil {
@@ -196,32 +201,22 @@ func GetAllAttendancesByDate(c *fiber.Ctx) error {
 }
 
 // GetAttendanceByEmployeeID godoc
-// @Summary     Get Attendance By Employee ID
-// @Description Get Attendance by Employee ID
-// @Tags        attendance
-// @Accept      json
-// @Produce     json
-// @Param       employee_id   path      string  true  "ID of Employee"
-// @Success     200            {object}  models.Response
-// @Failure     400            {object}  models.Response
-// @Failure     404            {object}  models.Response
-// @Failure     500            {object}  models.Response
-// @Router      /attendance/by-employee/{employee_id} [get]
-// @Security    BearerAuth
+//	@Summary		Get Attendance By Employee ID
+//	@Description	Get Attendance by Employee ID
+//	@Tags			Attendance
+//	@Accept			json
+//	@Produce		json
+//	@Security		BearerAuth
+//	@Param			X-Workplace-Token	header		string	true	"Workplace Token"
+//	@Param			employee_id			path		string	true	"ID of Employee"
+//	@Success		200					{object}	models.Response
+//	@Failure		400					{object}	models.Response
+//	@Failure		401					{object}	models.Response
+//	@Failure		403					{object}	models.Response
+//	@Failure		404					{object}	models.Response
+//	@Failure		500					{object}	models.Response
+//	@Router			/attendance/get_by_employee/{employee_id} [get]
 func GetAttendanceByEmployeeID(c *fiber.Ctx) error {
-// GetAttendanceByEmployeeID godoc
-// @Summary     Get Attendance By Employee ID
-// @Description Get Attendance by Employee ID
-// @Tags        attendance
-// @Accept      json
-// @Produce     json
-// @Param       employee_id   path      string  true  "ID of Employee"
-// @Success     200            {object}  models.Response
-// @Failure     400            {object}  models.Response
-// @Failure     404            {object}  models.Response
-// @Failure     500            {object}  models.Response
-// @Router      /attendance/by-employee/{employee_id} [get]
-// @Security    BearerAuth
 	employee_id := c.Params("employee_id")
 	if employee_id == "" {
 		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
@@ -272,23 +267,22 @@ func GetAttendanceByEmployeeID(c *fiber.Ctx) error {
 }
 
 // CreateAttendance godoc
-// @Summary     Create Attendance
-// @Description Create Attendance by given workplace
-// @Tags        attendance
-// @Accept      json
-// @Produce     json
-// @Param       employee_id    body      string  true  "ID of Employee"
-// @Param       attendance     body      string  true  "Attendance"
-// @Param       hours          body      int     true  "Hours"
-// @Param       date           body      string  true  "Date"
-// @Param       amount         body      float64 true  "Amount"
-// @Param       isHoliday     body      bool    true  "IsHoliday"
-// @Success     200            {object}  models.Response
-// @Failure     400            {object}  models.Response
-// @Failure     404            {object}  models.Response
-// @Failure     500            {object}  models.Response
-// @Router      /attendance [post]
-// @Security    BearerAuth
+//	@Summary		Create Attendance
+//	@Description	Create Attendance by given workplace
+//	@Tags			Attendance
+//	@Accept			json
+//	@Produce		json
+//	@Security		BearerAuth
+//	@Param			X-Workplace-Token	header		string					true	"Workplace Token"
+//	@Param			attendanceCreate	body		models.AttendanceCreate	true	"Employee body"
+//	@Success		200					{object}	models.Response
+//	@Failure		400					{object}	models.Response
+//	@Failure		401					{object}	models.Response
+//	@Failure		403					{object}	models.Response
+//	@Failure		404					{object}	models.Response
+//	@Failure		422					{object}	models.Response
+//	@Failure		500					{object}	models.Response
+//	@Router			/attendance/create [post]
 func CreateAttendance(c *fiber.Ctx) error {
 	var attendanceCreate models.AttendanceCreate
 	if err := c.BodyParser(&attendanceCreate); err != nil {
@@ -339,18 +333,22 @@ func CreateAttendance(c *fiber.Ctx) error {
 }
 
 // UpdateAttendance godoc
-// @Summary     Update Attendance
-// @Description Update Attendance by ID
-// @Tags        attendance
-// @Accept      json
-// @Produce     json
-// @Param       id   path      string  true  "ID of Attendance"
-// @Success     200  {object}  models.Response
-// @Failure     400  {object}  models.Response
-// @Failure     404  {object}  models.Response
-// @Failure     500  {object}  models.Response
-// @Router      /attendance/{id} [patch]
-// @Security    BearerAuth
+//	@Summary		Update Attendance
+//	@Description	Update Attendance by ID
+//	@Tags			Attendance
+//	@Accept			json
+//	@Produce		json
+//	@Security		BearerAuth
+//	@Param			X-Workplace-Token	header		string					true	"Workplace Token"
+//	@Param			attendanceUpdate	body		models.AttendanceUpdate	true	"Employee body"
+//	@Success		200					{object}	models.Response
+//	@Failure		400					{object}	models.Response
+//	@Failure		401					{object}	models.Response
+//	@Failure		403					{object}	models.Response
+//	@Failure		404					{object}	models.Response
+//	@Failure		422					{object}	models.Response
+//	@Failure		500					{object}	models.Response
+//	@Router			/attendance/update [put]
 func UpdateAttendance(c *fiber.Ctx) error {
 	var attendanceUpdate models.AttendanceUpdate
 	if err := c.BodyParser(&attendanceUpdate); err != nil {
@@ -401,18 +399,22 @@ func UpdateAttendance(c *fiber.Ctx) error {
 }
 
 // DeleteAttendance godoc
-// @Summary     Delete Attendance
-// @Description Delete Attendance by ID
-// @Tags        attendance
-// @Accept      json
-// @Produce     json
-// @Param       id   path      string  true  "ID of Attendance"
-// @Success     200  {object}  models.Response
-// @Failure     400  {object}  models.Response
-// @Failure     404  {object}  models.Response
-// @Failure     500  {object}  models.Response
-// @Router      /attendance/{id} [delete]
-// @Security    BearerAuth
+//	@Summary		Delete Attendance
+//	@Description	Delete Attendance by ID
+//	@Tags			Attendance
+//	@Accept			json
+//	@Produce		json
+//	@Security		BearerAuth
+//	@Param			X-Workplace-Token	header		string	true	"Workplace Token"
+//	@Param			id					path		string	true	"ID of Attendance"
+//	@Success		200					{object}	models.Response
+//	@Failure		400					{object}	models.Response
+//	@Failure		401					{object}	models.Response
+//	@Failure		403					{object}	models.Response
+//	@Failure		404					{object}	models.Response
+//	@Failure		422					{object}	models.Response
+//	@Failure		500					{object}	models.Response
+//	@Router			/attendance/delete/{id} [delete]
 func DeleteAttendance(c *fiber.Ctx) error {
 	id := c.Params("id")
 

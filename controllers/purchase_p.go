@@ -5,19 +5,23 @@ import (
 	"github.com/DanielChachagua/GestionCar/services"
 	"github.com/gofiber/fiber/v2"
 )
-// GetEmployeeByID godoc
-// @Summary     Get Employee By ID
-// @Description Get Employee By ID
-// @Tags        employee
-// @Accept      json
-// @Produce     json
-// @Param       id   path      string  true  "ID of Employee"
-// @Success     200  {object}  models.Response
-// @Failure     400  {object}  models.Response
-// @Failure     404  {object}  models.Response
-// @Failure     500  {object}  models.Response
-// @Router      /employee/{id} [get]
-// @Security    BearerAuth
+
+// PurchaseProductGetByID godoc
+//	@Summary		Get Purchase Product By ID
+//	@Description	Retrieves a specific purchase product by its ID for a given workplace.
+//	@Tags			Purchase Product
+//	@Accept			json
+//	@Produce		json
+//	@Security		BearerAuth
+//	@Param			X-Workplace-Token	header		string												true	"Workplace Token"
+//	@Param			id					path		string												true	"ID of the purchase product"
+//	@Success		200					{object}	models.Response{body=models.PurchaseProductLaundry}	"Product obtained successfully"
+//	@Failure		400					{object}	models.Response										"Bad Request"
+//	@Failure		401					{object}	models.Response										"Auth is required"
+//	@Failure		403					{object}	models.Response										"Not Authorized"
+//	@Failure		404					{object}	models.Response										"Purchase Product not found"
+//	@Failure		500					{object}	models.Response										"Internal server error"
+//	@Router			/purchase_product/{id} [get]
 func PurchaseProductGetByID(c *fiber.Ctx) error {
 	id := c.Params("id")
 	if id == "" {
@@ -69,20 +73,21 @@ func PurchaseProductGetByID(c *fiber.Ctx) error {
 }
 
 // PurchaseProductGetAllByPurhcaseID godoc
-// @Summary     Get All Products From Purchase Order
-// @Description Get All Products From Purchase Order
-// @Tags        purchase_product
-// @Accept      json
-// @Produce     json
-// @Param       purchase_id   path      string  true  "ID of Purchase Order"
-// @Success     200           {object}  models.Response{body=[]models.PurchaseProductLaundry} "Products obtained with success"
-// @Success     200           {object}  models.Response{body=[]models.PurchasePartWorkshop} "Workshop parts obtained with success"
-// @Failure     400           {object}  models.Response "ID is required"
-// @Failure     400           {object}  models.Response "Workplace is required"
-// @Failure     404           {object}  models.Response "Purchase order not found"
-// @Failure     500           {object}  models.Response "Internal server error"
-// @Router      /purchase_product/{purchase_id} [get]
-// @Security    BearerAuth
+//	@Summary		Get All Products From Purchase Order
+//	@Description	Get All Products From Purchase Order
+//	@Tags			Purchase Product
+//	@Accept			json
+//	@Produce		json
+//	@Security		BearerAuth
+//	@Param			X-Workplace-Token	header		string													true	"Workplace Token"
+//	@Param			purchase_id			path		string													true	"ID of Purchase Order"
+//	@Success		200					{object}	models.Response{body=[]models.PurchaseProductLaundry}	"Products obtained with success"
+//	@Failure		400					{object}	models.Response											"Bad Request"
+//	@Failure		401					{object}	models.Response											"Auth is required"
+//	@Failure		403					{object}	models.Response											"Not Authorized"
+//	@Failure		404					{object}	models.Response											"Purchase Order not found"
+//	@Failure		500					{object}	models.Response											"Internal server error"
+//	@Router			/purchase_product/get_purchase/{purchase_id} [get]
 func PurchaseProductGetAllByPurhcaseID(c *fiber.Ctx) error {
 	purchaseId := c.Params("purchase_id")
 	if purchaseId == "" {
@@ -134,19 +139,22 @@ func PurchaseProductGetAllByPurhcaseID(c *fiber.Ctx) error {
 }
 
 // PurchaseProductCreate godoc
-// @Summary     Create Purchase Product
-// @Description Creates a purchase product, either for laundry or workshop.
+//	@Summary		Create Purchase Product
+//	@Description	Creates a purchase product, either for laundry or workshop.
 //              Returns the ID of the created purchase product.
-// @Tags        purchase_product
-// @Accept      json
-// @Produce     json
-// @Param       purchaseProductCreate body     models.PurchaseProductCreate true  "Purchase product creation data"
-// @Success     200                 {object} models.Response{body=string} "Purchase product created successfully"
-// @Failure     400                 {object} models.Response            "Invalid request"
-// @Failure     400                 {object} models.Response            "Workplace is required"
-// @Failure     500                 {object} models.Response            "Internal server error"
-// @Router      /purchase_product   [post]
-// @Security    BearerAuth
+//	@Tags			Purchase Product
+//	@Accept			json
+//	@Produce		json
+//	@Security		BearerAuth
+//	@Param			X-Workplace-Token		header		string							true	"Workplace Token"
+//	@Param			purchaseProductCreate	body		models.PurchaseProductCreate	true	"Purchase product creation data"
+//	@Success		200						{object}	models.Response{body=string}	"Purchase product created successfully"
+//	@Failure		400						{object}	models.Response					"Bad Request"
+//	@Failure		401						{object}	models.Response					"Auth is required"
+//	@Failure		403						{object}	models.Response					"Not Authorized"
+//	@Failure		422						{object}	models.Response					"Model is invalid"
+//	@Failure		500						{object}	models.Response					"Internal server error"
+//	@Router			/purchase_product/create   [post]
 func PurchaseProductCreate(c *fiber.Ctx) error {
 	var purchaseProductCreate models.PurchaseProductCreate
 	if err := c.BodyParser(&purchaseProductCreate); err != nil {
@@ -197,18 +205,23 @@ func PurchaseProductCreate(c *fiber.Ctx) error {
 }
 
 // PurchaseProductUpdate godoc
-// @Summary     Update Purchase Product
-// @Description Updates the given purchase product and returns a success message.
-// @Tags        purchase_product
-// @Accept      json
-// @Produce     json
-// @Param       id      path      string            true  "ID of the purchase product"
-// @Param       product body      models.PurchaseProductUpdate true  "Purchase product update details"
-// @Success     200     {object}  models.Response   "Purchase product updated successfully"
-// @Failure     400     {object}  models.Response   "Invalid request or missing required parameters"
-// @Failure     500     {object}  models.Response   "Internal server error"
-// @Router      /purchase_product/{id} [put]
-// @Security    BearerAuth
+//	@Summary		Update Purchase Product
+//	@Description	Updates the given purchase product and returns a success message.
+//	@Tags			Purchase Product
+//	@Accept			json
+//	@Produce		json
+//	@Security		BearerAuth
+//	@Param			X-Workplace-Token	header		string							true	"Workplace Token"
+//	@Param			id					path		string							true	"ID of the purchase product"
+//	@Param			product				body		models.PurchaseProductUpdate	true	"Purchase product update details"
+//	@Success		200					{object}	models.Response					"Purchase product updated successfully"
+//	@Failure		400					{object}	models.Response					"Bad Request"
+//	@Failure		401					{object}	models.Response					"Auth is required"
+//	@Failure		403					{object}	models.Response					"Not Authorized"
+//	@Failure		404					{object}	models.Response					"Purchase Product not found"
+//	@Failure		422					{object}	models.Response					"Model is invalid"
+//	@Failure		500					{object}	models.Response					"Internal server error"
+//	@Router			/purchase_product/update/{id} [put]
 func PurchaseProductUpdate(c *fiber.Ctx) error {
 	var purchaseProductUpdate models.PurchaseProductUpdate
 	if err := c.BodyParser(&purchaseProductUpdate); err != nil {
@@ -259,19 +272,21 @@ func PurchaseProductUpdate(c *fiber.Ctx) error {
 }
 
 // PurchaseProductDelete godoc
-// @Summary     Delete Purchase Product
-// @Description Deletes a specific purchase product.
-//              Returns a success message if the deletion is successful.
-// @Tags        purchase_product
-// @Accept      json
-// @Produce     json
-// @Param       id   path      string  true  "ID of Purchase Product"
-// @Success     200  {object}  models.Response "Purchase product deleted successfully"
-// @Failure     400  {object}  models.Response "ID is required"
-// @Failure     400  {object}  models.Response "Workplace is required"
-// @Failure     500  {object}  models.Response "Internal server error"
-// @Router      /purchase_product/{id} [delete]
-// @Security    BearerAuth
+//	@Summary		Delete Purchase Product
+//	@Description	Deletes a specific purchase product.
+//	@Tags			Purchase Product
+//	@Accept			json
+//	@Produce		json
+//	@Security		BearerAuth
+//	@Param			X-Workplace-Token	header		string			true	"Workplace Token"
+//	@Param			id					path		string			true	"ID of Purchase Product"
+//	@Success		200					{object}	models.Response	"Purchase product deleted successfully"
+//	@Failure		400					{object}	models.Response	"Bad Request"
+//	@Failure		401					{object}	models.Response	"Auth is required"
+//	@Failure		403					{object}	models.Response	"Not Authorized"
+//	@Failure		404					{object}	models.Response	"Purchase Product not found"
+//	@Failure		500					{object}	models.Response	"Internal server error"
+//	@Router			/purchase_product/{id} [delete]
 func PurchaseProductDelete(c *fiber.Ctx) error {
 	id := c.Params("id")
 	if id == "" {

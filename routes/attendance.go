@@ -8,9 +8,11 @@ import (
 
 func AttendanceRoutes(app *fiber.App){
 	att := app.Group("/attendance", middleware.AuthMiddleware(), middleware.WorkplaceMiddleware())
-	att.Get("/:id", controllers.GetAttendanceByID)
 	att.Get("/get_all", controllers.GetAllAttendances)
+	att.Post("/get_by_date", controllers.GetAllAttendancesByDate)
 	att.Post("/create", controllers.CreateAttendance)
-	att.Put("/update/:id", controllers.UpdateAttendance)
+	att.Put("/update", controllers.UpdateAttendance)
+	att.Get("/get_by_employee/:employee_id", controllers.GetAttendanceByEmployeeID)
 	att.Delete("/delete/:id", controllers.DeleteAttendance)
+	att.Get("/:id", controllers.GetAttendanceByID)
 }

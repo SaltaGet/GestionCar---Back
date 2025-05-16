@@ -1,187 +1,344 @@
 package controllers
 
 import (
-	"errors"
-
 	"github.com/DanielChachagua/GestionCar/models"
 	"github.com/DanielChachagua/GestionCar/repositories"
-	"github.com/google/uuid"
-	"gorm.io/gorm"
+	"github.com/DanielChachagua/GestionCar/services"
+	"github.com/gofiber/fiber/v2"
 )
-// GetEmployeeByID godoc
-// @Summary     Get Employee By ID
-// @Description Get Employee By ID
-// @Tags        employee
-// @Accept      json
-// @Produce     json
-// @Param       id   path      string  true  "ID of Employee"
-// @Success     200  {object}  models.Response
-// @Failure     400  {object}  models.Response
-// @Failure     404  {object}  models.Response
-// @Failure     500  {object}  models.Response
-// @Router      /employee/{id} [get]
-// @Security    BearerAuth
-func VehicleCreate(vehicleCreate *models.VehicleCreate) (string , error) {
-	exist, err := repositories.Repo.GetVehicleByDomain(vehicleCreate.Domain)
+
+
+// VehicleCreate godoc
+//	@Summary		Create Vehicle
+//	@Description	Create a new Vehicle
+//	@Tags			Vehicle
+//	@Accept			json
+//	@Produce		json
+//	@Security		BearerAuth
+//	@Param			vehicleCreate		body		models.VehicleCreate	true	"Vehicle information"
+//	@Success		201					{object}	models.Response
+//	@Failure		400					{object}	models.Response	"Bad Request"
+//	@Failure		401					{object}	models.Response	"Auth is required"
+//	@Failure		403					{object}	models.Response	"Not Authorized"
+//	@Failure		422					{object}	models.Response	"Model is invalid"
+//	@Failure		500					{object}	models.Response
+//	@Router			/vehicle/create [post]
+func VehicleCreate(c *fiber.Ctx) error{
+	var vehicleCreate models.VehicleCreate
+	if err := c.BodyParser(&vehicleCreate); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
+			Status:  false,
+			Body:    nil,
+			Message: "Invalid request",
+		})
+	}
+	if err := vehicleCreate.Validate(); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
+			Status:  false,
+			Body:    nil,
+			Message: err.Error(),
+		})
+	}
+
+	vehicle, err := services.VehicleCreate(&vehicleCreate)
 	if err != nil {
-		return "", models.ErrorResponse(500, "Error al buscar el vehiculo", err)
+		if errResp, ok := err.(*models.ErrorStruc); ok {
+			return c.Status(errResp.StatusCode).JSON(models.Response{
+				Status:  false,
+				Body:    nil,
+				Message: errResp.Message,
+			})
+		}
+		return c.Status(fiber.StatusInternalServerError).JSON(models.Response{
+			Status:  false,
+			Body:    nil,
+			Message: "Error interno",
+		})
 	}
-
-	if exist != nil {
-		return "", models.ErrorResponse(400, "El vehiculo ya existe", nil)
-	}
-
-	vehicle, err := repositories.Repo.CreateVehicle(&models.Vehicle{
-		ID: uuid.NewString(),
-		Domain:   vehicleCreate.Domain,
-		Brand:    vehicleCreate.Brand,
-		Model:    vehicleCreate.Model,
-		Color:    vehicleCreate.Color,
-		Year:     vehicleCreate.Year,
-		ClientID: vehicleCreate.ClientID,
+	return c.Status(fiber.StatusOK).JSON(models.Response{
+		Status:  true,
+		Body:    vehicle,
+		Message: "Vehiculo creado con exito",
 	})
-
-	if err != nil {
-		models.ErrorResponse(500, "Error al crear el vehiculo", err)
-	}
-
-	return vehicle, nil
+	
 }
 
-// VehicleGetAll retrieves all vehicles from the repository.
-// @Summary Get all vehicles
-// @Description Fetches all vehicles stored in the system.
-// @Tags vehicle
-// @Produce json
-// @Success 200 {object} []models.Vehicle "List of vehicles retrieved successfully"
-// @Failure 500 {object} models.Response "Internal server error"
-// @Router /vehicles [get]
-func VehicleGetAll() (*[]models.Vehicle, error) {
-	vehicles, err := repositories.Repo.GetAllVehicles()
+// VehicleGetAll godoc
+//	@Summary		Get all vehicles
+//	@Description	Fetches all vehicles stored in the system.
+//	@Tags			Vehicle
+//	@Produce		json
+//	@Security		BearerAuth
+//	@Success		200					{object}	[]models.Vehicle	"List of vehicles retrieved successfully"
+//	@Failure		400					{object}	models.Response		"Bad Request"
+//	@Failure		401					{object}	models.Response		"Auth is required"
+//	@Failure		403					{object}	models.Response		"Not Authorized"
+//	@Failure		500					{object}	models.Response		"Internal server error"
+//	@Router			/vehicle/get_all [get]
+func VehicleGetAll(c *fiber.Ctx) error {
+	vehicles, err := services.VehicleGetAll()
 	if err != nil {
-		return nil, models.ErrorResponse(500, "Error al buscar los vehiculos", err)
+		if errResp, ok := err.(*models.ErrorStruc); ok {
+			return c.Status(errResp.StatusCode).JSON(models.Response{
+				Status:  false,
+				Body:    nil,
+				Message: errResp.Message,
+			})
+		}
+		return c.Status(fiber.StatusInternalServerError).JSON(models.Response{
+			Status:  false,
+			Body:    nil,
+			Message: "Error interno",
+		})
 	}
-	return &vehicles, nil
+
+	return c.Status(fiber.StatusOK).JSON(models.Response{
+		Status:  true,
+		Body:    vehicles,
+		Message: "Vehiculos obtenidos con exito",
+	})
 }
 
 // VehicleGetByID godoc
-// @Summary     Get Vehicle By ID
-// @Description Get Vehicle By ID
-// @Tags        vehicle
-// @Accept      json
-// @Produce     json
-// @Param       id   path      string  true  "ID of Vehicle"
-// @Success     200  {object}  models.Vehicle
-// @Failure     400  {object}  models.Response
-// @Failure     404  {object}  models.Response
-// @Failure     500  {object}  models.Response
-// @Router      /vehicle/{id} [get]
-// @Security    BearerAuth
-func VehicleGetByID(id string) (*models.Vehicle, error) {
-	vehicle, err := repositories.Repo.GetVehicleByID(id)
-	if err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, models.ErrorResponse(404, "Usuario no encontrado", err)
-		}
-		return nil, models.ErrorResponse(500, "Error al buscar usuario", err)
+//	@Summary		Get Vehicle By ID
+//	@Description	Get Vehicle By ID
+//	@Tags			Vehicle
+//	@Accept			json
+//	@Produce		json
+//	@Security		BearerAuth
+//	@Param			id					path		string			true	"ID of Vehicle"
+//	@Success		200					{object}	models.Vehicle	"Vehicle retrieved successfully"
+//	@Failure		400					{object}	models.Response	"Bad Request"
+//	@Failure		401					{object}	models.Response	"Auth is required"
+//	@Failure		403					{object}	models.Response	"Not Authorized"
+//	@Failure		404					{object}	models.Response	"Vehicle not found"
+//	@Failure		500					{object}	models.Response
+//	@Router			/vehicle/{id} [get]
+func VehicleGetByID(c *fiber.Ctx) error {
+	id := c.Params("id")
+	if id == "" {
+		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
+			Status:  false,
+			Body:    nil,
+			Message: "ID is required",
+		})
 	}
-	return vehicle, nil
+
+	vehicle, err := services.VehicleGetByID(id)
+	if err != nil {
+		if errResp, ok := err.(*models.ErrorStruc); ok {
+			return c.Status(errResp.StatusCode).JSON(models.Response{
+				Status:  false,
+				Body:    nil,
+				Message: errResp.Message,
+			})
+		}
+		return c.Status(fiber.StatusInternalServerError).JSON(models.Response{
+			Status:  false,
+			Body:    nil,
+			Message: "Error interno",
+		})
+	}
+	return c.Status(fiber.StatusOK).JSON(models.Response{
+		Status:  true,
+		Body:    vehicle,
+		Message: "Vehiculo obtenido con exito",
+	})
 }
 
-// VehicleGetByDomain retrieves all vehicles that contain the given domain.
-// @Summary Get Vehicles By Domain
-// @Description Fetches all vehicles that contain the given domain.
-// @Tags vehicle
-// @Produce json
-// @Param domain path string true "Domain string"
-// @Success 200 {object} []models.Vehicle "List of vehicles retrieved successfully"
-// @Failure 400 {object} models.Response "Bad request"
-// @Failure 404 {object} models.Response "Not found"
-// @Failure 500 {object} models.Response "Internal server error"
-// @Router /vehicle/domain/{domain} [get]
-func VehicleGetByDomain(domain string) (*[]models.Vehicle, error) {
-	vehicle, err := repositories.Repo.GetVehicleByDomain(domain)
-	if err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, models.ErrorResponse(404, "Usuario no encontrado", err)
-		}
-		return nil, models.ErrorResponse(500, "Error al buscar usuario", err)
+// VehicleGetByDomain godoc
+//	@Summary		Get Vehicles By Domain
+//	@Description	Fetches all vehicles that contain the given domain.
+//	@Tags			Vehicle
+//	@Produce		json
+//	@Security		BearerAuth
+//	@Param			domain				query		string				true	"Domain string"
+//	@Success		200					{object}	[]models.Vehicle	"List of vehicles retrieved successfully"
+//	@Failure		400					{object}	models.Response		"Bad Request"
+//	@Failure		401					{object}	models.Response		"Auth is required"
+//	@Failure		403					{object}	models.Response		"Not Authorized"
+//	@Failure		500					{object}	models.Response		"Internal server error"
+//	@Router			/vehicle/get_by_domain [get]
+func VehicleGetByDomain(c *fiber.Ctx) error {
+	domain := c.Query("domain")
+	if domain == "" || len(domain) < 3 {
+		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
+			Status:  false,
+			Body:    nil,
+			Message: "Dominio requerido o debe de tener al menos 3 caracteres",
+		})
 	}
-	return vehicle, nil
+
+	vehicles, err := repositories.Repo.GetVehicleByDomain(domain)
+	if err != nil {
+		if errResp, ok := err.(*models.ErrorStruc); ok {
+			return c.Status(errResp.StatusCode).JSON(models.Response{
+				Status:  false,
+				Body:    nil,
+				Message: errResp.Message,
+			})
+		}
+		return c.Status(fiber.StatusInternalServerError).JSON(models.Response{
+			Status:  false,
+			Body:    nil,
+			Message: "Error interno",
+		})
+	}
+
+	return c.Status(fiber.StatusOK).JSON(models.Response{
+		Status:  true,
+		Body:    vehicles,
+		Message: "Vehiculos obtenidos con exito",
+	})
 }
 
-// VehicleGetByClientID retrieves all vehicles that belong to the given client.
-// @Summary Get Vehicles By Client ID
-// @Description Fetches all vehicles that belong to the given client.
-// @Tags vehicle
-// @Produce json
-// @Param clientID path string true "Client ID"
-// @Success 200 {object} []models.Vehicle "List of vehicles retrieved successfully"
-// @Failure 400 {object} models.Response "Bad request"
-// @Failure 404 {object} models.Response "Not found"
-// @Failure 500 {object} models.Response "Internal server error"
-// @Router /vehicle/client/{clientID} [get]
-func VehicleGetByClientID(clientID string) (*[]models.Vehicle, error) {
+// VehicleGetByClientID godoc
+//	@Summary		Get Vehicles By Client ID
+//	@Description	Fetches all vehicles that belong to the given client.
+//	@Tags			Vehicle
+//	@Produce		json
+//	@Security		BearerAuth
+//	@Param			client_id			path		string				true	"Client ID"
+//	@Success		200					{object}	[]models.Vehicle	"List of vehicles retrieved successfully"
+//	@Failure		400					{object}	models.Response		"Bad Request"
+//	@Failure		401					{object}	models.Response		"Auth is required"
+//	@Failure		403					{object}	models.Response		"Not Authorized"
+//	@Failure		500					{object}	models.Response		"Internal server error"
+//	@Router			/vehicle/get_by_client/{client_id} [get]
+func VehicleGetByClientID(c *fiber.Ctx) error {
+	clientID := c.Params("client_id")
+	if clientID == "" {
+		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
+			Status:  false,
+			Body:    nil,
+			Message: "Client ID is required",
+		})
+	}
+
 	vehicles, err := repositories.Repo.GetVehicleByClientID(clientID)
 	if err != nil {
-		return nil, models.ErrorResponse(500, "Error al buscar los vehiculos", err)
+		if errResp, ok := err.(*models.ErrorStruc); ok {
+			return c.Status(errResp.StatusCode).JSON(models.Response{
+				Status:  false,
+				Body:    nil,
+				Message: errResp.Message,
+			})
+		}
+		return c.Status(fiber.StatusInternalServerError).JSON(models.Response{
+			Status:  false,
+			Body:    nil,
+			Message: "Error interno",
+		})
 	}
-	return &vehicles, nil
+
+	return c.Status(fiber.StatusOK).JSON(models.Response{
+		Status:  true,
+		Body:    vehicles,
+		Message: "Vehiculos obtenidos con exito",
+	})
 }
 
 // VehicleUpdate godoc
-// @Summary     Update Vehicle
-// @Description Update Vehicle with the given ID.
-// @Tags        vehicle
-// @Accept      json
-// @Produce     json
-// @Param       id   path      string  true  "ID of Vehicle"
-// @Param       vehicleUpdate body models.VehicleUpdate true "VehicleUpdate"
-// @Success     200  {object}  models.Response
-// @Failure     400  {object}  models.Response
-// @Failure     404  {object}  models.Response
-// @Failure     500  {object}  models.Response
-// @Router      /vehicle/{id} [put]
-// @Security    BearerAuth
-func VehicleUpdate(id string, vehicleUpdate *models.VehicleUpdate) (string, error) {
-	err := repositories.Repo.UpdateVehicle(&models.Vehicle{
-		ID: id,
-		Domain:   vehicleUpdate.Domain,		
-		Brand:    vehicleUpdate.Brand,
-		Model:    vehicleUpdate.Model,
-		Color:    vehicleUpdate.Color,
-		Year:     vehicleUpdate.Year,
-	})
-
-	if err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return "", models.ErrorResponse(404, "Usuario no encontrado", err)
-		}
-		return "", models.ErrorResponse(500, "Error al eliminar cliente", err)
+//	@Summary		Update Vehicle
+//	@Description	Update Vehicle with the given ID.
+//	@Tags			Vehicle
+//	@Accept			json
+//	@Produce		json
+//	@Security		BearerAuth
+//	@Param			vehicleUpdate		body		models.VehicleUpdate	true	"VehicleUpdate"
+//	@Success		200					{object}	models.Response			"Vehicle updated successfully"
+//	@Failure		400					{object}	models.Response			"Bad Request"
+//	@Failure		401					{object}	models.Response			"Auth is required"
+//	@Failure		403					{object}	models.Response			"Not Authorized"
+//	@Failure		404					{object}	models.Response			"Vehicle not found"
+//	@Failure		422					{object}	models.Response			"Model is invalid"
+//	@Failure		500					{object}	models.Response
+//	@Router			/vehicle/update [put]
+func VehicleUpdate(c *fiber.Ctx) error {
+	var vehicleUpdate models.VehicleUpdate
+	if err := c.BodyParser(&vehicleUpdate); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
+			Status:  false,
+			Body:    nil,
+			Message: "Invalid request",
+		})
 	}
-	return id, nil
+
+	if err := vehicleUpdate.Validate(); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
+			Status:  false,
+			Body:    nil,
+			Message: err.Error(),
+		})
+	}
+
+	err := services.VehicleUpdate(&vehicleUpdate)
+	if err != nil {
+		if errResp, ok := err.(*models.ErrorStruc); ok {
+			return c.Status(errResp.StatusCode).JSON(models.Response{
+				Status:  false,
+				Body:    nil,
+				Message: errResp.Message,
+			})
+		}
+		return c.Status(fiber.StatusInternalServerError).JSON(models.Response{
+			Status:  false,
+			Body:    nil,
+			Message: "Error interno",
+		})
+	}
+
+	return c.Status(fiber.StatusOK).JSON(models.Response{
+		Status:  true,
+		Body:    nil,
+		Message: "Vehiculo actualizado con exito",
+	})
 }
 
 // VehicleDelete godoc
-// @Summary     Delete Vehicle
-// @Description Delete Vehicle with the given ID.
-// @Tags        vehicle
-// @Accept      json
-// @Produce     json
-// @Param       id   path      string  true  "ID of Vehicle"
-// @Success     200
-// @Failure     400  {object}  models.Response
-// @Failure     404  {object}  models.Response
-// @Failure     500  {object}  models.Response
-// @Router      /vehicle/{id} [delete]
-// @Security    BearerAuth
-func VehicleDelete(id string) (error) {
-	err := repositories.Repo.DeleteVehicle(id)
-	if err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return models.ErrorResponse(404, "Usuario no encontrado", err)
-		}
-		return models.ErrorResponse(500, "Error al eliminar cliente", err)
+//	@Summary		Delete Vehicle
+//	@Description	Delete Vehicle with the given ID.
+//	@Tags			Vehicle
+//	@Accept			json
+//	@Produce		json
+//	@Security		BearerAuth
+//	@Param			id					path		string			true	"ID of Vehicle"
+//	@Failure		200					{object}	models.Response	"Vehicle deleted successfully"
+//	@Failure		400					{object}	models.Response	"Bad Request"
+//	@Failure		401					{object}	models.Response	"Auth is required"
+//	@Failure		403					{object}	models.Response	"Not Authorized"
+//	@Failure		404					{object}	models.Response	"Vehicle not found"
+//	@Failure		500					{object}	models.Response
+//	@Router			/vehicle/delete/{id} [delete]
+func VehicleDelete(c *fiber.Ctx) error {
+	id := c.Params("id")
+	if id == "" {
+		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
+			Status:  false,
+			Body:    nil,
+			Message: "ID is required",
+		})
 	}
-	return nil
+
+	err := services.VehicleDelete(id)
+	if err != nil {
+		if errResp, ok := err.(*models.ErrorStruc); ok {
+			return c.Status(errResp.StatusCode).JSON(models.Response{
+				Status:  false,
+				Body:    nil,
+				Message: errResp.Message,
+			})
+		}
+		return c.Status(fiber.StatusInternalServerError).JSON(models.Response{
+			Status:  false,
+			Body:    nil,
+			Message: "Error interno",
+		})
+	}
+
+	return c.Status(fiber.StatusOK).JSON(models.Response{
+		Status:  true,
+		Body:    nil,
+		Message: "Vehiculo eliminado con exito",
+	})
 }

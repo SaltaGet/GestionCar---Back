@@ -6,7 +6,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-//  Login Login user
+//  Login godoc
 //	@Summary		Login user
 //	@Description	Login user required identifier and password
 //	@Tags			Auth
@@ -61,7 +61,7 @@ func AuthLogin(c *fiber.Ctx) error {
 	})
 }
 
-//  Login Login workplace
+//  Login godoc
 //	@Summary		Login Workplace
 //	@Description	Login workplace required workplace_id
 //	@Tags			Auth

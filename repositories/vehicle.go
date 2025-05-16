@@ -1,6 +1,11 @@
 package repositories
 
-import "github.com/DanielChachagua/GestionCar/models"
+import (
+	"errors"
+
+	"github.com/DanielChachagua/GestionCar/models"
+	"gorm.io/gorm"
+)
 
 func (r *Repository) GetVehicleByID(id string) (*models.Vehicle, error) {
 	var vehicle models.Vehicle
@@ -16,6 +21,17 @@ func (r *Repository) GetVehicleByDomain(domain string) (*[]models.Vehicle, error
 		return nil, err
 	}
 	return &vehicles, nil
+}
+
+func (r *Repository) GetVehicleByDomainEq(domain string) (bool, error) {
+	var vehicle models.Vehicle
+	if err := r.DB.Preload("Client").Where("domain = ?", domain).First(&vehicle).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return false, nil
+		}
+		return false, err
+	}
+	return true, nil
 }
 
 func (r *Repository) CreateVehicle(vehicle *models.Vehicle) (string, error) {
@@ -53,12 +69,12 @@ func (r *Repository) GetAllVehicles() ([]models.Vehicle, error) {
 	return vehicles, nil
 }
 
-func (r *Repository) GetVehicleByClientID(clientID string) ([]models.Vehicle, error) {
+func (r *Repository) GetVehicleByClientID(clientID string) (*[]models.Vehicle, error) {
 	var vehicles []models.Vehicle
 	if err := r.DB.Where("client_id = ?", clientID).Find(&vehicles).Error; err != nil {
 		return nil, err
 	}
-	return vehicles, nil
+	return &vehicles, nil
 }
 
 // func (r *Repository) GetVehicleByClientIDAndDomain(clientID, domain string) (*models.Vehicle, error) {

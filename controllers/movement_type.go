@@ -6,20 +6,22 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-// GetMovementTypeByID retrieves the movement type by its ID for a specific workplace.
-// @Summary     Get Movement Type By ID
-// @Description Get Movement Type By ID
-// @Tags        movement_type
-// @Accept      json
-// @Produce     json
-// @Param       id   path      string  true  "ID of the movement type"
-// @Success     200  {object}  models.Response{body=models.MovementTypeLaundry} "Movement type details from laundry"
-// @Success     200  {object}  models.Response{body=models.MovementTypeWorkshop} "Movement type details from workshop"
-// @Failure     400  {object}  models.Response "ID is required or Workplace is required"
-// @Failure     404  {object}  models.Response "Movement type not found"
-// @Failure     500  {object}  models.Response "Internal server error"
-// @Router      /movement_type/{id} [get]
-// @Security    BearerAuth
+// GetMovementTypeByID godoc
+//	@Summary		Get Movement Type By ID
+//	@Description	Get Movement Type By ID
+//	@Tags			Movement
+//	@Accept			json
+//	@Produce		json
+//	@Security		BearerAuth
+//	@Param			X-Workplace-Token	header		string												true	"Workplace Token"
+//	@Param			id					path		string												true	"ID of the movement type"
+//	@Success		200					{object}	models.Response{body=models.MovementTypeLaundry}	"Movement type details"
+//	@Failure		400					{object}	models.Response										"Bad Request"
+//	@Failure		401					{object}	models.Response										"Auth is required"
+//	@Failure		403					{object}	models.Response										"Not Authorized"
+//	@Failure		404					{object}	models.Response										"Expense not found"
+//	@Failure		500					{object}	models.Response										"Internal server error"
+//	@Router			/movement/{id} [get]
 func GetMovementTypeByID(c *fiber.Ctx) error {
 	id := c.Params("id")
 	if id == "" {
@@ -71,18 +73,21 @@ func GetMovementTypeByID(c *fiber.Ctx) error {
 }
 
 // GetAllMovementTypes godoc
-// @Summary     Get all movement types
-// @Description Get all movement types from either laundry or workshop based on the provided isIncome query parameter.
-// @Tags        movement_type
-// @Accept      json
-// @Produce     json
-// @Param       isIncome query     bool     true  "Is income movement type"
-// @Success     200      {object}  models.Response{body=[]models.MovementTypeLaundry} "List of laundry movement types"
-// @Success     200      {object}  models.Response{body=[]models.MovementTypeWorkshop} "List of workshop movement types"
-// @Failure     400      {object}  models.Response "Workplace is required or invalid request"
-// @Failure     500      {object}  models.Response "Internal server error"
-// @Router      /movement_type/get_all [get]
-// @Security    BearerAuth
+//	@Summary		Get all movement types
+//	@Description	Get all movement types from either laundry or workshop based on the provided isIncome query parameter.
+//	@Tags			Movement
+//	@Accept			json
+//	@Produce		json
+//	@Security		BearerAuth
+//	@Param			X-Workplace-Token	header		string												true	"Workplace Token"
+//	@Param			isIncome			query		bool												true	"Is income movement type"
+//	@Success		200					{object}	models.Response{body=[]models.MovementTypeLaundry}	"List of movement types"
+//	@Failure		400					{object}	models.Response										"Bad Request"
+//	@Failure		401					{object}	models.Response										"Auth is required"
+//	@Failure		403					{object}	models.Response										"Not Authorized"
+//	@Failure		404					{object}	models.Response										"Expense not found"
+//	@Failure		500					{object}	models.Response										"Internal server error"
+//	@Router			/movement/get_all [get]
 func GetAllMovementTypes(c *fiber.Ctx) error {
 	var isIncome bool
 	if err := c.QueryParser(&isIncome); err != nil {
@@ -133,18 +138,23 @@ func GetAllMovementTypes(c *fiber.Ctx) error {
 	})
 }
 
-// MovementTypeCreate handles the creation of a new movement type.
-// @Summary     Create Movement Type
-// @Description This endpoint creates a new movement type based on the provided JSON payload.
-// @Tags        movement_type
-// @Accept      json
-// @Produce     json
-// @Param       movementType body models.MovementTypeCreate true "Movement Type Details"
-// @Success     200 {object} models.Response{body=string} "Movement created successfully"
-// @Failure     400 {object} models.Response "Invalid request or workplace required"
-// @Failure     500 {object} models.Response "Internal server error"
-// @Router      /movement_type/create [post]
-// @Security    BearerAuth
+// MovementTypeCreate godoc
+//	@Summary		Create Movement Type
+//	@Description	This endpoint creates a new movement type based on the provided JSON payload.
+//	@Tags			Movement
+//	@Accept			json
+//	@Produce		json
+//	@Security		BearerAuth
+//	@Param			X-Workplace-Token	header		string							true	"Workplace Token"
+//	@Param			movementType		body		models.MovementTypeCreate		true	"Movement Type Details"
+//	@Success		200					{object}	models.Response{body=string}	"Movement created successfully"
+//	@Failure		400					{object}	models.Response					"Bad Request"
+//	@Failure		401					{object}	models.Response					"Auth is required"
+//	@Failure		403					{object}	models.Response					"Not Authorized"
+//	@Failure		404					{object}	models.Response					"Expense not found"
+//	@Failure		422					{object}	models.Response					"Model invalid"
+//	@Failure		500					{object}	models.Response					"Internal server error"
+//	@Router			/movement/create [post]
 func MovementTypeCreate(c *fiber.Ctx) error {
 	var movementCreate models.MovementTypeCreate
 	if err := c.BodyParser(&movementCreate); err != nil {
@@ -194,18 +204,23 @@ func MovementTypeCreate(c *fiber.Ctx) error {
 	})
 }
 
-// MovementTypeUpdate handles the update of a movement type.
-// @Summary     Update Movement Type
-// @Description This endpoint updates a movement type based on the provided JSON payload.
-// @Tags        movement_type
-// @Accept      json
-// @Produce     json
-// @Param       movementType body models.MovementTypeUpdate true "Movement Type Details"
-// @Success     200 {object} models.Response "Movement updated successfully"
-// @Failure     400 {object} models.Response "Invalid request or workplace required"
-// @Failure     500 {object} models.Response "Internal server error"
-// @Router      /movement_type/update [put]
-// @Security    BearerAuth
+// MovementTypeUpdate godoc
+//	@Summary		Update Movement Type
+//	@Description	This endpoint updates a movement type based on the provided JSON payload.
+//	@Tags			Movement
+//	@Accept			json
+//	@Produce		json
+//	@Security		BearerAuth
+//	@Param			X-Workplace-Token	header		string						true	"Workplace Token"
+//	@Param			movementType		body		models.MovementTypeUpdate	true	"Movement Type Details"
+//	@Success		200					{object}	models.Response				"Movement updated successfully"
+//	@Failure		400					{object}	models.Response				"Bad Request"
+//	@Failure		401					{object}	models.Response				"Auth is required"
+//	@Failure		403					{object}	models.Response				"Not Authorized"
+//	@Failure		404					{object}	models.Response				"Expense not found"
+//	@Failure		422					{object}	models.Response				"Model invalid"
+//	@Failure		500					{object}	models.Response				"Internal server error"
+//	@Router			/movement/update [put]
 func MovementTypeUpdate(c *fiber.Ctx) error {
 	var movementUpdate models.MovementTypeUpdate
 	if err := c.BodyParser(&movementUpdate); err != nil {
@@ -255,18 +270,22 @@ func MovementTypeUpdate(c *fiber.Ctx) error {
 	})
 }
 
-// MovementTypeDelete deletes a movement type by its ID.
-// @Summary     Delete Movement Type
-// @Description Deletes a movement type based on its ID.
-// @Tags        movement_type
-// @Accept      json
-// @Produce     json
-// @Param       id   path      string  true  "ID of the movement type"
-// @Success     200  {object}  models.Response "Movement type deleted successfully"
-// @Failure     400  {object}  models.Response "ID is required or workplace required"
-// @Failure     500  {object}  models.Response "Internal server error"
-// @Router      /movement_type/{id} [delete]
-// @Security    BearerAuth
+// MovementTypeDelete godoc
+//	@Summary		Delete Movement Type
+//	@Description	Deletes a movement type based on its ID.
+//	@Tags			Movement
+//	@Accept			json
+//	@Produce		json
+//	@Security		BearerAuth
+//	@Param			X-Workplace-Token	header		string			true	"Workplace Token"
+//	@Param			id					path		string			true	"ID of the movement type"
+//	@Success		200					{object}	models.Response	"Movement type deleted successfully"
+//	@Failure		400					{object}	models.Response	"Bad Request"
+//	@Failure		401					{object}	models.Response	"Auth is required"
+//	@Failure		403					{object}	models.Response	"Not Authorized"
+//	@Failure		404					{object}	models.Response	"Expense not found"
+//	@Failure		500					{object}	models.Response	"Internal server error"
+//	@Router			/movement/delete/{id} [delete]
 func MovementTypeDelete(c *fiber.Ctx) error {
 	id := c.Params("id")
 	if id == "" {

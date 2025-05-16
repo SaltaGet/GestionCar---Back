@@ -42,7 +42,7 @@ func main() {
 	dep := dependencies.NewDependency(db)
 
 	app.Use(middleware.LoggingMiddleware)
-	app.Use(middleware.AuditMiddleware())
+	// app.Use(middleware.AuditMiddleware())
 
 	routes.SetupRoutes(app)
 

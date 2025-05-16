@@ -10,13 +10,13 @@ import (
 )
 
 func VehicleCreate(vehicleCreate *models.VehicleCreate) (string , error) {
-	exist, err := repositories.Repo.GetVehicleByDomain(vehicleCreate.Domain)
+	exist, err := repositories.Repo.GetVehicleByDomainEq(vehicleCreate.Domain)
 	if err != nil {
 		return "", models.ErrorResponse(500, "Error al buscar el vehiculo", err)
 	}
 
-	if exist != nil {
-		return "", models.ErrorResponse(400, "El vehiculo ya existe", nil)
+	if exist {
+		return "", models.ErrorResponse(400, "El dominio ya existe", nil)
 	}
 
 	vehicle, err := repositories.Repo.CreateVehicle(&models.Vehicle{
@@ -48,7 +48,7 @@ func VehicleGetByID(id string) (*models.Vehicle, error) {
 	vehicle, err := repositories.Repo.GetVehicleByID(id)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, models.ErrorResponse(404, "Usuario no encontrado", err)
+			return nil, models.ErrorResponse(404, "Vehiculo no encontrado", err)
 		}
 		return nil, models.ErrorResponse(500, "Error al buscar usuario", err)
 	}
@@ -59,7 +59,7 @@ func VehicleGetByDomain(domain string) (*[]models.Vehicle, error) {
 	vehicle, err := repositories.Repo.GetVehicleByDomain(domain)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, models.ErrorResponse(404, "Usuario no encontrado", err)
+			return nil, models.ErrorResponse(404, "Vehiculo no encontrado", err)
 		}
 		return nil, models.ErrorResponse(500, "Error al buscar usuario", err)
 	}
@@ -71,12 +71,12 @@ func VehicleGetByClientID(clientID string) (*[]models.Vehicle, error) {
 	if err != nil {
 		return nil, models.ErrorResponse(500, "Error al buscar los vehiculos", err)
 	}
-	return &vehicles, nil
+	return vehicles, nil
 }
 
-func VehicleUpdate(id string, vehicleUpdate *models.VehicleUpdate) (string, error) {
+func VehicleUpdate(vehicleUpdate *models.VehicleUpdate) error {
 	err := repositories.Repo.UpdateVehicle(&models.Vehicle{
-		ID: id,
+		ID:       vehicleUpdate.ID,
 		Domain:   vehicleUpdate.Domain,		
 		Brand:    vehicleUpdate.Brand,
 		Model:    vehicleUpdate.Model,
@@ -86,18 +86,18 @@ func VehicleUpdate(id string, vehicleUpdate *models.VehicleUpdate) (string, erro
 
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return "", models.ErrorResponse(404, "Usuario no encontrado", err)
+			return models.ErrorResponse(404, "Vehiculo no encontrado", err)
 		}
-		return "", models.ErrorResponse(500, "Error al eliminar cliente", err)
+		return models.ErrorResponse(500, "Error al eliminar cliente", err)
 	}
-	return id, nil
+	return nil
 }
 
 func VehicleDelete(id string) (error) {
 	err := repositories.Repo.DeleteVehicle(id)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return models.ErrorResponse(404, "Usuario no encontrado", err)
+			return models.ErrorResponse(404, "Vehiculo no encontrado", err)
 		}
 		return models.ErrorResponse(500, "Error al eliminar cliente", err)
 	}

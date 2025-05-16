@@ -21,7 +21,7 @@ func RoleAuthMiddleware(roles []string) fiber.Handler {
 			return c.Next()
 		}
 
-		return c.Status(fiber.StatusUnauthorized).JSON(models.Response{
+		return c.Status(fiber.StatusForbidden).JSON(models.Response{
 			Status:  false,
 			Body:    nil,
 			Message: "Unauthorized",

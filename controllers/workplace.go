@@ -7,18 +7,17 @@ import (
 )
 
 //  Workplace GetAll
-//  @Summary		Workplace GetAll
+//	@Summary		Workplace GetAll
 //	@Description	Workplace GetAll required auth token
 //	@Tags			Workplace
 //	@Accept			json
 //	@Produce		json
 //	@Security		BearerAuth
-//	@Success		200			{object}	models.Response
-//	@Failure		400			{object}	models.Response
-//	@Failure		401			{object}	models.Response
-//	@Failure		422			{object}	models.Response
-//	@Failure		404			{object}	models.Response
-//	@Failure		500			{object}	models.Response
+//	@Success		200	{object}	models.Response	"Workplaces obtenidos con éxito"
+//	@Failure		400	{object}	models.Response	"Bad Request"
+//	@Failure		401	{object}	models.Response	"Auth is required"
+//	@Failure		403	{object}	models.Response	"Not Authorized"
+//	@Failure		500	{object}	models.Response
 //	@Router			/workplace/get_all [get]
 func GetWorkplaces(c *fiber.Ctx) error {
 	user := c.Locals("user").(*models.User)

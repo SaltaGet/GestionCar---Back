@@ -34,6 +34,7 @@ func (v *VehicleCreate) Validate() error {
 }
 
 type VehicleUpdate struct {
+	ID    string `json:"id" validate:"required" example:"123e4567-e89b-12d3-a456-426614174000"`
 	Brand string `json:"brand" example:"Toyota"`
 	Model string `json:"model" example:"Corolla"`
 	Color string `json:"color" example:"Red"`

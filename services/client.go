@@ -38,7 +38,7 @@ func ClientGetByID(id string) (*models.Client, error) {
 	client, err := repositories.Repo.GetClientByID(id)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, models.ErrorResponse(404, "Usuario no encontrado", err)
+			return nil, models.ErrorResponse(404, "Cliente no encontrado", err)
 		}
 		return nil, models.ErrorResponse(500, "Error al eliminar cliente", err)
 	}
@@ -49,7 +49,7 @@ func ClientGetByName(name string) (*[]models.Client, error) {
 	client, err := repositories.Repo.GetClientByName(name)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, models.ErrorResponse(404, "Usuario no encontrado", err)
+			return nil, models.ErrorResponse(404, "Cliente no encontrado", err)
 		}
 		return nil, models.ErrorResponse(500, "Error al eliminar cliente", err)
 	}
@@ -67,7 +67,7 @@ func ClientUpdate(clientUpdate *models.ClientUpdate) (string, error) {
 	})
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return "", models.ErrorResponse(404, "Usuario no encontrado", err)
+			return "", models.ErrorResponse(404, "Cliente no encontrado", err)
 		}
 		return "", models.ErrorResponse(500, "Error al actualizar cliente", err)
 	}
@@ -78,7 +78,7 @@ func ClientDelete(id string) (string, error) {
 	err := repositories.Repo.DeleteClient(id)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return "", models.ErrorResponse(404, "Usuario no encontrado", err)
+			return "", models.ErrorResponse(404, "Cliente no encontrado", err)
 		}
 		return "", models.ErrorResponse(500, "Error al eliminar cliente", err)
 	}

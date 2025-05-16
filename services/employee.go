@@ -22,7 +22,7 @@ func GetEmployeeByID(id string, workplace string) (*models.EmployeeLaundry, *mod
 func GetEmployeeByName(name string, workplace string) (*[]models.EmployeeLaundry, *[]models.EmployeeWorkshop, error) {
 	employeesLaundry, employeesWorkshop, err := repositories.Repo.GetEmployeeByName(name, workplace)
 	if err != nil {
-		return nil, nil, models.ErrorResponse(500, "Error al actualizar cliente", err)
+		return nil, nil, models.ErrorResponse(500, "Error al obtener clientes", err)
 	}
 	return employeesLaundry, employeesWorkshop, nil
 }
