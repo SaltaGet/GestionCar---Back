@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"os"
 
@@ -25,6 +26,7 @@ import (
 //	@description				Type "Bearer" followed by a space and the JWT token. Example: "Bearer eyJhbGciOiJIUz..."
 
 func main() {
+	fmt.Println("Inicio app")
 	err := godotenv.Load()
 
 	if err != nil {
