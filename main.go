@@ -52,7 +52,7 @@ func main() {
 
 	app.Get("/swagger/*", swagger.HandlerDefault)
 
-	log.Fatal(app.Listen(":8080"))
+	log.Fatal(app.Listen(":3000"))
 
 
 }
