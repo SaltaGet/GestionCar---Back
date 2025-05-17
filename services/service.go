@@ -9,12 +9,12 @@ import (
 )
 
 func ServiceCreate(service *models.ServiceCreate, workplace string) (string, error) {
-	existSL, existSW, err := repositories.Repo.GetServiceByName(service.Name, workplace)
+	exist, err := repositories.Repo.GetServiceByName(service.Name, workplace)
 	if err != nil {
 		return "", models.ErrorResponse(500, "Error al buscar servicio", err)
 	}
 
-	if existSL != nil || existSW != nil {
+	if exist {
 		return "", models.ErrorResponse(400, "El servicio ya existe", nil)
 	}
 

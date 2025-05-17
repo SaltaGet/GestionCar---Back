@@ -142,16 +142,16 @@ func (r *Repository) DeleteSupplierByID(id string, workplace string) error {
 	return nil
 }
 
-func (r *Repository) GetSupplierByName(name string, workplace string) (*models.SupplierLaundry, *models.SupplierWorkshop, error) {
+func (r *Repository) GetSupplierByName(name string, workplace string) (*[]models.SupplierLaundry, *[]models.SupplierWorkshop, error) {
 	if workplace == "laundry" {
-		var supplier models.SupplierLaundry
-		if err := r.DB.Where("name LIKE ?", "%"+name +"%").First(&supplier).Error; err != nil {
+		var supplier []models.SupplierLaundry
+		if err := r.DB.Where("name LIKE ?", "%"+name +"%").Find(&supplier).Error; err != nil {
 			return nil, nil, err
 		}
 		return &supplier, nil, nil
 	} else if workplace == "workshop" {
-		var supplier models.SupplierWorkshop
-		if err := r.DB.Where("name LIKE ?", "%"+name +"%").First(&supplier).Error; err != nil {
+		var supplier []models.SupplierWorkshop
+		if err := r.DB.Where("name LIKE ?", "%"+name +"%").Find(&supplier).Error; err != nil {
 			return nil, nil, err
 		}
 		return nil, &supplier, nil

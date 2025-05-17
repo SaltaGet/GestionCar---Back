@@ -35,7 +35,7 @@ func SupplierGetByID(id string, workplace string) (*models.SupplierLaundry, *mod
 	return supplierLaundry, supplierWorkshop, nil
 }
 
-func SupplierGetByName(name string, workplace string) (*models.SupplierLaundry, *models.SupplierWorkshop, error) {
+func SupplierGetByName(name string, workplace string) (*[]models.SupplierLaundry, *[]models.SupplierWorkshop, error) {
 	supplierLaundry, supplierWorkshop, err := repositories.Repo.GetSupplierByName(name, workplace)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {

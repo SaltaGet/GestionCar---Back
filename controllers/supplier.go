@@ -257,7 +257,8 @@ func SupplierCreate(c *fiber.Ctx) error {
 		Message: "Proveedor creado con éxito",
 	})
 }
-
+// eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjBlYzIzOGU5LThkZTEtNDg2MS05OGY0LTc5NjY4ZmUzZjZhNCJ9.iT0dBWAfpeFtHSYzuh7MxZrQzZ6XVzypKsreFVXksnw
+// eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Ijg3OGZkNWRhLTdiNDctNDI2ZS1iZmRhLTFiMjMwMTBlMWJhNCJ9.yGhFvYKi6Zm2HpxNravhZUzE2stcr6AwrWWsNI5W-o8
 // SupplierUpdate godoc
 //	@Summary		Update Supplier
 //	@Description	Update a supplier's information from the specified workplace.
@@ -266,7 +267,6 @@ func SupplierCreate(c *fiber.Ctx) error {
 //	@Produce		json
 //	@Security		BearerAuth
 //	@Param			X-Workplace-Token	header		string					true	"Workplace Token"
-//	@Param			id					path		string					true	"ID of the Supplier"
 //	@Param			body				body		models.SupplierUpdate	true	"Supplier information"
 //	@Success		200					{object}	models.Response			"Supplier updated with success"
 //	@Failure		400					{object}	models.Response			"Bad Request"
@@ -275,7 +275,7 @@ func SupplierCreate(c *fiber.Ctx) error {
 //	@Failure		404					{object}	models.Response			"Supplier not found"
 //	@Failure		422					{object}	models.Response			"Model is invalid"
 //	@Failure		500					{object}	models.Response			"Internal server error"
-//	@Router			/supplier/update/{id} [put]
+//	@Router			/supplier/update [put]
 func SupplierUpdate(c *fiber.Ctx) error {
 	var supplierUpdate models.SupplierUpdate
 	if err := c.BodyParser(&supplierUpdate); err != nil {

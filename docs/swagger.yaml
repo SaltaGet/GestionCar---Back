@@ -247,18 +247,18 @@ definitions:
     properties:
       amount:
         type: number
-      client:
-        $ref: '#/definitions/models.SupplierLaundry'
       created_at:
         type: string
       details:
         type: string
-      employee_id:
-        type: string
       id:
+        type: string
+      movement_type_id:
         type: string
       movement_type_laundry:
         $ref: '#/definitions/models.MovementTypeLaundry'
+      supplier:
+        $ref: '#/definitions/models.SupplierLaundry'
       supplier_id:
         type: string
       updated_at:
@@ -4121,7 +4121,7 @@ paths:
       summary: Get Supplier By Name
       tags:
       - Supplier
-  /supplier/update/{id}:
+  /supplier/update:
     put:
       consumes:
       - application/json
@@ -4130,11 +4130,6 @@ paths:
       - description: Workplace Token
         in: header
         name: X-Workplace-Token
-        required: true
-        type: string
-      - description: ID of the Supplier
-        in: path
-        name: id
         required: true
         type: string
       - description: Supplier information

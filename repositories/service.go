@@ -1,10 +1,12 @@
 package repositories
 
 import (
+	"errors"
 	"fmt"
 
 	"github.com/DanielChachagua/GestionCar/models"
 	"github.com/google/uuid"
+	"gorm.io/gorm"
 )
 
 func (r *Repository) GetServiceByID(id string, workplace string) (*models.ServiceLaundry, *models.ServiceWorkshop, error) {
@@ -24,21 +26,27 @@ func (r *Repository) GetServiceByID(id string, workplace string) (*models.Servic
 	return nil, nil, fmt.Errorf("tipo de movimiento no soportado")
 }
 
-func (r *Repository) GetServiceByName(name string, workplace string) (*models.ServiceLaundry, *models.ServiceWorkshop, error) {
+func (r *Repository) GetServiceByName(name string, workplace string) (bool, error) {
 	if workplace == "laundry" {
 		var service models.ServiceLaundry
 		if err := r.DB.Where("name = ?", name).First(&service).Error; err != nil {
-			return nil, nil, err
+			if errors.Is(err, gorm.ErrRecordNotFound) {
+				return false, nil
+			}
+			return false, err
 		}
-		return &service, nil, nil
+		return true, nil
 	} else if workplace == "workshop" {
 		var service models.ServiceWorkshop
 		if err := r.DB.Where("name = ?", name).First(&service).Error; err != nil {
-			return nil, nil, err
+			if errors.Is(err, gorm.ErrRecordNotFound) {
+				return false, nil
+			}
+			return false, err
 		}
-		return nil, &service, nil
+		return true, nil
 	}
-	return nil, nil, fmt.Errorf("tipo de movimiento no soportado")
+	return false, fmt.Errorf("tipo de movimiento no soportado")
 }
 
 func (r *Repository) GetAllServices(workplace string) (*[]models.ServiceLaundry, *[]models.ServiceWorkshop, error) {
@@ -62,7 +70,7 @@ func (r *Repository) CreateService(service *models.ServiceCreate, workplace stri
 	newID := uuid.NewString()
 	switch workplace {
 	case "laundry":
-		if err := r.DB.Create(models.ServiceLaundry{
+		if err := r.DB.Create(&models.ServiceLaundry{
 			ID: newID,
 			Name: service.Name,
 		}).Error; err != nil {
@@ -70,7 +78,7 @@ func (r *Repository) CreateService(service *models.ServiceCreate, workplace stri
 		}
 		return newID, nil
 	case "workshop":
-		if err := r.DB.Create(models.ServiceWorkshop{
+		if err := r.DB.Create(&models.ServiceWorkshop{
 			ID: newID,
 			Name: service.Name,
 		}).Error; err != nil {

@@ -5270,7 +5270,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/supplier/update/{id}": {
+        "/supplier/update": {
             "put": {
                 "security": [
                     {
@@ -5294,13 +5294,6 @@ const docTemplate = `{
                         "description": "Workplace Token",
                         "name": "X-Workplace-Token",
                         "in": "header",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "ID of the Supplier",
-                        "name": "id",
-                        "in": "path",
                         "required": true
                     },
                     {
@@ -6368,23 +6361,23 @@ const docTemplate = `{
                 "amount": {
                     "type": "number"
                 },
-                "client": {
-                    "$ref": "#/definitions/models.SupplierLaundry"
-                },
                 "created_at": {
                     "type": "string"
                 },
                 "details": {
                     "type": "string"
                 },
-                "employee_id": {
+                "id": {
                     "type": "string"
                 },
-                "id": {
+                "movement_type_id": {
                     "type": "string"
                 },
                 "movement_type_laundry": {
                     "$ref": "#/definitions/models.MovementTypeLaundry"
+                },
+                "supplier": {
+                    "$ref": "#/definitions/models.SupplierLaundry"
                 },
                 "supplier_id": {
                     "type": "string"
