@@ -56,5 +56,5 @@ func GetAllMovementTypes(isIncome bool ,workplace string) (*[]models.MovementTyp
 	if err != nil {
 		return nil, nil, models.ErrorResponse(500, "Error al actualizar cliente", err)
 	}
-	return &movementTypesLaundry, &movementTypesWorkshop, nil
+	return movementTypesLaundry, movementTypesWorkshop, nil
 }

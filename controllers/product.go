@@ -351,7 +351,6 @@ func ProductUpdateStock(c *fiber.Ctx) error {
 //	@Produce		json
 //	@Security		BearerAuth
 //	@Param			X-Workplace-Token	header		string					true	"Workplace Token"
-//	@Param			id					path		string					true	"ID of the product"
 //	@Param			product				body		models.ProductUpdate	true	"Product update details"
 //	@Success		200					{object}	models.Response			"Product updated successfully"
 //	@Failure		400					{object}	models.Response			"Bad Request"
@@ -360,7 +359,7 @@ func ProductUpdateStock(c *fiber.Ctx) error {
 //	@Failure		404					{object}	models.Response			"Product not found"
 //	@Failure		422					{object}	models.Response			"Model invalid"
 //	@Failure		500					{object}	models.Response			"Internal server error"
-//	@Router			/product/update/{id} [put]
+//	@Router			/product/update [put]
 func ProductUpdate(c *fiber.Ctx) error {
 	var productUpdate models.ProductUpdate
 	if err := c.BodyParser(&productUpdate); err != nil {

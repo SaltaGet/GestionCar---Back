@@ -57,7 +57,7 @@ func UpdateIncome(expense *models.IncomeUpdate, workplace string) error {
 }
 
 func DeleteIncome(id string, workplace string) error {
-	err := repositories.Repo.DeleteExpenseByID(id, workplace)
+	err := repositories.Repo.DeleteIncomeByID(id, workplace)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return models.ErrorResponse(404, "Movimiento no encontrado", err)

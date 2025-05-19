@@ -661,6 +661,7 @@ definitions:
         type: string
       role:
         enum:
+        - admin
         - admin_laundry
         - admin_workshop
         - employee_laundry
@@ -2993,7 +2994,7 @@ paths:
       summary: Get Product By Name
       tags:
       - Product
-  /product/update/{id}:
+  /product/update:
     put:
       consumes:
       - application/json
@@ -3002,11 +3003,6 @@ paths:
       - description: Workplace Token
         in: header
         name: X-Workplace-Token
-        required: true
-        type: string
-      - description: ID of the product
-        in: path
-        name: id
         required: true
         type: string
       - description: Product update details

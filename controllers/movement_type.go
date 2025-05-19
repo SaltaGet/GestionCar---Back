@@ -1,6 +1,8 @@
 package controllers
 
 import (
+	"strconv"
+
 	"github.com/DanielChachagua/GestionCar/models"
 	"github.com/DanielChachagua/GestionCar/services"
 	"github.com/gofiber/fiber/v2"
@@ -89,14 +91,19 @@ func GetMovementTypeByID(c *fiber.Ctx) error {
 //	@Failure		500					{object}	models.Response										"Internal server error"
 //	@Router			/movement/get_all [get]
 func GetAllMovementTypes(c *fiber.Ctx) error {
-	var isIncome bool
-	if err := c.QueryParser(&isIncome); err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
-			Status:  false,
-			Body:    nil,
-			Message: "Invalid request",
-		})
-	}
+	isIncomeStr := c.Query("isIncome")
+isIncome := false
+if isIncomeStr != "" {
+    var err error
+    isIncome, err = strconv.ParseBool(isIncomeStr)
+    if err != nil {
+        return c.Status(fiber.StatusBadRequest).JSON(models.Response{
+            Status:  false,
+            Body:    nil,
+            Message: "Invalid value for isIncome",
+        })
+    }
+}
 
 	workplace := c.Locals("workplace").(*models.Workplace)
 	if workplace == nil {

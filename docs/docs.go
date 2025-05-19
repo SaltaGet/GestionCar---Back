@@ -3436,7 +3436,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/product/update/{id}": {
+        "/product/update": {
             "put": {
                 "security": [
                     {
@@ -3460,13 +3460,6 @@ const docTemplate = `{
                         "description": "Workplace Token",
                         "name": "X-Workplace-Token",
                         "in": "header",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "ID of the product",
-                        "name": "id",
-                        "in": "path",
                         "required": true
                     },
                     {
@@ -7003,6 +6996,7 @@ const docTemplate = `{
                 "role": {
                     "type": "string",
                     "enum": [
+                        "admin",
                         "admin_laundry",
                         "admin_workshop",
                         "employee_laundry",
