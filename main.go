@@ -12,6 +12,7 @@ import (
 	"github.com/DanielChachagua/GestionCar/repositories"
 	"github.com/DanielChachagua/GestionCar/routes"
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/swagger"
 	"github.com/joho/godotenv"
 )
@@ -40,6 +41,11 @@ func main() {
 	defer database.CloseDB(db)
 
 	app := fiber.New()
+
+	app.Use(cors.New(cors.Config{
+        AllowOrigins: "*",
+        AllowMethods: "*",
+    }))
 
 	dep := dependencies.NewDependency(db)
 
