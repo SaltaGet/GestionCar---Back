@@ -43,8 +43,10 @@ func main() {
 	app := fiber.New()
 
 	app.Use(cors.New(cors.Config{
-        AllowOrigins: "*",
-        AllowMethods: "*",
+    AllowOrigins:  "*",
+    AllowMethods:  "*",
+    AllowHeaders:  "*",
+    AllowCredentials: true,
     }))
 
 	dep := dependencies.NewDependency(db)
