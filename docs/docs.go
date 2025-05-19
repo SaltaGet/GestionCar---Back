@@ -5438,7 +5438,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/user": {
+        "/user/create": {
             "post": {
                 "security": [
                     {
@@ -5975,7 +5975,22 @@ const docTemplate = `{
                     "200": {
                         "description": "Workplaces obtenidos con éxito",
                         "schema": {
-                            "$ref": "#/definitions/models.Response"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/models.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "body": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/models.Workplace"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     },
                     "400": {
@@ -7061,7 +7076,7 @@ const docTemplate = `{
                 },
                 "model": {
                     "type": "string",
-                    "example": "Corolla"
+                    "example": "Corolla or null"
                 },
                 "year": {
                     "type": "string",
@@ -7103,6 +7118,39 @@ const docTemplate = `{
                 "year": {
                     "type": "string",
                     "example": "2020"
+                }
+            }
+        },
+        "models.Workplace": {
+            "type": "object",
+            "properties": {
+                "address": {
+                    "type": "string"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "identifier": {
+                    "type": "string",
+                    "enum": [
+                        "laundry",
+                        "workshop"
+                    ]
+                },
+                "name": {
+                    "type": "string"
+                },
+                "phone": {
+                    "type": "string"
+                },
+                "updated_at": {
+                    "type": "string"
                 }
             }
         }

@@ -13,7 +13,7 @@ import (
 //	@Accept			json
 //	@Produce		json
 //	@Security		BearerAuth
-//	@Success		200	{object}	models.Response	"Workplaces obtenidos con éxito"
+//	@Success		200	{object}	models.Response{body=[]models.Workplace}	"Workplaces obtenidos con éxito"
 //	@Failure		400	{object}	models.Response	"Bad Request"
 //	@Failure		401	{object}	models.Response	"Auth is required"
 //	@Failure		403	{object}	models.Response	"Not Authorized"

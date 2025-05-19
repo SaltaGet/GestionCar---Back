@@ -714,7 +714,7 @@ definitions:
         example: ABC123
         type: string
       model:
-        example: Corolla
+        example: Corolla or null
         type: string
       year:
         example: "2020"
@@ -751,6 +751,28 @@ definitions:
     required:
     - client_id
     - id
+    type: object
+  models.Workplace:
+    properties:
+      address:
+        type: string
+      created_at:
+        type: string
+      email:
+        type: string
+      id:
+        type: string
+      identifier:
+        enum:
+        - laundry
+        - workshop
+        type: string
+      name:
+        type: string
+      phone:
+        type: string
+      updated_at:
+        type: string
     type: object
 info:
   contact: {}
@@ -4174,7 +4196,7 @@ paths:
       summary: Update Supplier
       tags:
       - Supplier
-  /user:
+  /user/create:
     post:
       consumes:
       - application/json
@@ -4514,7 +4536,14 @@ paths:
         "200":
           description: Workplaces obtenidos con éxito
           schema:
-            $ref: '#/definitions/models.Response'
+            allOf:
+            - $ref: '#/definitions/models.Response'
+            - properties:
+                body:
+                  items:
+                    $ref: '#/definitions/models.Workplace'
+                  type: array
+              type: object
         "400":
           description: Bad Request
           schema:

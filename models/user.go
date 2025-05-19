@@ -36,7 +36,7 @@ type UserCreate struct {
 	Username  string `json:"username" validate:"required"`
 	Email     string `json:"email" validate:"required,email"`
 	Password  string `json:"password" validate:"required"`
-	Role      string `json:"role" validate:"required,oneof=admin_laundry admin_workshop employee_laundry employee_workshop"`
+	Role      string `json:"role" validate:"required,oneof= admin admin_laundry admin_workshop employee_laundry employee_workshop"`
 }
 
 func (u *UserCreate) Validate() error {

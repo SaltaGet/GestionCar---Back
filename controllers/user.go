@@ -19,7 +19,7 @@ import (
 //	@Failure		401			{object}	models.Response	"Auth is required"
 //	@Failure		403			{object}	models.Response	"Not Authorized"
 //	@Failure		500			{object}	models.Response
-//	@Router			/user [post]
+//	@Router			/user/create [post]
 func CreateUser(c *fiber.Ctx) error {
 	var userCreate models.UserCreate
 	if err := c.BodyParser(&userCreate); err != nil {

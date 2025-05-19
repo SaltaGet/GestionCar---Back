@@ -9,12 +9,12 @@ import (
 
 func UserCreate(user *models.UserCreate) (string, error) {
 	// Check if the user already exists
-	existingUser, err := repositories.Repo.GetUserByUsername(user.Username)
+	existingUser, err := repositories.Repo.GetUserByUsernameEmail(user.Username, user.Email)
 	if err != nil {
 		return "", models.ErrorResponse(500, "Error al buscar el usuario", err)
 	}
-	if existingUser != nil {
-		return "", models.ErrorResponse(400, "El nombre de usuario ya existe", nil)
+	if existingUser {
+		return "", models.ErrorResponse(400, "El username o el email ya existe", nil)
 	}
 
 	pass, err := utils.HashPassword(user.Password)

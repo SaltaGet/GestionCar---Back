@@ -21,7 +21,7 @@ type Vehicle struct {
 
 type VehicleCreate struct {
 	Brand string `json:"brand" validate:"required" example:"Toyota"`
-	Model string `json:"model" example:"Corolla"`
+	Model string `json:"model" example:"Corolla or null"`
 	Color string `json:"color" validate:"required" example:"Red"`
 	Year  string `json:"year" example:"2020"`
 	Domain string `json:"domain" validate:"required" example:"ABC123"`

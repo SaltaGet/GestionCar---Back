@@ -11,7 +11,6 @@ func UserRoutes(app *fiber.App) {
 	auth.Post(
 		"/create", 
 		middleware.AuthMiddleware(), 
-		middleware.WorkplaceMiddleware(), 
 		middleware.RoleAuthMiddleware([]string{"super_admin","admin"}), 
 		controllers.CreateUser,
 	)

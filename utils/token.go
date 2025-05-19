@@ -11,6 +11,10 @@ import (
 func GenerateUserToken(user *models.User) (string, error) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"id": user.ID,
+		"first_name": user.FirstName,
+		"last_name":  user.LastName,
+		"username":  user.Username,
+		"role": user.Role,
 	})
 
 	t, err := token.SignedString([]byte(os.Getenv("SECRET_KEY")))
