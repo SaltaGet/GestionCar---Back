@@ -46,7 +46,7 @@ func main() {
     AllowOrigins:  "*",
     AllowMethods:  "*",
     AllowHeaders:  "*",
-    AllowCredentials: true,
+    AllowCredentials: false,
     }))
 
 	dep := dependencies.NewDependency(db)
