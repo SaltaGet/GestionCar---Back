@@ -4,17 +4,21 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"time"
 
 	"github.com/DanielChachagua/GestionCar/database"
 	"github.com/DanielChachagua/GestionCar/dependencies"
 	_ "github.com/DanielChachagua/GestionCar/docs"
+	"github.com/DanielChachagua/GestionCar/jobs"
 	"github.com/DanielChachagua/GestionCar/middleware"
 	"github.com/DanielChachagua/GestionCar/repositories"
 	"github.com/DanielChachagua/GestionCar/routes"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
+	"github.com/gofiber/fiber/v2/middleware/limiter"
 	"github.com/gofiber/swagger"
 	"github.com/joho/godotenv"
+	"github.com/robfig/cron/v3"
 )
 
 //	@title						APP GESTIONCAR
@@ -43,16 +47,26 @@ func main() {
 	app := fiber.New()
 
 	app.Use(cors.New(cors.Config{
-    AllowOrigins:  "*",
-    AllowMethods:  "*",
-    AllowHeaders:  "*",
-    AllowCredentials: false,
-    }))
+		AllowOrigins:     "*",
+		AllowMethods:     "*",
+		AllowHeaders:     "*",
+		AllowCredentials: false,
+	}))
 
 	dep := dependencies.NewDependency(db)
 
 	app.Use(middleware.LoggingMiddleware)
 	// app.Use(middleware.AuditMiddleware())
+
+	app.Use(limiter.New(limiter.Config{
+		Max:        120,
+		Expiration: 1 * time.Minute,
+		LimitReached: func(c *fiber.Ctx) error {
+			return c.Status(fiber.StatusTooManyRequests).JSON(fiber.Map{
+				"error": "Demasiadas peticiones. Intentá más tarde.",
+			})
+		},
+	}))
 
 	routes.SetupRoutes(app)
 
@@ -60,7 +74,12 @@ func main() {
 
 	app.Get("/swagger/*", swagger.HandlerDefault)
 
+	c := cron.New()
+
+	c.AddFunc("0 0 1 * *", jobs.Backup)
+	c.AddFunc("0 0 * * 0", jobs.GenerateResume)
+
+	c.Start()
+
 	log.Fatal(app.Listen(":3000"))
-
-
 }

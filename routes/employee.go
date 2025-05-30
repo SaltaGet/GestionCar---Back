@@ -8,7 +8,7 @@ import (
 
 func EmployeeRoutes(app *fiber.App){
 	att := app.Group("/employee", middleware.AuthMiddleware(), middleware.WorkplaceMiddleware())
-	att.Get("/get_all", controllers.GetAllEmployees)
+	att.Get("/get_all", middleware.RoleAuthMiddleware([]string{"super_admin","admin"}),controllers.GetAllEmployees)
 	att.Get("/get_by_name", controllers.GetEmployeeByName)
 	att.Post("/create", controllers.CreateEmployee)
 	att.Put("/update", controllers.UpdateEmployee)
