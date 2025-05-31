@@ -7,7 +7,7 @@ import (
 )
 
 // Asistencia empleados
-type AttendanceLaundry struct {
+type Attendance struct {
 	ID         string          `gorm:"primaryKey" json:"id"`
 	EmployeeID string          `gorm:"not null" json:"employee_id"`
 	Attendance string          `gorm:"not null" json:"role" validate:"oneof=presente tarde parcial ausente"`
@@ -17,20 +17,7 @@ type AttendanceLaundry struct {
 	IsHoliday  bool            `gorm:"not null;default:false" json:"is_holiday"`
 	CreatedAt  time.Time          `gorm:"autoCreateTime" json:"created_at"`
 	UpdatedAt  time.Time          `gorm:"autoUpdateTime" json:"updated_at"`
-	Employee   EmployeeLaundry `gorm:"foreignKey:EmployeeID;references:ID" json:"employee"`
-}
-
-type AttendanceWorkshop struct {
-	ID         string          `gorm:"primaryKey" json:"id"`
-	EmployeeID string          `gorm:"not null" json:"employee_id"`
-	Attendance string          `gorm:"not null" json:"role" validate:"oneof=presente tarde parcial ausente"`
-	Hours      int             `gorm:"not null;" json:"hours" validate:"max=24"`
-	Date       string          `gorm:"not null" json:"date"`
-	Amount     float32          `gorm:"not null" json:"amount"`
-	IsHoliday  bool            `gorm:"not null;default:false" json:"is_holiday"`
-	CreatedAt  time.Time          `gorm:"autoCreateTime" json:"created_at"`
-	UpdatedAt  time.Time          `gorm:"autoUpdateTime" json:"updated_at"`
-	Employee   EmployeeWorkshop `gorm:"foreignKey:EmployeeID;references:ID" json:"employee"`
+	Employee   Employee `gorm:"foreignKey:EmployeeID;references:ID" json:"employee"`
 }
 
 type AttendanceCreate struct {

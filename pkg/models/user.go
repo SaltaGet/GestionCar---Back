@@ -44,3 +44,18 @@ func (u *UserCreate) Validate() error {
 	validate := validator.New()
 	return validate.Struct(u)
 }
+
+type UserUpdate struct {
+	ID        string `json:"id" validate:"required"`
+	FirstName string `json:"first_name" validate:"required"`
+	LastName  string `json:"last_name" validate:"required"`
+	Username  string `json:"username" validate:"required"`
+	Email     string `json:"email" validate:"required,email"`
+	Password  string `json:"password" validate:"required"`
+	Role      string `json:"role" validate:"required,oneof= admin admin_laundry admin_workshop employee_laundry employee_workshop"`
+}
+
+func (u *UserUpdate) Validate() error {
+	validate := validator.New()
+	return validate.Struct(u)
+}

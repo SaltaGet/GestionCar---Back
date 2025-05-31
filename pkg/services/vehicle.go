@@ -9,6 +9,8 @@ import (
 	"gorm.io/gorm"
 )
 
+// v VehicleService
+
 func VehicleCreate(vehicleCreate *models.VehicleCreate) (string , error) {
 	exist, err := repositories.Repo.GetVehicleByDomainEq(vehicleCreate.Domain)
 	if err != nil {

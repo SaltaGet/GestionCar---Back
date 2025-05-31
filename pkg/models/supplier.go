@@ -7,18 +7,7 @@ import (
 )
 
 // Proveedor
-type SupplierLaundry struct {
-	ID        string `gorm:"primaryKey" json:"id"`
-	Name      string `gorm:"not null" json:"name"`
-	Address   string `gorm:"not null" json:"address"`
-	Phone     string `gorm:"not null" json:"phone"`
-	Email     string `gorm:"not null" json:"email"`
-	CreatedAt time.Time `gorm:"autoCreateTime" json:"created_at"`
-	UpdatedAt time.Time `gorm:"autoUpdateTime" json:"updated_at"`
-}
-
-
-type SupplierWorkshop struct {
+type Supplier struct {
 	ID        string `gorm:"primaryKey" json:"id"`
 	Name      string `gorm:"not null" json:"name"`
 	Address   string `gorm:"not null" json:"address"`

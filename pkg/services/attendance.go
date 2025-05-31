@@ -4,55 +4,54 @@ import (
 	"errors"
 
 	"github.com/DanielChachagua/GestionCar/pkg/models"
-	"github.com/DanielChachagua/GestionCar/pkg/repositories"
 	"gorm.io/gorm"
 )
 
-func GetAttendanceByID(id string, workplace string) (*models.AttendanceLaundry, *models.AttendanceWorkshop, error) {
-	attendanceLaundry, attendanceWorkshop, err := repositories.Repo.GetAttendanceByID(id, workplace)
+func (s *AttendanceService) GetAttendanceByID(id string) (*models.Attendance, error) {
+	attendance, err := s.AttendanceRepository.GetAttendanceByID(id)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, nil, models.ErrorResponse(404, "Empleado no encontrado", err)
+			return nil, models.ErrorResponse(404, "Empleado no encontrado", err)
 		}
-		return nil, nil, models.ErrorResponse(500, "Error al actualizar cliente", err)
+		return nil, models.ErrorResponse(500, "Error al actualizar cliente", err)
 	}
-	return attendanceLaundry, attendanceWorkshop, nil
+	return attendance, nil
 }
 
-func GetAllAttendances(workplace string) (*[]models.AttendanceLaundry, *[]models.AttendanceWorkshop, error) {
-	attendancesLaundry, attendancesWorkshop, err := repositories.Repo.GetAllAttendances(workplace)
+func (s *AttendanceService) GetAllAttendances() (*[]models.Attendance, error) {
+	attendances, err := s.AttendanceRepository.GetAllAttendances()
 	if err != nil {
-		return nil, nil, models.ErrorResponse(500, "Error al actualizar cliente", err)
+		return nil, models.ErrorResponse(500, "Error al actualizar cliente", err)
 	}
-	return attendancesLaundry, attendancesWorkshop, nil
+	return attendances, nil
 }
 
-func GetAllAttendancesByDate(date_start string, date_end string, workplace string) (*[]models.AttendanceLaundry, *[]models.AttendanceWorkshop, error) {
-	attendancesLaundry, attendancesWorkshop, err := repositories.Repo.GetAttendancesByDate(date_start, date_end, workplace)
+func (s *AttendanceService) GetAllAttendancesByDate(date_start string, date_end string) (*[]models.Attendance, error) {
+	attendances, err := s.AttendanceRepository.GetAttendancesByDate(date_start, date_end)
 	if err != nil {
-		return nil, nil, models.ErrorResponse(500, "Error al actualizar cliente", err)
+		return nil, models.ErrorResponse(500, "Error al actualizar cliente", err)
 	}
-	return attendancesLaundry, attendancesWorkshop, nil
+	return attendances, nil
 }
 
-func GetAttendanceByEmployeeID(employeeID string, workplace string) (*[]models.AttendanceLaundry, *[]models.AttendanceWorkshop, error) {
-	attendancesLaundry, attendancesWorkshop, err := repositories.Repo.GetAttendanceByEmployeeID(employeeID, workplace)
+func (s *AttendanceService) GetAttendanceByEmployeeID(employeeID string) (*[]models.Attendance, error) {
+	attendances, err := s.AttendanceRepository.GetAttendanceByEmployeeID(employeeID)
 	if err != nil {
-		return nil, nil, models.ErrorResponse(500, "Error al actualizar cliente", err)
+		return nil, models.ErrorResponse(500, "Error al actualizar cliente", err)
 	}
-	return attendancesLaundry, attendancesWorkshop, nil
+	return attendances, nil
 }
 
-func CreateAttendance(attendance *models.AttendanceCreate, workplace string) (string, error) {
-	id, err := repositories.Repo.CreateAttendance(attendance, workplace)
+func (s *AttendanceService) CreateAttendance(attendance *models.AttendanceCreate) (string, error) {
+	id, err := s.AttendanceRepository.CreateAttendance(attendance)
 	if err != nil {
 		return "", models.ErrorResponse(500, "Error al actualizar cliente", err)
 	}
 	return id, nil
 }
 
-func UpdateAttendance(attendance *models.AttendanceUpdate, workplace string) error {
-	err := repositories.Repo.UpdateAttendance(attendance, workplace)
+func (s *AttendanceService) UpdateAttendance(attendance *models.AttendanceUpdate) error {
+	err := s.AttendanceRepository.UpdateAttendance(attendance)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return models.ErrorResponse(404, "Empleado no encontrado", err)
@@ -62,8 +61,8 @@ func UpdateAttendance(attendance *models.AttendanceUpdate, workplace string) err
 	return nil
 }
 
-func DeleteAttendance(id string, workplace string) error {
-	err := repositories.Repo.DeleteAttendance(id, workplace)
+func (s *AttendanceService) DeleteAttendance(id string) error {
+	err := s.AttendanceRepository.DeleteAttendance(id)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return models.ErrorResponse(404, "Empleado no encontrado", err)

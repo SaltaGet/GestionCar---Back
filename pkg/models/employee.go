@@ -6,17 +6,7 @@ import (
 	"github.com/go-playground/validator/v10"
 )
 
-type EmployeeLaundry struct {
-	ID   string `gorm:"primaryKey" json:"id"`
-	Name string `gorm:"not null" json:"name"`
-	Phone string `gorm:"not null" json:"phone"`
-	Email string `gorm:"not null" json:"email"`
-	Address string `gorm:"not null" json:"address"`
-	CreatedAt time.Time `gorm:"autoCreateTime" json:"created_at"`
-	UpdatedAt time.Time `gorm:"autoUpdateTime" json:"updated_at"`
-}
-
-type EmployeeWorkshop struct {
+type Employee struct {
 	ID   string `gorm:"primaryKey" json:"id"`
 	Name string `gorm:"not null" json:"name"`
 	Phone string `gorm:"not null" json:"phone"`

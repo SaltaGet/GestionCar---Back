@@ -6,7 +6,7 @@ import (
 	"github.com/go-playground/validator/v10"
 )
 
-type ExpenseLaundry struct {
+type Expense struct {
 	ID                  string              `gorm:"primaryKey" json:"id"`
 	Details             string              `json:"details"`
 	SupplierID          string              `json:"supplier_id"`
@@ -14,20 +14,8 @@ type ExpenseLaundry struct {
 	Amount              float32             `gorm:"not null" json:"amount"`
 	CreatedAt           time.Time           `gorm:"autoCreateTime" json:"created_at"`
 	UpdatedAt           time.Time           `gorm:"autoUpdateTime" json:"updated_at"`
-	Supplier            SupplierLaundry     `gorm:"foreignKey:SupplierID" json:"supplier"`
-	MovementTypeLaundry MovementTypeLaundry `gorm:"foreignKey:MovementTypeID;references:ID" json:"movement_type_laundry"`
-}
-
-type ExpenseWorkshop struct {
-	ID                   string               `gorm:"primaryKey" json:"id"`
-	Details              string               `json:"details"`
-	SupplierID           string               `json:"supplier_id"`
-	MovementTypeID       string               `gorm:"not null" json:"movement_type_id"`
-	Amount               float32              `gorm:"not null" json:"amount"`
-	CreatedAt            time.Time            `gorm:"autoCreateTime" json:"created_at"`
-	UpdatedAt            time.Time            `gorm:"autoUpdateTime" json:"updated_at"`
-	Supplier             SupplierWorkshop     `gorm:"foreignKey:SupplierID" json:"supplier"`
-	MovementTypeWorkshop MovementTypeWorkshop `gorm:"foreignKey:MovementTypeID;references:ID" json:"movement_type_workshop"`
+	Supplier            Supplier     `gorm:"foreignKey:SupplierID" json:"supplier"`
+	MovementTypeLaundry MovementType `gorm:"foreignKey:MovementTypeID;references:ID" json:"movement_type_laundry"`
 }
 
 type ExpenseCreate struct {

@@ -1,7 +1,6 @@
 package repositories
 
 import (
-	"fmt"
 	"time"
 
 	"github.com/DanielChachagua/GestionCar/pkg/models"
@@ -9,68 +8,35 @@ import (
 	"gorm.io/gorm"
 )
 
-func (r *Repository) GetIncomeByID(id string, workplace string) (*models.IncomeLaundry, *models.IncomeWorkshop, error) {
-	switch workplace {
-	case "laundry":
-		var income models.IncomeLaundry
+func (r *Repository) GetIncomeByID(id string) (*models.Income, error) {
+		var income models.Income
 		if err := r.DB.Where("id = ?", id).First(&income).Error; err != nil {
-			return nil, nil, err
+			return nil, err
 		}
-		return &income, nil, nil
-	case "workshop":
-		var income models.IncomeWorkshop
-		if err := r.DB.Where("id = ?", id).First(&income).Error; err != nil {
-			return nil, nil, err
-		}
-		return nil, &income, nil
-	default:
-		return nil, nil, fmt.Errorf("tipo de movimiento no soportado")
-	}
+		return &income, nil
 }
 
-func (r *Repository) GetAllIncomes(workplace string) (*[]models.IncomeLaundry, *[]models.IncomeWorkshop, error) {
-	if workplace == "laundry" {
-		var incomes []models.IncomeLaundry
+func (r *Repository) GetAllIncomes() (*[]models.Income, error) {
+		var incomes []models.Income
 		if err := r.DB.Limit(100).Order("created_at desc").Find(&incomes).Error; err != nil {
-			return nil, nil, err
+			return nil, err
 		}
-		return &incomes, nil, nil
-	} else if workplace == "workshop" {
-		var incomes []models.IncomeWorkshop
-		if err := r.DB.Limit(100).Order("created_at desc").Find(&incomes).Error; err != nil {
-			return nil, nil, err
-		}
-		return nil, &incomes, nil
-	}
-	return nil, nil, fmt.Errorf("tipo de movimiento no soportado")
+		return &incomes, nil
 }
 
-func (r *Repository) GetIncomeToday(workplace string) (*[]models.IncomeLaundry, *[]models.IncomeWorkshop, error) {
+func (r *Repository) GetIncomeToday() (*[]models.Income, error) {
 	today := time.Now().Format("2006-01-02")
-	switch workplace {
-	case "laundry":
-		var incomes []models.IncomeLaundry
+		var incomes []models.Income
 		if err := r.DB.Where("DATE(created_at) = ?", today).Order("created_at desc").Find(&incomes).Error; err != nil {
-			return nil, nil, err
+			return nil, err
 		}
-		return &incomes, nil, nil
-	case "workshop":
-		var incomes []models.IncomeWorkshop
-		if err := r.DB.Where("DATE(created_at) = ?", today).Order("created_at desc").Find(&incomes).Error; err != nil {
-			return nil, nil, err
-		}
-		return nil, &incomes, nil
-	default:
-		return nil, nil, fmt.Errorf("tipo de movimiento no soportado")
-	}
+		return &incomes, nil
 }
 
-func (r *Repository) CreateIncome(income *models.IncomeCreate, workplace string) (string, error) {
+func (r *Repository) CreateIncome(income *models.IncomeCreate) (string, error) {
 	newID := uuid.NewString()
 	err := r.DB.Transaction(func(tx *gorm.DB) error {
-		switch workplace {
-		case "laundry":
-			if err := r.DB.Create(&models.IncomeLaundry{
+			if err := r.DB.Create(&models.Income{
 				ID:             newID,
 				Ticket:         income.Ticket,
 				Details:        income.Details,
@@ -84,7 +50,7 @@ func (r *Repository) CreateIncome(income *models.IncomeCreate, workplace string)
 			}
 
 			for _, item := range income.ServicesID {
-				if err := r.DB.Create(&models.IncomeServiceLaundry{
+				if err := r.DB.Create(&models.IncomeService{
 					ID:              newID,
 					IncomeLaundryID: newID,
 					ServiceID:       item,
@@ -93,33 +59,6 @@ func (r *Repository) CreateIncome(income *models.IncomeCreate, workplace string)
 				}
 			}
 			return nil
-		case "workshop":
-			if err := r.DB.Create(&models.IncomeWorkshop{
-				ID:             newID,
-				Ticket:         income.Ticket,
-				Details:        income.Details,
-				ClientID:       income.ClientID,
-				VehicleID:      income.VehicleID,
-				EmployeeID:     income.EmployeeID,
-				Amount:         income.Amount,
-				MovementTypeID: income.MovementTypeID,
-			}).Error; err != nil {
-				return err
-			}
-
-			for _, item := range income.ServicesID {
-				if err := r.DB.Create(&models.IncomeServiceWorkshop{
-					ID:               newID,
-					IncomeWorkshopID: newID,
-					ServiceID:        item,
-				}).Error; err != nil {
-					return err
-				}
-			}
-			return nil
-		default:
-			return fmt.Errorf("tipo de movimiento no soportado")
-		}
 	})
 	if err != nil {
 		return "", err
@@ -127,12 +66,10 @@ func (r *Repository) CreateIncome(income *models.IncomeCreate, workplace string)
 	return newID, nil
 }
 
-func (r *Repository) UpdateIncome(income *models.IncomeUpdate, workplace string) error {
+func (r *Repository) UpdateIncome(income *models.IncomeUpdate) error {
 	return r.DB.Transaction(func(tx *gorm.DB) error {
-		switch workplace {
-		case "laundry":
 			if err := tx.Where("id = ?", income.ID).
-				Updates(&models.IncomeLaundry{
+				Updates(&models.Income{
 					Ticket:         income.Ticket,
 					Details:        income.Details,
 					ClientID:       income.ClientID,
@@ -144,7 +81,7 @@ func (r *Repository) UpdateIncome(income *models.IncomeUpdate, workplace string)
 				return err
 			}
 
-			var existingProducts []models.IncomeServiceLaundry
+			var existingProducts []models.IncomeService
 			if err := tx.Where("income_laundry_id = ?", income.ID).Find(&existingProducts).Error; err != nil {
 				return err
 			}
@@ -160,7 +97,7 @@ func (r *Repository) UpdateIncome(income *models.IncomeUpdate, workplace string)
 
 			for _, p := range existingProducts {
 				if !receivedIDs[p.ID] {
-					if err := tx.Delete(&models.IncomeServiceLaundry{}, "id = ?", p.ID).Error; err != nil {
+					if err := tx.Delete(&models.IncomeService{}, "id = ?", p.ID).Error; err != nil {
 						return err
 					}
 				}
@@ -168,7 +105,7 @@ func (r *Repository) UpdateIncome(income *models.IncomeUpdate, workplace string)
 
 			for _, prod := range income.ServicesID {
 				if prod == "" || !existingIDs[prod] {
-					newProd := models.IncomeServiceLaundry{
+					newProd := models.IncomeService{
 						ID:              uuid.NewString(),
 						IncomeLaundryID: income.ID,
 						ServiceID:       prod,
@@ -177,7 +114,7 @@ func (r *Repository) UpdateIncome(income *models.IncomeUpdate, workplace string)
 						return err
 					}
 				} else {
-					if err := tx.Model(&models.IncomeServiceLaundry{}).
+					if err := tx.Model(&models.IncomeService{}).
 						Where("id = ?", prod).
 						Updates(map[string]interface{}{
 							"service_id": prod,
@@ -187,88 +124,17 @@ func (r *Repository) UpdateIncome(income *models.IncomeUpdate, workplace string)
 				}
 			}
 			return nil
-		case "workshop":
-			if err := tx.Where("id = ?", income.ID).
-				Updates(&models.IncomeWorkshop{
-					Ticket:         income.Ticket,
-					Details:        income.Details,
-					ClientID:       income.ClientID,
-					VehicleID:      income.VehicleID,
-					EmployeeID:     income.EmployeeID,
-					Amount:         income.Amount,
-					MovementTypeID: income.MovementTypeID,
-				}).Error; err != nil {
-				return err
-			}
-
-			var existingProducts []models.IncomeServiceWorkshop
-			if err := tx.Where("income_workshop_id = ?", income.ID).Find(&existingProducts).Error; err != nil {
-				return err
-			}
-			existingIDs := map[string]bool{}
-			for _, p := range existingProducts {
-				existingIDs[p.ID] = true
-			}
-
-			receivedIDs := map[string]bool{}
-			for _, prod := range income.ServicesID {
-				receivedIDs[prod] = true
-			}
-
-			for _, p := range existingProducts {
-				if !receivedIDs[p.ID] {
-					if err := tx.Delete(&models.IncomeServiceWorkshop{}, "id = ?", p.ID).Error; err != nil {
-						return err
-					}
-				}
-			}
-
-			for _, prod := range income.ServicesID {
-				if prod == "" || !existingIDs[prod] {
-					newProd := models.IncomeServiceWorkshop{
-						ID:              uuid.NewString(),
-						IncomeWorkshopID: income.ID,
-						ServiceID:       prod,
-					}
-					if err := tx.Create(&newProd).Error; err != nil {
-						return err
-					}
-				} else {
-					if err := tx.Model(&models.IncomeServiceWorkshop{}).
-						Where("id = ?", prod).
-						Updates(map[string]interface{}{
-							"service_id": prod,
-						}).Error; err != nil {
-						return err
-					}
-				}
-			}
-			return nil
-		default:
-			return fmt.Errorf("tipo de movimiento no soportado")
-		}
 	})
 }
 
-func (r *Repository) DeleteIncomeByID(id string, workplace string) error {
+func (r *Repository) DeleteIncomeByID(id string) error {
 	return r.DB.Transaction(func(tx *gorm.DB) error {
-		if workplace == "laundry" {
-			if err := tx.Where("income_laundry_id = ?", id).Delete(&models.IncomeServiceLaundry{}).Error; err != nil {
+			if err := tx.Where("income_laundry_id = ?", id).Delete(&models.IncomeService{}).Error; err != nil {
 				return err
 			}
-			if err := tx.Where("id = ?", id).Delete(&models.IncomeLaundry{}).Error; err != nil {
+			if err := tx.Where("id = ?", id).Delete(&models.Income{}).Error; err != nil {
 				return err
 			}
-		} else if workplace == "workshop" {
-			if err := tx.Where("income_workshop_id = ?", id).Delete(&models.IncomeServiceWorkshop{}).Error; err != nil {
-				return err
-			}
-			if err := tx.Where("id = ?", id).Delete(&models.IncomeWorkshop{}).Error; err != nil {
-				return err
-			}
-		} else {
-			return fmt.Errorf("tipo de movimiento no soportado")
-		}
 		return nil
 	})
 }

@@ -2,33 +2,21 @@ package repositories
 
 import (
 	"errors"
-	"fmt"
-
 	"github.com/DanielChachagua/GestionCar/pkg/models"
 	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
 
-func (r *Repository) GetServiceByID(id string, workplace string) (*models.ServiceLaundry, *models.ServiceWorkshop, error) {
-	if workplace == "laundry" {
-		var service models.ServiceLaundry
+func (r *Repository) GetServiceByID(id string) (*models.Service, error) {
+		var service models.Service
 		if err := r.DB.Where("id = ?", id).First(&service).Error; err != nil {
-			return nil, nil, err
+			return nil, err
 		}
-		return &service, nil, nil
-	} else if workplace == "workshop" {
-		var service models.ServiceWorkshop
-		if err := r.DB.Where("id = ?", id).First(&service).Error; err != nil {
-			return nil, nil, err
-		}
-		return nil, &service, nil
-	}
-	return nil, nil, fmt.Errorf("tipo de movimiento no soportado")
+		return &service, nil
 }
 
-func (r *Repository) GetServiceByName(name string, workplace string) (bool, error) {
-	if workplace == "laundry" {
-		var service models.ServiceLaundry
+func (r *Repository) GetServiceByName(name string) (bool, error) {
+		var service models.Service
 		if err := r.DB.Where("name = ?", name).First(&service).Error; err != nil {
 			if errors.Is(err, gorm.ErrRecordNotFound) {
 				return false, nil
@@ -36,101 +24,44 @@ func (r *Repository) GetServiceByName(name string, workplace string) (bool, erro
 			return false, err
 		}
 		return true, nil
-	} else if workplace == "workshop" {
-		var service models.ServiceWorkshop
-		if err := r.DB.Where("name = ?", name).First(&service).Error; err != nil {
-			if errors.Is(err, gorm.ErrRecordNotFound) {
-				return false, nil
-			}
-			return false, err
-		}
-		return true, nil
-	}
-	return false, fmt.Errorf("tipo de movimiento no soportado")
 }
 
-func (r *Repository) GetAllServices(workplace string) (*[]models.ServiceLaundry, *[]models.ServiceWorkshop, error) {
-	if workplace == "laundry" {
-		var services []models.ServiceLaundry
+func (r *Repository) GetAllServices() (*[]models.Service, error) {
+		var services []models.Service
 		if err := r.DB.Find(&services).Error; err != nil {
-			return nil, nil, err
+			return nil, err
 		}
-		return &services, nil, nil
-	} else if workplace == "workshop" {
-		var services []models.ServiceWorkshop
-		if err := r.DB.Find(&services).Error; err != nil {
-			return nil, nil, err
-		}
-		return nil, &services, nil
-	}
-	return nil, nil, fmt.Errorf("tipo de movimiento no soportado")
+		return &services, nil
 }
 
-func (r *Repository) CreateService(service *models.ServiceCreate, workplace string) (string, error) {
+func (r *Repository) CreateService(service *models.ServiceCreate) (string, error) {
 	newID := uuid.NewString()
-	switch workplace {
-	case "laundry":
-		if err := r.DB.Create(&models.ServiceLaundry{
+		if err := r.DB.Create(&models.Service{
 			ID: newID,
 			Name: service.Name,
 		}).Error; err != nil {
 			return "", err
 		}
 		return newID, nil
-	case "workshop":
-		if err := r.DB.Create(&models.ServiceWorkshop{
-			ID: newID,
-			Name: service.Name,
-		}).Error; err != nil {
-			return "", err
-		}
-		return newID, nil
-	default:
-		return "", fmt.Errorf("tipo de movimiento no soportado")
-	}
 }
 
-func (r *Repository) UpdateService(service *models.ServiceUpdate, workplace string) error {
-	switch workplace {
-	case "laundry":
-		if err := r.DB.Where("id = ?", service.ID).First(&models.ServiceLaundry{}).Error; err != nil {
+func (r *Repository) UpdateService(service *models.ServiceUpdate) error {
+		if err := r.DB.Where("id = ?", service.ID).First(&models.Service{}).Error; err != nil {
 			return err
 		}
-		s := models.ServiceLaundry{
+		s := models.Service{
 			ID: service.ID,
 			Name: service.Name,
 		}
 		if err := r.DB.Save(&s).Error; err != nil {
 			return err
 		}
-	case "workshop":
-		if err := r.DB.Where("id = ?", service.ID).First(&models.ServiceWorkshop{}).Error; err != nil {
-			return err
-		}
-		s := models.ServiceWorkshop{
-			ID: service.ID,
-			Name: service.Name,
-		}
-		if err := r.DB.Save(&s).Error; err != nil {
-			return err
-		}
-	default:
-		return fmt.Errorf("tipo de movimiento no soportado")
+		return nil
 	}
-	return nil
-}
 
 func (r *Repository) DeleteServiceByID(id string, workplace string) error {
-	if workplace == "laundry" {
-		if err := r.DB.Where("id = ?", id).Delete(&models.ServiceLaundry{}).Error; err != nil {
+		if err := r.DB.Where("id = ?", id).Delete(&models.Service{}).Error; err != nil {
 			return err
 		}
-	} else if workplace == "workshop" {
-		if err := r.DB.Where("id = ?", id).Delete(&models.ServiceWorkshop{}).Error; err != nil {
-			return err
-		}
-	} else {
-		return fmt.Errorf("tipo de movimiento no soportado")
-	}
 	return nil
 }

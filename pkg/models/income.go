@@ -6,7 +6,7 @@ import (
 	"github.com/go-playground/validator/v10"
 )
 
-type IncomeLaundry struct {
+type Income struct {
 	ID                  string              `gorm:"primaryKey" json:"id"`
 	Ticket              string              `json:"ticket"`
 	Details             string              `json:"details"`
@@ -19,25 +19,8 @@ type IncomeLaundry struct {
 	UpdatedAt           time.Time           `gorm:"autoUpdateTime" json:"updated_at"`
 	Client              Client              `gorm:"foreignKey:ClientID" json:"client"`
 	Vehicle             Vehicle             `gorm:"foreignKey:VehicleID" json:"vehicle"`
-	EmployeeLaundry     EmployeeLaundry     `gorm:"foreignKey:EmployeeID" json:"employee_laundry"`
-	MovementTypeLaundry MovementTypeLaundry `gorm:"foreignKey:MovementTypeID;references:ID" json:"movement_type_laundry"`
-}
-
-type IncomeWorkshop struct {
-	ID                   string               `gorm:"primaryKey" json:"id"`
-	Ticket               string               `json:"ticket"`
-	Details              string               `json:"details"`
-	ClientID             string               `gorm:"not null" json:"client_id"`
-	VehicleID            string               `json:"vehicle_id"`
-	EmployeeID           string               `json:"employee_id"`
-	Amount               float32              `json:"amount"`
-	MovementTypeID       string               `json:"movement_type_id"`
-	CreatedAt            time.Time            `gorm:"autoCreateTime" json:"created_at"`
-	UpdatedAt            time.Time            `gorm:"autoUpdateTime" json:"updated_at"`
-	Client               Client               `gorm:"foreignKey:ClientID" json:"client"`
-	Vehicle              Vehicle              `gorm:"foreignKey:VehicleID" json:"vehicle"`
-	EmployeeWorkshop     EmployeeWorkshop     `gorm:"foreignKey:EmployeeID" json:"employee_workshop"`
-	MovementTypeWorkshop MovementTypeWorkshop `gorm:"foreignKey:MovementTypeID;references:ID" json:"movement_type_workshop"`
+	Employee     Employee     `gorm:"foreignKey:EmployeeID" json:"employee"`
+	MovementType MovementType `gorm:"foreignKey:MovementTypeID;references:ID" json:"movement_type`
 }
 
 type IncomeCreate struct {

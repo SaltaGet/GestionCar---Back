@@ -9,7 +9,7 @@ import (
 	"gorm.io/gorm"
 )
 
-func AuthLogin(username, password string) (string, error) {
+func (a *AuthService) AuthLogin(username, password string) (string, error) {
 	user, err := repositories.Repo.GetUserByUsername(username)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {

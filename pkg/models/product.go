@@ -6,16 +6,7 @@ import (
 	"github.com/go-playground/validator/v10"
 )
 
-type ProductLaundry struct {
-	ID         string    `gorm:"primaryKey" json:"id"`
-	Identifier string    `gorm:"not null;unique" json:"identifier"`
-	Name       string    `gorm:"not null" json:"name"`
-	Stock      int32     `gorm:"not null;min:0;default:0" json:"stock"`
-	CreatedAt  time.Time `gorm:"autoCreateTime" json:"created_at"`
-	UpdatedAt  time.Time `gorm:"autoUpdateTime" json:"updated_at"`
-}
-
-type PartWorkshop struct {
+type Product struct {
 	ID         string    `gorm:"primaryKey" json:"id"`
 	Identifier string    `gorm:"not null;unique" json:"identifier"`
 	Name       string    `gorm:"not null" json:"name"`
