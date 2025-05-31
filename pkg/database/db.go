@@ -146,6 +146,7 @@ func ConnectDB(uri string) (*gorm.DB, error) {
 
 	db.AutoMigrate(
 		&models.User{},
+		&models.Tenant{},
 	)
 
 	var email string
@@ -163,7 +164,15 @@ func ConnectDB(uri string) (*gorm.DB, error) {
 		return nil, err
 	}
 
-	db.Create(&models.User{ID: newId, FirstName: os.Getenv("FIRSTNAME_ADMIN"), LastName: os.Getenv("LASTNAME_ADMIN"), Username: os.Getenv("ADMIN_USERNAME"), Email: os.Getenv("ADMIN_EMAIL"), Password: pass, Role: os.Getenv("ROLE_ADMIN")})
+	db.Create(&models.User{
+		ID: newId, 
+		FirstName: os.Getenv("FIRSTNAME_ADMIN"), 
+		LastName: os.Getenv("LASTNAME_ADMIN"), 
+		Username: os.Getenv("ADMIN_USERNAME"), 
+		Email: os.Getenv("ADMIN_EMAIL"), 
+		Password: pass, 
+		IsAdmin: true,
+	})
 
 	mainDB = db
 

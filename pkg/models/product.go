@@ -37,7 +37,9 @@ func (p *ProductUpdate) Validate() error {
 }
 
 type StockUpdate struct {
+	ID    string `json:"id" validate:"required"`
 	Stock int32 `json:"stock" validate:"required"`
+	Method string `json:"method" validate:"required, oneof= add subtract update"`
 }
 
 func (p *StockUpdate) Validate() error {

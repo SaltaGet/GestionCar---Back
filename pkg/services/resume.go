@@ -4,12 +4,11 @@ import (
 	"errors"
 
 	"github.com/DanielChachagua/GestionCar/pkg/models"
-	"github.com/DanielChachagua/GestionCar/pkg/repositories"
 	"gorm.io/gorm"
 )
 
-func ExpenseResumeCreate(resume *models.ExpenseResumeCreate, workplace string) (string, error) {
-	id, err := repositories.Repo.CreateExpenseResume(resume, workplace)
+func (r *ResumeService) ExpenseResumeCreate(resume *models.ResumeExpenseCreate) (string, error) {
+	id, err := r.ResumeExpenseRepository.CreateExpenseResume(resume)
 	if err != nil {
 		return "", models.ErrorResponse(500, "Error al crear resumen", err)
 	}
@@ -17,29 +16,29 @@ func ExpenseResumeCreate(resume *models.ExpenseResumeCreate, workplace string) (
 	return id, nil
 }
 
-func GetExpenseResumeByDateBetween(fromDate string, toDate string, workplace string) (*[]models.ExpenseResumeLaundry, *[]models.ExpenseResumeWorkshop, error) {
-	laundry, workshop, err := repositories.Repo.GetExpenseResumeByDateBetween(fromDate, toDate, workplace)
+func (r *ResumeService) GetExpenseResumeByDateBetween(fromDate string, toDate string) (*[]models.ResumeExpense, error) {
+	resumes, err := r.ResumeExpenseRepository.GetExpenseResumeByDateBetween(fromDate, toDate)
 	if err != nil {
-		return nil, nil, err
+		return nil, err
 	}
 
-	return laundry, workshop, nil
+	return resumes, nil
 }
 
-func GetExpenseResumeByID(id string, workplace string) (*models.ExpenseResumeLaundry, *models.ExpenseResumeWorkshop, error) {
-	laundry, workshop, err := repositories.Repo.GetExpenseResumeByID(id, workplace)
+func (r *ResumeService) GetExpenseResumeByID(id string) (*models.ResumeExpense, error) {
+	resumes, err := r.ResumeExpenseRepository.GetExpenseResumeByID(id)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, nil, models.ErrorResponse(404, "Resumen no encontrado", err)
+			return nil, models.ErrorResponse(404, "Resumen no encontrado", err)
 		}
-		return nil, nil, err
+		return nil, err
 	}
 
-	return laundry, workshop, nil
+	return resumes, nil
 }
 
-func UpdateExpenseResume(resume *models.ExpenseResumeUpdate, workplace string) error {
-	err := repositories.Repo.UpdateExpenseResume(resume, workplace)
+func (r *ResumeService) UpdateExpenseResume(resume *models.ResumeExpenseUpdate) error {
+	err := r.ResumeExpenseRepository.UpdateExpenseResume(resume)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return models.ErrorResponse(404, "Resumen no encontrado", err)
@@ -53,8 +52,8 @@ func UpdateExpenseResume(resume *models.ExpenseResumeUpdate, workplace string) e
 
 // INCOME
 
-func CreateIncomeResume(resume *models.IncomeResumeCreate, workplace string) (string, error) {
-	id, err := repositories.Repo.CreateIncomeResume(resume, workplace)
+func (r *ResumeService) CreateIncomeResume(resume *models.ResumeIncomeCreate) (string, error) {
+	id, err := r.ResumeIncomeRepository.IncomeResumeCreate(resume)
 	if err != nil {
 		return "", models.ErrorResponse(500, "Error al crear resumen", err)
 	}
@@ -62,29 +61,29 @@ func CreateIncomeResume(resume *models.IncomeResumeCreate, workplace string) (st
 	return id, nil
 }
 
-func GetIncomeResumeByDateBetween(fromDate string, toDate string, workplace string) (*[]models.IncomeResumeLaundry, *[]models.IncomeResumeWorkshop, error) {
-	laundry, workshop, err := repositories.Repo.GetIncomeResumeByDateBetween(fromDate, toDate, workplace)
+func (r *ResumeService) GetIncomeResumeByDateBetween(fromDate string, toDate string) (*[]models.ResumeIncome, error) {
+	incomes, err := r.ResumeIncomeRepository.GetIncomeResumeByDateBetween(fromDate, toDate)
 	if err != nil {
-		return nil, nil, err
+		return nil, err
 	}
 
-	return laundry, workshop, nil
+	return incomes, nil
 }
 
-func GetIncomeResumeByID(id string, workplace string) (*models.IncomeResumeLaundry, *models.IncomeResumeWorkshop, error) {
-	laundry, workshop, err := repositories.Repo.GetIncomeResumeByID(id, workplace)
+func (r *ResumeService) GetIncomeResumeByID(id string) (*models.ResumeIncome, error) {
+	income, err := r.ResumeIncomeRepository.GetIncomeResumeByID(id)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, nil, models.ErrorResponse(404, "Resumen no encontrado", err)
+			return nil, models.ErrorResponse(404, "Resumen no encontrado", err)
 		}
-		return nil, nil, err
+		return nil, err
 	}
 
-	return laundry, workshop, nil
+	return income, nil
 }
 
-func UpdateIncomeResume(resume *models.IncomeResumeUpdate, workplace string) error {
-	err := repositories.Repo.UpdateIncomeResume(resume, workplace)
+func (r *ResumeService) UpdateIncomeResume(resume *models.ResumeIncomeUpdate) error {
+	err := r.ResumeIncomeRepository.UpdateIncomeResume(resume)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return models.ErrorResponse(404, "Resumen no encontrado", err)

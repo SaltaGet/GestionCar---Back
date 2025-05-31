@@ -4,7 +4,6 @@ import (
 	"errors"
 
 	"github.com/DanielChachagua/GestionCar/pkg/models"
-	"github.com/DanielChachagua/GestionCar/pkg/repositories"
 	"gorm.io/gorm"
 )
 
@@ -46,16 +45,16 @@ func (p *ProductService) ProductGetByName(name string) (*[]models.Product, error
 	return products, nil
 }
 
-func (p *ProductService) ProductCreate(product *models.ProductCreate, workplace string) (string, error) {
-	id, err := p.ProductRepository.CreateElement(product, workplace)
+func (p *ProductService) ProductCreate(product *models.ProductCreate) (string, error) {
+	id, err := p.ProductRepository.ProductCreate(product)
 	if err != nil {
 		return "", models.ErrorResponse(500, "Error al crear producto", err)
 	}
 	return id, nil
 }
 
-func (p *ProductService) ProductUpdate(product *models.ProductUpdate, workplace string) error {
-	err := p.ProductRepository.UpdateElement(product, workplace)
+func (p *ProductService) ProductUpdate(product *models.ProductUpdate) error {
+	err := p.ProductRepository.ProductUpdate(product)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return models.ErrorResponse(404, "Elemento no encontrado", err)
@@ -65,41 +64,41 @@ func (p *ProductService) ProductUpdate(product *models.ProductUpdate, workplace 
 	return nil
 }
 
-func (p *ProductService) ProductUpdateStock(id string, stock *models.StockUpdate, method string, workplace string) error {
-	product, part, err := p.productRepository.ProductGetByID(id, workplace)
+func (p *ProductService) ProductUpdateStock(stock *models.StockUpdate) error {
+	product, err := p.ProductRepository.ProductGetByID(stock.ID)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return models.ErrorResponse(404, "Elemento no encontrado", err)
 		}
 		return models.ErrorResponse(500, "Error al actualizar stock", err)
 	}
-	switch method {
+	switch stock.Method {
 	case "update":
 		if stock.Stock < 0 {
 			return models.ErrorResponse(400, "El stock no puede ser negativo", nil)
 		}
-		return p.ProductRepository.UpdateStock(stock.Stock, id, workplace)
+		return p.ProductRepository.UpdateStock(stock)
 	case "add":
 		if stock.Stock <= 0{
 			return models.ErrorResponse(400, "El stock debe ser mayor a 0", nil)
 		}
-		return p.ProductRepository.AddToStock(id, stock.Stock, workplace)
+		return p.ProductRepository.AddToStock(stock)
 	case "subtract":
 		if stock.Stock <= 0{
 			return models.ErrorResponse(400, "El stock debe ser mayor a 0", nil)
 		}
-		if (part != nil && part.Stock < stock.Stock) || (product != nil && product.Stock < stock.Stock) {
+		if product != nil && product.Stock < stock.Stock {
 			return models.ErrorResponse(400, "El stock no puede ser negativo", nil)
 		}
-		return p.ProductRepository.SubtractFromStockToStock(id, stock.Stock, workplace)
+		return p.ProductRepository.SubtractFromStockToStock(stock)
 	
 	default:
 		return models.ErrorResponse(500, "Método de actualización no soportado", err)
 	}
 }
 
-func (p *ProductService) ProductDelete(id string, workplace string) error {
-	err := repositories.Repo.DeleteElement(id, workplace)
+func (p *ProductService) ProductDelete(id string) error {
+	err := p.ProductRepository.ProductDelete(id)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return models.ErrorResponse(404, "Producto no encontrado", err)

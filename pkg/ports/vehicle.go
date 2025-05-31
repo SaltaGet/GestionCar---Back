@@ -18,6 +18,7 @@ type VehicleRepository interface {
 	GetClientByName(name string) (clients *[]models.Client, err error)
 	VehicleGetAll() (vehicles *[]models.Vehicle, err error)
 	VehicleGetByDomain(domain string) (vehicles *[]models.Vehicle, err error)
+	VehicleExistByDomain(domain string) (exist bool, err error)
 	VehicleGetByClientID(clientID string) (vehicles *[]models.Vehicle, err error)
 	VehicleCreate(vehicleCreate *models.VehicleCreate) (id string, err error)
 	VehicleUpdate(vehicleUpdate *models.VehicleUpdate) (err error)

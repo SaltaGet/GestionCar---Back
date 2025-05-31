@@ -23,7 +23,7 @@ func (r *Repository) GetVehicleByDomain(domain string) (*[]models.Vehicle, error
 	return &vehicles, nil
 }
 
-func (r *Repository) GetVehicleByDomainEq(domain string) (bool, error) {
+func (r *Repository) VehicleExistByDomain(domain string) (bool, error) {
 	var vehicle models.Vehicle
 	if err := r.DB.Preload("Client").Where("domain = ?", domain).First(&vehicle).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {

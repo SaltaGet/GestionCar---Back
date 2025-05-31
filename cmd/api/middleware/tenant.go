@@ -8,7 +8,7 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 )
 
-func WorkplaceMiddleware() fiber.Handler {
+func TenantMiddleware() fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		token := c.Get("X-Workplace-Token")
 

@@ -4,42 +4,38 @@ import (
 	"errors"
 
 	"github.com/DanielChachagua/GestionCar/pkg/models"
-	"github.com/DanielChachagua/GestionCar/pkg/repositories"
 	"gorm.io/gorm"
 )
 
-func PurchaseOrderGetByID(id string, workplace string) (*models.PurchaseOrderLaundry, *models.PurchaseOrderWorkshop, error) {
-	purchaseOrderLaundry, purchaseOrderWorkshop, err := repositories.Repo.GetPurchaseOrderByID(id, workplace)
+func (p *PurchaseOrderService) PurchaseOrderGetByID(id string) (*models.PurchaseOrder, error) {
+	purchaseOrder, err := p.PurchaseOrderRepository.PurchaseOrderGetByID(id)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, nil, models.ErrorResponse(404, "Empleado no encontrado", err)
+			return nil, models.ErrorResponse(404, "Empleado no encontrado", err)
 		}
-		return nil, nil, models.ErrorResponse(500, "Error al actualizar cliente", err)
+		return nil, models.ErrorResponse(500, "Error al actualizar cliente", err)
 	}
-	return purchaseOrderLaundry, purchaseOrderWorkshop, nil
+	return purchaseOrder, nil
 }
 
-func PurchaseOrderGetAll(workplace string) (*[]models.PurchaseOrderLaundry, *[]models.PurchaseOrderWorkshop, error) {
-	purchaseOrderLaundry, purchaseOrderWorkshop, err := repositories.Repo.GetAllPurchaseOrders(workplace)
+func (p *PurchaseOrderService) PurchaseOrderGetAll() (*[]models.PurchaseOrder, error) {
+	purchaseOrder, err := p.PurchaseOrderRepository.PurchaseOrderGetAll()
 	if err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, nil, models.ErrorResponse(404, "Empleado no encontrado", err)
-		}
-		return nil, nil, models.ErrorResponse(500, "Error al actualizar cliente", err)
+		return nil, models.ErrorResponse(500, "Error al actualizar cliente", err)
 	}
-	return purchaseOrderLaundry, purchaseOrderWorkshop, nil
+	return purchaseOrder, nil
 }
 
-func PurchaseOrderCreate(purchaseOrder *models.PurchaseOrderCreate, workplace string) (string, error) {
-	id, err := repositories.Repo.CreatePurchaseOrder(purchaseOrder, workplace)
+func (p *PurchaseOrderService) PurchaseOrderCreate(purchaseOrder *models.PurchaseOrderCreate) (string, error) {
+	id, err := p.PurchaseOrderRepository.PurchaseOrderCreate(purchaseOrder)
 	if err != nil {
 		return "", models.ErrorResponse(500, "Error al actualizar cliente", err)
 	}
 	return id, nil
 }
 
-func PurchaseOrderUpdate(purchaseOrder *models.PurchaseOrderUpdate, workplace string) error {
-	err := repositories.Repo.UpdatePurchaseOrder(purchaseOrder, workplace)
+func (p *PurchaseOrderService) PurchaseOrderUpdate(purchaseOrder *models.PurchaseOrderUpdate) error {
+	err := p.PurchaseOrderRepository.PurchaseOrderUpdate(purchaseOrder)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return models.ErrorResponse(404, "Empleado no encontrado", err)
@@ -49,8 +45,8 @@ func PurchaseOrderUpdate(purchaseOrder *models.PurchaseOrderUpdate, workplace st
 	return nil
 }
 
-func PurchaseOrderDelete(id string, workplace string) error {
-	err := repositories.Repo.DeletePurchaseOrderByID(id, workplace)
+func (p *PurchaseOrderService) PurchaseOrderDelete(id string) error {
+	err := p.PurchaseOrderRepository.PurchaseOrderDelete(id)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return models.ErrorResponse(404, "Empleado no encontrado", err)

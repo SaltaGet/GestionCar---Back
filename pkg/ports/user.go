@@ -13,6 +13,7 @@ type UserRepository interface {
 	GetByIdentifier(identifier string) (user *models.User, err error) 
 	GetUserByID(id string) (user *models.User, err error) 
 	GetUserByUsername(username string) (user *models.User, err error) 
+	GetUserByUsernameEmail(username string, email string) (exist bool, err error) 
 	GetByEmail(email string) (user *models.User, err error) 
 	ExistUser(identifier string, email string) (exist bool, err error) 
 }

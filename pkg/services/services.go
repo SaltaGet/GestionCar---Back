@@ -37,6 +37,31 @@ type ProductService struct {
 	ProductRepository ports.ProductRepository
 }
 
+type PurchaseOrderService struct{
+	PurchaseOrderRepository ports.PurchaseOrderRepository
+}
+
+type ResumeService struct {
+	ResumeExpenseRepository ports.ResumeExpenseRepository
+	ResumeIncomeRepository ports.ResumeIncomeRepository
+}
+
+type RoleService struct {
+	RoleRepository ports.RoleRepository
+}
+
+type ServiceService struct {
+	ServiceRepository ports.ServiceRepository
+}
+
+type SupplierService struct {
+	SupplierRepository ports.SupplierRepository
+}
+
+type UserService struct {
+	UserRepository ports.UserRepository
+}
+
 type VehicleService struct {
 	VehicleRepository ports.VehicleRepository
 }

@@ -4,12 +4,11 @@ import (
 	"errors"
 
 	"github.com/DanielChachagua/GestionCar/pkg/models"
-	"github.com/DanielChachagua/GestionCar/pkg/repositories"
 	"gorm.io/gorm"
 )
 
-func ServiceCreate(service *models.ServiceCreate, workplace string) (string, error) {
-	exist, err := repositories.Repo.GetServiceByName(service.Name, workplace)
+func (s *ServiceService) ServiceCreate(service *models.ServiceCreate) (string, error) {
+	exist, err := s.ServiceRepository.ServiceGetByName(service.Name)
 	if err != nil {
 		return "", models.ErrorResponse(500, "Error al buscar servicio", err)
 	}
@@ -18,15 +17,15 @@ func ServiceCreate(service *models.ServiceCreate, workplace string) (string, err
 		return "", models.ErrorResponse(400, "El servicio ya existe", nil)
 	}
 
-	id, err := repositories.Repo.CreateService(service, workplace)
+	id, err := s.ServiceRepository.ServiceCreate(service)
 	if err != nil {
 		return "", models.ErrorResponse(500, "Error al crear servicio", err)
 	}
 	return id, nil
 }
 
-func ServiceUpdate(service *models.ServiceUpdate, workplace string) error {
-	err := repositories.Repo.UpdateService(service, workplace)
+func (s *ServiceService) ServiceUpdate(service *models.ServiceUpdate) error {
+	err := s.ServiceRepository.ServiceUpdate(service)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return models.ErrorResponse(404, "Servicio no encontrado", err)
@@ -36,8 +35,8 @@ func ServiceUpdate(service *models.ServiceUpdate, workplace string) error {
 	return nil
 }
 
-func ServiceDeleteByID(id string, workplace string) error {
-	err := repositories.Repo.DeleteServiceByID(id, workplace)
+func (s *ServiceService) ServiceDeleteByID(id string) error {
+	err := s.ServiceRepository.ServiceDeleteByID(id)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return models.ErrorResponse(404, "Servicio no encontrado", err)
@@ -47,21 +46,21 @@ func ServiceDeleteByID(id string, workplace string) error {
 	return nil
 }
 
-func ServiceGetAll(workplace string) (*[]models.ServiceLaundry, *[]models.ServiceWorkshop, error) {
-	servicesLaundry, servicesWorkshop, err := repositories.Repo.GetAllServices(workplace)
+func (s *ServiceService) ServiceGetAll() (*[]models.Service, error) {
+	services, err := s.ServiceRepository.ServiceGetAll()
 	if err != nil {
-		return nil, nil, models.ErrorResponse(500, "Error al obtener servicios", err)
+		return nil, models.ErrorResponse(500, "Error al obtener servicios", err)
 	}
-	return servicesLaundry, servicesWorkshop, nil
+	return services, nil
 }
 
-func ServiceGetByID(id string, workplace string) (*models.ServiceLaundry, *models.ServiceWorkshop, error) {
-	serviceLaundry, serviceWorkshop, err := repositories.Repo.GetServiceByID(id, workplace)
+func (s *ServiceService) ServiceGetByID(id string) (*models.Service, error) {
+	service, err := s.ServiceRepository.ServiceGetByID(id)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, nil, models.ErrorResponse(404, "Servicio no encontrado", err)
+			return nil, models.ErrorResponse(404, "Servicio no encontrado", err)
 		}
-		return nil, nil, models.ErrorResponse(500, "Error al buscar servicio", err)
+		return nil, models.ErrorResponse(500, "Error al buscar servicio", err)
 	}
-	return serviceLaundry, serviceWorkshop, nil
+	return service, nil
 }

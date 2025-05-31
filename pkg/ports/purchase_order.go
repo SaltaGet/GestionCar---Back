@@ -10,7 +10,7 @@ type PurchaseOrderService interface {
 	PurchaseOrderDelete(id string) (err error)
 }
 
-type PurchaseOrderOrderRepository interface {
+type PurchaseOrderRepository interface {
 	PurchaseOrderGetByID(id string) (client *models.PurchaseOrder, err error)
 	PurchaseOrderGetAll() (clients *[]models.PurchaseOrder, err error)
 	PurchaseOrderCreate(purchaseOrderCreate *models.PurchaseOrderCreate) (id string, err error)

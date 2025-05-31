@@ -2,14 +2,12 @@ package services
 
 import (
 	"github.com/DanielChachagua/GestionCar/pkg/models"
-	"github.com/DanielChachagua/GestionCar/pkg/repositories"
 	"github.com/DanielChachagua/GestionCar/pkg/utils"
-	"github.com/google/uuid"
 )
 
-func UserCreate(user *models.UserCreate) (string, error) {
+func (u *UserService) UserCreate(userCreate *models.UserCreate) (string, error) {
 	// Check if the user already exists
-	existingUser, err := repositories.Repo.GetUserByUsernameEmail(user.Username, user.Email)
+	existingUser, err := u.UserRepository.GetUserByUsernameEmail(userCreate.Username, userCreate.Email)
 	if err != nil {
 		return "", models.ErrorResponse(500, "Error al buscar el usuario", err)
 	}
@@ -17,24 +15,16 @@ func UserCreate(user *models.UserCreate) (string, error) {
 		return "", models.ErrorResponse(400, "El username o el email ya existe", nil)
 	}
 
-	pass, err := utils.HashPassword(user.Password)
+	
+	userCreate.Password, err = utils.HashPassword(userCreate.Password)
 	if err != nil {
 		return "", models.ErrorResponse(500, "Error al hashear la contraseña", err)
 	}
-	// Create the new user
-	newUser := &models.User{
-		ID: uuid.NewString(),
-		FirstName: user.FirstName,
-		LastName:  user.LastName,
-		Email:     user.Email,
-		Role:      user.Role,
-		Username: user.Username,
-		Password: pass,
-	}
-	err = repositories.Repo.CreateUser(newUser)
+
+	id, err := u.UserRepository.Create(userCreate)
 	if err != nil {
 		return "", models.ErrorResponse(500, "Error al crear el usuario", err)
 	}
 
-	return newUser.ID, nil
+	return id, nil
 }
