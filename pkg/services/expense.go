@@ -4,60 +4,59 @@ import (
 	"errors"
 
 	"github.com/DanielChachagua/GestionCar/pkg/models"
-	"github.com/DanielChachagua/GestionCar/pkg/repositories"
 	"gorm.io/gorm"
 )
 
-func GetExpenseByID(id string, workplace string) (*models.ExpenseLaundry, *models.ExpenseWorkshop, error) {
-	laundries, workshops, err := repositories.Repo.GetExpenseByID(id, workplace)
+func (e *ExpenseService) GetExpenseByID(id string) (*models.Expense, error) {
+	expense, err := e.ExpenseRepository.GetExpenseByID(id)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, nil, models.ErrorResponse(404, "Movimiento no encontrado", err)
+			return nil, models.ErrorResponse(404, "Movimiento no encontrado", err)
 		}
-		return nil, nil, models.ErrorResponse(500, "Error al buscar movimiento", err)
+		return nil, models.ErrorResponse(500, "Error al buscar movimiento", err)
 	}
 
-	return laundries, workshops, nil
+	return expense, nil
 }
 
-func GetAllExpenses(workplace string) (*[]models.ExpenseLaundry, *[]models.ExpenseWorkshop, error) {
-	laundries, workshops, err := repositories.Repo.GetAllExpenses(workplace)
+func (e *ExpenseService) GetAllExpenses(workplace string) (*[]models.Expense, error) {
+	expenses, err := e.ExpenseRepository.GetAllExpenses()
 	
 	if err != nil {
-		return nil, nil, models.ErrorResponse(500, "Error al buscar movimientos", err)
+		return nil, models.ErrorResponse(500, "Error al buscar movimientos", err)
 	}
 
-	return laundries, workshops, nil
+	return expenses, nil
 }
 
-func GetExpenseToday(workplace string) (*[]models.ExpenseLaundry, *[]models.ExpenseWorkshop, error) {
-	laundries, workshops, err := repositories.Repo.GetExpenseToday(workplace)
+func (e *ExpenseService) GetExpenseToday(workplace string) (*[]models.Expense, error) {
+	expenses, err := e.ExpenseRepository.GetExpenseToday()
 	
 	if err != nil {
-		return nil, nil, models.ErrorResponse(500, "Error al buscar movimientos", err)
+		return nil, models.ErrorResponse(500, "Error al buscar movimientos", err)
 	}
 
-	return laundries, workshops, nil
+	return expenses, nil
 }
 
-func CreateExpense(expense *models.ExpenseCreate, workplace string) (string, error) {
-	laundryID, err := repositories.Repo.CreateExpense(expense, "laundry")
+func (e *ExpenseService) CreateExpense(expense *models.ExpenseCreate) (string, error) {
+	id, err := e.ExpenseRepository.CreateExpense(expense)
 	if err != nil {
 		return "", models.ErrorResponse(500, "Error al crear movimiento", err)
 	}
-	return laundryID, nil
+	return id, nil
 }
 
-func UpdateExpense(expense *models.ExpenseUpdate, workplace string) error {
-	err := repositories.Repo.UpdateExpense(expense, workplace)
+func (e *ExpenseService) UpdateExpense(expense *models.ExpenseUpdate) error {
+	err := e.ExpenseRepository.UpdateExpense(expense)
 	if err != nil {
 		return models.ErrorResponse(500, "Error al actualizar movimiento", err)
 	}
 	return nil
 }
 
-func DeleteExpense(id string, workplace string) error {
-	err := repositories.Repo.DeleteExpenseByID(id, workplace)
+func (e *ExpenseService) DeleteExpense(id string) error {
+	err := e.ExpenseRepository.DeleteExpense(id)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return models.ErrorResponse(404, "Movimiento no encontrado", err)

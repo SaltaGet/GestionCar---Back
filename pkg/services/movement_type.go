@@ -4,21 +4,20 @@ import (
 	"errors"
 
 	"github.com/DanielChachagua/GestionCar/pkg/models"
-	"github.com/DanielChachagua/GestionCar/pkg/repositories"
 	"gorm.io/gorm"
 )
 
-func MovementTypeCreate(movementType *models.MovementTypeCreate, workplace string) (string, error) {
-	id, err := repositories.Repo.CreateMovementType(movementType, workplace)
+func (m *MovementTypeService) MovementTypeCreate(movementType *models.MovementTypeCreate) (string, error) {
+	id, err := m.MovementTypeRepository.CreateMovementType(movementType)
 	if err != nil {
 		return "", models.ErrorResponse(500, "Error al actualizar cliente", err)
 	}
+
 	return id, nil
 }
 
-func MovementTypeUpdate(movementType *models.MovementTypeUpdate, workplace string) error {
-	err := repositories.Repo.UpdateMovementType(movementType, workplace)
-
+func (m *MovementTypeService) MovementTypeUpdate(movementType *models.MovementTypeUpdate) error {
+	err := m.MovementTypeRepository.UpdateMovementType(movementType)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return models.ErrorResponse(404, "Empleado no encontrado", err)
@@ -29,8 +28,8 @@ func MovementTypeUpdate(movementType *models.MovementTypeUpdate, workplace strin
 	return nil
 }
 
-func MovementTypeDelete(id string, workplace string) error {
-	err := repositories.Repo.DeleteMovementType(id, workplace)
+func (m *MovementTypeService) MovementTypeDelete(id string) error {
+	err := m.MovementTypeRepository.DeleteMovementType(id)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return models.ErrorResponse(404, "Empleado no encontrado", err)
@@ -40,21 +39,21 @@ func MovementTypeDelete(id string, workplace string) error {
 	return nil
 }
 
-func GetMovementTypeByID(id string, workplace string) (*models.MovementTypeLaundry, *models.MovementTypeWorkshop, error) {
-	movementTypeLaundry, movementTypeWorkshop, err := repositories.Repo.GetMovementTypeByID(id, workplace)
+func (m *MovementTypeService) GetMovementTypeByID(id string) (*models.MovementType, error) {
+	movementType, err := m.MovementTypeRepository.GetMovementTypeByID(id)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, nil, models.ErrorResponse(404, "Empleado no encontrado", err)
+			return nil, models.ErrorResponse(404, "Empleado no encontrado", err)
 		}
-		return nil, nil, models.ErrorResponse(500, "Error al actualizar cliente", err)
+		return nil, models.ErrorResponse(500, "Error al actualizar cliente", err)
 	}
-	return movementTypeLaundry, movementTypeWorkshop, nil
+	return movementType, nil
 }
 
-func GetAllMovementTypes(isIncome bool ,workplace string) (*[]models.MovementTypeLaundry, *[]models.MovementTypeWorkshop, error) {
-	movementTypesLaundry, movementTypesWorkshop, err := repositories.Repo.GetAllMovementTypes(isIncome, workplace)
+func (m *MovementTypeService) GetAllMovementTypes(isIncome bool) (*[]models.MovementType, error) {
+	movementTypes, err := m.MovementTypeRepository.GetAllMovementTypes(isIncome)
 	if err != nil {
-		return nil, nil, models.ErrorResponse(500, "Error al actualizar cliente", err)
+		return nil, models.ErrorResponse(500, "Error al actualizar cliente", err)
 	}
-	return movementTypesLaundry, movementTypesWorkshop, nil
+	return movementTypes, nil
 }

@@ -4,47 +4,46 @@ import (
 	"errors"
 
 	"github.com/DanielChachagua/GestionCar/pkg/models"
-	"github.com/DanielChachagua/GestionCar/pkg/repositories"
 	"gorm.io/gorm"
 )
 
-func GetEmployeeByID(id string, workplace string) (*models.EmployeeLaundry, *models.EmployeeWorkshop, error) {
-	employeeLaundry, employeeWorkshop, err := repositories.Repo.GetEmployeeByID(id, workplace)
+func (e *EmployeeService) GetEmployeeByID(id string) (*models.Employee, error) {
+	employee, err := e.EmployeeRepository.GetEmployeeByID(id)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, nil, models.ErrorResponse(404, "Empleado no encontrado", err)
+			return nil, models.ErrorResponse(404, "Empleado no encontrado", err)
 		}
-		return nil, nil, models.ErrorResponse(500, "Error al actualizar cliente", err)
+		return nil, models.ErrorResponse(500, "Error al actualizar cliente", err)
 	}
-	return employeeLaundry, employeeWorkshop, nil
+	return employee, nil
 }
 
-func GetEmployeeByName(name string, workplace string) (*[]models.EmployeeLaundry, *[]models.EmployeeWorkshop, error) {
-	employeesLaundry, employeesWorkshop, err := repositories.Repo.GetEmployeeByName(name, workplace)
+func (e *EmployeeService) GetEmployeeByName(name string) (*[]models.Employee, error) {
+	employees, err := e.EmployeeRepository.GetEmployeeByName(name)
 	if err != nil {
-		return nil, nil, models.ErrorResponse(500, "Error al obtener clientes", err)
+		return nil, models.ErrorResponse(500, "Error al obtener clientes", err)
 	}
-	return employeesLaundry, employeesWorkshop, nil
+	return employees, nil
 }
 
-func GetAllEmployees(workplace string) (*[]models.EmployeeLaundry, *[]models.EmployeeWorkshop, error) {
-	employeesLaundry, employeesWorkshop, err := repositories.Repo.GetAllEmployees(workplace)
+func (e *EmployeeService) GetAllEmployees(workplace string) (*[]models.Employee, error) {
+	employees, err := e.EmployeeRepository.GetAllEmployees()
 	if err != nil {
-		return nil, nil, models.ErrorResponse(500, "Error al actualizar cliente", err)
+		return nil, models.ErrorResponse(500, "Error al actualizar cliente", err)
 	}
-	return employeesLaundry, employeesWorkshop, nil
+	return employees, nil
 }
 
-func CreateEmployee(employee *models.EmployeeCreate, workplace string) (string, error) {
-	id, err := repositories.Repo.CreateEmployee(employee, workplace)
+func (e *EmployeeService) CreateEmployee(employee *models.EmployeeCreate) (string, error) {
+	id, err := e.EmployeeRepository.CreateEmployee(employee)
 	if err != nil {
 		return "", models.ErrorResponse(500, "Error al actualizar cliente", err)
 	}
 	return id, nil
 }
 
-func UpdateEmployee(employee *models.EmployeeUpdate, workplace string) error {
-	err := repositories.Repo.UpdateEmployee(employee, workplace)
+func (e *EmployeeService) UpdateEmployee(employee *models.EmployeeUpdate) error {
+	err := e.EmployeeRepository.UpdateEmployee(employee)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return models.ErrorResponse(404, "Empleado no encontrado", err)
@@ -54,8 +53,8 @@ func UpdateEmployee(employee *models.EmployeeUpdate, workplace string) error {
 	return nil
 }
 
-func DeleteEmployee(id string, workplace string) error {
-	err := repositories.Repo.DeleteEmployee(id, workplace)
+func (e *EmployeeService) DeleteEmployee(id string) error {
+	err := e.EmployeeRepository.DeleteEmployee(id)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return models.ErrorResponse(404, "Empleado no encontrado", err)

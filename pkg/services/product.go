@@ -8,60 +8,54 @@ import (
 	"gorm.io/gorm"
 )
 
-func ProductGetByID(id string, workplace string) (*models.ProductLaundry, *models.PartWorkshop, error) {
-	product, part, err := repositories.Repo.GetElementByID(id, workplace)
+func (p *ProductService) ProductGetByID(id string) (*models.Product, error) {
+	product, err := p.ProductRepository.ProductGetByID(id)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, nil, models.ErrorResponse(404, "Elemento no encontrado", err)
+			return nil, models.ErrorResponse(404, "Elemento no encontrado", err)
 		}
-		return nil, nil, models.ErrorResponse(500, "Error al actualizar cliente", err)
+		return nil, models.ErrorResponse(500, "Error al actualizar cliente", err)
 	}
-	return product, part, nil
+	return product, nil
 }
 
-func ProductGetByIdentifier(identifier string, workplace string) (*[]models.ProductLaundry, *[]models.PartWorkshop, error) {
-	product, part, err := repositories.Repo.GetElementsByIdentifier(identifier, workplace)
+func (p *ProductService) ProductGetByIdentifier(identifier string) (*[]models.Product, error) {
+	product, err := p.ProductRepository.ProductGetByIdentifier(identifier)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, nil, models.ErrorResponse(404, "Elemento no encontrado", err)
+			return nil, models.ErrorResponse(404, "Elemento no encontrado", err)
 		}
-		return nil, nil, models.ErrorResponse(500, "Error al actualizar cliente", err)
+		return nil, models.ErrorResponse(500, "Error al actualizar cliente", err)
 	}
-	return product, part, nil
+	return product, nil
 }
 
-func ProductGetAll(workplace string) (*[]models.ProductLaundry, *[]models.PartWorkshop, error) {
-	product, part, err := repositories.Repo.GetAllElements(workplace)
+func (p *ProductService) ProductGetAll(workplace string) (*[]models.Product, error) {
+	products, err := p.ProductRepository.ProductGetAll()
 	if err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, nil, models.ErrorResponse(404, "Elemento no encontrado", err)
-		}
-		return nil, nil, models.ErrorResponse(500, "Error al actualizar cliente", err)
+		return nil, models.ErrorResponse(500, "Error al actualizar cliente", err)
 	}
-	return product, part, nil
+	return products, nil
 }
 
-func ProductGetByName(name string, workplace string) (*[]models.ProductLaundry, *[]models.PartWorkshop, error) {
-	product, part, err := repositories.Repo.GetAllElementsByName(name, workplace)
+func (p *ProductService) ProductGetByName(name string) (*[]models.Product, error) {
+	products, err := p.ProductRepository.ProductGetByName(name)
 	if err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, nil, models.ErrorResponse(404, "Elemento no encontrado", err)
-		}
-		return nil, nil, models.ErrorResponse(500, "Error al obtener productos", err)
+		return nil, models.ErrorResponse(500, "Error al obtener productos", err)
 	}
-	return product, part, nil
+	return products, nil
 }
 
-func ProductCreate(product *models.ProductCreate, workplace string) (string, error) {
-	id, err := repositories.Repo.CreateElement(product, workplace)
+func (p *ProductService) ProductCreate(product *models.ProductCreate, workplace string) (string, error) {
+	id, err := p.ProductRepository.CreateElement(product, workplace)
 	if err != nil {
 		return "", models.ErrorResponse(500, "Error al crear producto", err)
 	}
 	return id, nil
 }
 
-func ProductUpdate(product *models.ProductUpdate, workplace string) error {
-	err := repositories.Repo.UpdateElement(product, workplace)
+func (p *ProductService) ProductUpdate(product *models.ProductUpdate, workplace string) error {
+	err := p.ProductRepository.UpdateElement(product, workplace)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return models.ErrorResponse(404, "Elemento no encontrado", err)
@@ -71,8 +65,8 @@ func ProductUpdate(product *models.ProductUpdate, workplace string) error {
 	return nil
 }
 
-func ProductUpdateStock(id string, stock *models.StockUpdate, method string, workplace string) error {
-	product, part, err := repositories.Repo.GetElementByID(id, workplace)
+func (p *ProductService) ProductUpdateStock(id string, stock *models.StockUpdate, method string, workplace string) error {
+	product, part, err := p.productRepository.ProductGetByID(id, workplace)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return models.ErrorResponse(404, "Elemento no encontrado", err)
@@ -84,12 +78,12 @@ func ProductUpdateStock(id string, stock *models.StockUpdate, method string, wor
 		if stock.Stock < 0 {
 			return models.ErrorResponse(400, "El stock no puede ser negativo", nil)
 		}
-		return repositories.Repo.UpdateStock(stock.Stock, id, workplace)
+		return p.ProductRepository.UpdateStock(stock.Stock, id, workplace)
 	case "add":
 		if stock.Stock <= 0{
 			return models.ErrorResponse(400, "El stock debe ser mayor a 0", nil)
 		}
-		return repositories.Repo.AddToStock(id, stock.Stock, workplace)
+		return p.ProductRepository.AddToStock(id, stock.Stock, workplace)
 	case "subtract":
 		if stock.Stock <= 0{
 			return models.ErrorResponse(400, "El stock debe ser mayor a 0", nil)
@@ -97,14 +91,14 @@ func ProductUpdateStock(id string, stock *models.StockUpdate, method string, wor
 		if (part != nil && part.Stock < stock.Stock) || (product != nil && product.Stock < stock.Stock) {
 			return models.ErrorResponse(400, "El stock no puede ser negativo", nil)
 		}
-		return repositories.Repo.SubtractFromStockToStock(id, stock.Stock, workplace)
+		return p.ProductRepository.SubtractFromStockToStock(id, stock.Stock, workplace)
 	
 	default:
 		return models.ErrorResponse(500, "Método de actualización no soportado", err)
 	}
 }
 
-func ProductDelete(id string, workplace string) error {
+func (p *ProductService) ProductDelete(id string, workplace string) error {
 	err := repositories.Repo.DeleteElement(id, workplace)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {

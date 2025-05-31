@@ -4,13 +4,13 @@ import (
 	"errors"
 
 	"github.com/DanielChachagua/GestionCar/pkg/models"
-	"github.com/DanielChachagua/GestionCar/pkg/repositories"
 	"github.com/DanielChachagua/GestionCar/pkg/utils"
 	"gorm.io/gorm"
 )
 
+
 func (a *AuthService) AuthLogin(username, password string) (string, error) {
-	user, err := repositories.Repo.GetUserByUsername(username)
+	user, err := a.UserRepository.GetUserByUsername(username)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return "", models.ErrorResponse(404, "Usuario no encontrado", err)
@@ -31,26 +31,26 @@ func (a *AuthService) AuthLogin(username, password string) (string, error) {
 	return token, nil
 }
 
-func AuthWorkplace(id string) (string, error) {
-	workplace, err := repositories.Repo.GetWorkplaceByID(id)
-	if err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return "", models.ErrorResponse(404, "Lugar de trabajo no encontrado", err)
-		}
-		return "", models.ErrorResponse(500, "Error al buscar lugar de trabajo", err)
-	}
+// func (a *AuthService) AuthWorkplace(id string) (string, error) {
+// 	workplace, err := repositories.Repo.GetWorkplaceByID(id)
+// 	if err != nil {
+// 		if errors.Is(err, gorm.ErrRecordNotFound) {
+// 			return "", models.ErrorResponse(404, "Lugar de trabajo no encontrado", err)
+// 		}
+// 		return "", models.ErrorResponse(500, "Error al buscar lugar de trabajo", err)
+// 	}
 
-	token, err := utils.GenerateWorkplaceToken(workplace)
+// 	token, err := utils.GenerateWorkplaceToken(workplace)
 
-	if err != nil {
-		return "", models.ErrorResponse(500, "Error al generar token", err)
-	}
+// 	if err != nil {
+// 		return "", models.ErrorResponse(500, "Error al generar token", err)
+// 	}
 
-	return token, nil
-}
+// 	return token, nil
+// }
 
-func CurrentUser(userId string) (*models.User, error) {
-	user, err := repositories.Repo.GetUserByID(userId)
+func (a *AuthService) CurrentUser(userId string) (*models.User, error) {
+	user, err := a.UserRepository.GetUserByID(userId)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, models.ErrorResponse(404, "Usuario no encontrado", err)
@@ -61,17 +61,17 @@ func CurrentUser(userId string) (*models.User, error) {
 	return user, nil
 }
 
-func CurrentWorkplace(workplaceId string) (*models.Workplace, error) {
-	workplace, err := repositories.Repo.GetWorkplaceByID(workplaceId)
-	if err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, models.ErrorResponse(404, "Usuario no encontrado", err)
-		}
-		return nil, models.ErrorResponse(500, "Error al buscar usuario", err)
-	}
+// func (a *AuthService) CurrentWorkplace(workplaceId string) (*models.Workplace, error) {
+// 	workplace, err := repositories.Repo.GetWorkplaceByID(workplaceId)
+// 	if err != nil {
+// 		if errors.Is(err, gorm.ErrRecordNotFound) {
+// 			return nil, models.ErrorResponse(404, "Usuario no encontrado", err)
+// 		}
+// 		return nil, models.ErrorResponse(500, "Error al buscar usuario", err)
+// 	}
 
-	return workplace, nil
-}
+// 	return workplace, nil
+// }
 
 // func GetWorkplaceByRole(role string) (*models.Workplace, error) {
 // 	workplace, err := repositories.Repo.GetWorkplaceByRole(role)
