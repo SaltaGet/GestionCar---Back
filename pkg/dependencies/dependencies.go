@@ -1,7 +1,9 @@
 package dependencies
 
 import (
+	"github.com/DanielChachagua/GestionCar/cmd/api/controllers"
 	"github.com/DanielChachagua/GestionCar/pkg/repositories"
+	"github.com/DanielChachagua/GestionCar/pkg/services"
 	"gorm.io/gorm"
 )
 
@@ -23,48 +25,33 @@ import (
 var App *Application
 
 type Application struct {
-	EntityController *entCtrl.Controller
-	UserController *userCtrl.Controller
-	AuthController *authCtrl.Controller
-	EstablishmentController *estCtrl.Controller
+	AuthController *controllers.AuthController
+	UserController *controllers.UserController
+	TenantController *controllers.TenantController
 }
 
 func NewApplication(db *gorm.DB) *Application {
-	entityRepo := &entRep.Repository{DB: db,}
-	entityServ := &entServ.Service{EntityRepository: entityRepo}
-
-	userRepo := &userRep.Repository{DB: db,}
-	userServ := &userServ.Service{UserRepository: userRepo}
-
-	establishmentRepo := &estRep.Repository{DB: db,}
-	establishmentServ := &estServ.Service{EstablishmentRepository: establishmentRepo, EntityRepository: entityRepo}
+	repo := &repositories.Repository{DB: db,}
 	
-	authRepo := &authRep.Repository{DB: db,}
-	authServ := &authServ.Service{AuthRepository: authRepo, UserRepository: userRepo, EstablishmentRepository: establishmentRepo}
+	authServ := &services.AuthService{AuthRepository: repo, UserRepository: repo}
+	userServ := &services.UserService{UserRepository: repo}
+	tenantServ := &services.TenantService{TenantRepository: repo}
 
 	return &Application{
-		EntityController: &entCtrl.Controller{EntityService: entityServ},
-		UserController: &userCtrl.Controller{UserService: userServ},
-		AuthController: &authCtrl.Controller{AuthService: authServ},
-		EstablishmentController: &estCtrl.Controller{EstablishmentService: establishmentServ},
+		AuthController: &controllers.AuthController{AuthService: authServ},
+		UserController: &controllers.UserController{UserService: userServ},
+		TenantController: &controllers.TenantController{TenantService: tenantServ},
 	}
 }
 
-func (app *Application) SetDBRepository(db *sql.DB) {
-	entityRepo := &entRep.Repository{DB: db,}
-	entityServ := &entServ.Service{EntityRepository: entityRepo}
+func (app *Application) SetDBRepository(db *gorm.DB) {
+	repo := &repositories.Repository{DB: db,}
+	
+	authServ := &services.AuthService{AuthRepository: repo, UserRepository: repo}
+	userServ := &services.UserService{UserRepository: repo}
+	tenantServ := &services.TenantService{TenantRepository: repo}
 
-	userRepo := &userRep.Repository{DB: db,}
-	userServ := &userServ.Service{UserRepository: userRepo}
-
-	authRepo := &authRep.Repository{DB: db,}
-	authServ := &authServ.Service{AuthRepository: authRepo, UserRepository: userRepo}
-
-	establishmentRepo := &estRep.Repository{DB: db,}
-	establishmentServ := &estServ.Service{EstablishmentRepository: establishmentRepo, EntityRepository: entityRepo}
-
-	app.UserController.UserService = userServ
-	app.EntityController.EntityService = entityServ
 	app.AuthController.AuthService = authServ
-	app.EstablishmentController.EstablishmentService = establishmentServ
+	app.UserController.UserService = userServ
+	app.TenantController.TenantService = tenantServ
 }

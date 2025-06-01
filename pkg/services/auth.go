@@ -1,29 +1,21 @@
 package services
 
 import (
-	"errors"
+	// "errors"
 
 	"github.com/DanielChachagua/GestionCar/pkg/models"
 	"github.com/DanielChachagua/GestionCar/pkg/utils"
-	"gorm.io/gorm"
+	// "gorm.io/gorm"
 )
 
 
 func (a *AuthService) AuthLogin(username, password string) (string, error) {
-	user, err := a.UserRepository.GetUserByUsername(username)
+	user, err := a.AuthRepository.AuthLogin(username, password)
 	if err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return "", models.ErrorResponse(404, "Usuario no encontrado", err)
-		}
-		return "", models.ErrorResponse(500, "Error al  buscar usuario", err)
-	}
-
-	if !utils.CheckPasswordHash(password, user.Password) {
-		return "", models.ErrorResponse(401, "Credenciales incorrectas", nil)
+		return "", err
 	}
 
 	token, err := utils.GenerateUserToken(user)
-
 	if err != nil {
 		return "", models.ErrorResponse(500, "Error al generar token", err)
 	}
@@ -49,17 +41,17 @@ func (a *AuthService) AuthLogin(username, password string) (string, error) {
 // 	return token, nil
 // }
 
-func (a *AuthService) CurrentUser(userId string) (*models.User, error) {
-	user, err := a.UserRepository.GetUserByID(userId)
-	if err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, models.ErrorResponse(404, "Usuario no encontrado", err)
-		}
-		return nil, models.ErrorResponse(500, "Error al buscar usuario", err)
-	}
+// func (a *AuthService) CurrentUser(userId string) (*models.User, error) {
+// 	user, err := a.UserRepository.UserGetByID(userId)
+// 	if err != nil {
+// 		if errors.Is(err, gorm.ErrRecordNotFound) {
+// 			return nil, models.ErrorResponse(404, "Usuario no encontrado", err)
+// 		}
+// 		return nil, models.ErrorResponse(500, "Error al buscar usuario", err)
+// 	}
 
-	return user, nil
-}
+// 	return user, nil
+// }
 
 // func (a *AuthService) CurrentWorkplace(workplaceId string) (*models.Workplace, error) {
 // 	workplace, err := repositories.Repo.GetWorkplaceByID(workplaceId)

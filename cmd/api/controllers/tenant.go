@@ -2,7 +2,6 @@ package controllers
 
 import (
 	"github.com/DanielChachagua/GestionCar/pkg/models"
-	"github.com/DanielChachagua/GestionCar/pkg/services"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -18,10 +17,10 @@ import (
 //	@Failure		401	{object}	models.Response	"Auth is required"
 //	@Failure		403	{object}	models.Response	"Not Authorized"
 //	@Failure		500	{object}	models.Response
-//	@Router			/workplace/get_all [get]
-func GetWorkplaces(c *fiber.Ctx) error {
+//	@Router			/tenant/get_all [get]
+func (t *TenantController) GetWorkplaces(c *fiber.Ctx) error {
 	user := c.Locals("user").(*models.User)
-	workplaces, err := services.GetWorkplaceAll(user.Role)
+	workplaces, err := t.TenantService.TenantGetByID(user.ID)
 	if err != nil {
 		if errResp, ok := err.(*models.ErrorStruc); ok {
 			return c.Status(errResp.StatusCode).JSON(models.Response{

@@ -2,7 +2,6 @@ package controllers
 
 import (
 	"github.com/DanielChachagua/GestionCar/pkg/models"
-	"github.com/DanielChachagua/GestionCar/pkg/services"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -20,7 +19,7 @@ import (
 //	@Failure		404			{object}	models.Response
 //	@Failure		500			{object}	models.Response
 //	@Router			/auth/login [post]
-func AuthLogin(c *fiber.Ctx) error {
+func (a *AuthController) AuthLogin(c *fiber.Ctx) error {
 	var loginRequest models.AuthLogin
 	if err := c.BodyParser(&loginRequest); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
@@ -38,7 +37,7 @@ func AuthLogin(c *fiber.Ctx) error {
 		})
 	}
 
-	token, err := services.AuthLogin(loginRequest.Username, loginRequest.Password)
+	token, err := a.AuthService.AuthLogin(loginRequest.Username, loginRequest.Password)
 	if err != nil {
 		if errResp, ok := err.(*models.ErrorStruc); ok {
 			return c.Status(errResp.StatusCode).JSON(models.Response{
@@ -61,43 +60,43 @@ func AuthLogin(c *fiber.Ctx) error {
 	})
 }
 
-//  Login godoc
-//	@Summary		Login Workplace
-//	@Description	Login workplace required workplace_id
-//	@Tags			Auth
-//	@Accept			json
-//	@Produce		json
-//	@Security		BearerAuth
-//	@Param			workplace_id	path		string	true	"workplace_id"
-//	@Success		200				{object}	models.Response
-//	@Failure		400				{object}	models.Response
-//	@Failure		401				{object}	models.Response
-//	@Failure		422				{object}	models.Response
-//	@Failure		404				{object}	models.Response
-//	@Failure		500				{object}	models.Response
-//	@Router			/auth/workplace_login/{workplace_id} [get]
-func AuthWorkplace(c *fiber.Ctx) error {
-	id := c.Params("workplace_id")
+// //  Login godoc
+// //	@Summary		Login Workplace
+// //	@Description	Login workplace required workplace_id
+// //	@Tags			Auth
+// //	@Accept			json
+// //	@Produce		json
+// //	@Security		BearerAuth
+// //	@Param			workplace_id	path		string	true	"workplace_id"
+// //	@Success		200				{object}	models.Response
+// //	@Failure		400				{object}	models.Response
+// //	@Failure		401				{object}	models.Response
+// //	@Failure		422				{object}	models.Response
+// //	@Failure		404				{object}	models.Response
+// //	@Failure		500				{object}	models.Response
+// //	@Router			/auth/workplace_login/{workplace_id} [get]
+// func AuthWorkplace(c *fiber.Ctx) error {
+// 	id := c.Params("workplace_id")
 
-	token, err := services.AuthWorkplace(id)
-	if err != nil {
-		if errResp, ok := err.(*models.ErrorStruc); ok {
-			return c.Status(errResp.StatusCode).JSON(models.Response{
-				Status:  false,
-				Body:    nil,
-				Message: errResp.Message,
-			})
-		}
-		return c.Status(fiber.StatusInternalServerError).JSON(models.Response{
-			Status:  false,
-			Body:    nil,
-			Message: "Error interno",
-		})
-	}
+// 	token, err := services.AuthWorkplace(id)
+// 	if err != nil {
+// 		if errResp, ok := err.(*models.ErrorStruc); ok {
+// 			return c.Status(errResp.StatusCode).JSON(models.Response{
+// 				Status:  false,
+// 				Body:    nil,
+// 				Message: errResp.Message,
+// 			})
+// 		}
+// 		return c.Status(fiber.StatusInternalServerError).JSON(models.Response{
+// 			Status:  false,
+// 			Body:    nil,
+// 			Message: "Error interno",
+// 		})
+// 	}
 
-	return c.Status(200).JSON(models.Response{
-		Status:  true,
-		Body:    token,
-		Message: "Token obtenido con éxito",
-	})
-}
+// 	return c.Status(200).JSON(models.Response{
+// 		Status:  true,
+// 		Body:    token,
+// 		Message: "Token obtenido con éxito",
+// 	})
+// }

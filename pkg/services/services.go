@@ -58,6 +58,10 @@ type SupplierService struct {
 	SupplierRepository ports.SupplierRepository
 }
 
+type TenantService struct {
+	TenantRepository ports.TenantRepository
+}
+
 type UserService struct {
 	UserRepository ports.UserRepository
 }

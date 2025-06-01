@@ -7,7 +7,7 @@ import (
 
 func (u *UserService) UserCreate(userCreate *models.UserCreate) (string, error) {
 	// Check if the user already exists
-	existingUser, err := u.UserRepository.GetUserByUsernameEmail(userCreate.Username, userCreate.Email)
+	existingUser, err := u.UserRepository.UserGetExistByUsernameEmail(userCreate.Username, userCreate.Email)
 	if err != nil {
 		return "", models.ErrorResponse(500, "Error al buscar el usuario", err)
 	}
@@ -21,7 +21,7 @@ func (u *UserService) UserCreate(userCreate *models.UserCreate) (string, error) 
 		return "", models.ErrorResponse(500, "Error al hashear la contraseña", err)
 	}
 
-	id, err := u.UserRepository.Create(userCreate)
+	id, err := u.UserRepository.UserCreate(userCreate)
 	if err != nil {
 		return "", models.ErrorResponse(500, "Error al crear el usuario", err)
 	}

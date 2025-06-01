@@ -6,7 +6,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-func WorkplaceRoutes(app *fiber.App){
+func TenantRoutes(app *fiber.App, controllers *controllers.TenantController){
 	auth := app.Group("/workplace")
 	auth.Get("/get_all", middleware.AuthMiddleware(), controllers.GetWorkplaces)
 }

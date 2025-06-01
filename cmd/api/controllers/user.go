@@ -2,7 +2,6 @@ package controllers
 
 import (
 	"github.com/DanielChachagua/GestionCar/pkg/models"
-	"github.com/DanielChachagua/GestionCar/pkg/services"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -20,7 +19,7 @@ import (
 //	@Failure		403			{object}	models.Response	"Not Authorized"
 //	@Failure		500			{object}	models.Response
 //	@Router			/user/create [post]
-func CreateUser(c *fiber.Ctx) error {
+func (u *UserController) CreateUser(c *fiber.Ctx) error {
 	var userCreate models.UserCreate
 	if err := c.BodyParser(&userCreate); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
@@ -36,7 +35,7 @@ func CreateUser(c *fiber.Ctx) error {
 			Message: err.Error(),
 		})
 	}
-	userCreated, err := services.UserCreate(&userCreate)
+	userCreated, err := u.UserService.UserCreate(&userCreate)
 	if err != nil {
 		if errResp, ok := err.(*models.ErrorStruc); ok {
 			return c.Status(errResp.StatusCode).JSON(models.Response{

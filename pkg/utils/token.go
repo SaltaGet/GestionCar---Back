@@ -14,7 +14,7 @@ func GenerateUserToken(user *models.User) (string, error) {
 		"first_name": user.FirstName,
 		"last_name":  user.LastName,
 		"username":  user.Username,
-		"role": user.Role,
+		"is_admin": user.IsAdmin,
 	})
 
 	t, err := token.SignedString([]byte(os.Getenv("SECRET_KEY")))
@@ -45,27 +45,27 @@ func CleanToken(bearerToken string) string {
 	return bearerToken
 }
 
-func GenerateWorkplaceToken(workplace *models.Workplace) (string, error) {
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		"id": workplace.ID,
-	})
+// func GenerateWorkplaceToken(workplace *models.Workplace) (string, error) {
+// 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
+// 		"id": workplace.ID,
+// 	})
 
-	t, err := token.SignedString([]byte(os.Getenv("SECRET_KEY_WORKPLACE")))
-	if err != nil {
-		return "", err
-	}
+// 	t, err := token.SignedString([]byte(os.Getenv("SECRET_KEY_WORKPLACE")))
+// 	if err != nil {
+// 		return "", err
+// 	}
 
-	return t, nil
-}
+// 	return t, nil
+// }
 
-func VerifyWorkplaceToken(tokenString string) (jwt.Claims, error) {
-	cleanToken := CleanToken(tokenString)
-	token, err := jwt.Parse(cleanToken, func(token *jwt.Token) (interface{}, error) {
-		return []byte(os.Getenv("SECRET_KEY_WORKPLACE")), nil
-	})
-	if err != nil {
-		return nil, err
-	}
+// func VerifyWorkplaceToken(tokenString string) (jwt.Claims, error) {
+// 	cleanToken := CleanToken(tokenString)
+// 	token, err := jwt.Parse(cleanToken, func(token *jwt.Token) (interface{}, error) {
+// 		return []byte(os.Getenv("SECRET_KEY_WORKPLACE")), nil
+// 	})
+// 	if err != nil {
+// 		return nil, err
+// 	}
 
-	return token.Claims, nil
-}
+// 	return token.Claims, nil
+// }
