@@ -16,7 +16,7 @@ type User struct {
 	IsAdmin      bool    `gorm:"not null;default:false" json:"is_admin"`
 	CreatedAt time.Time `gorm:"autoCreateTime" json:"created_at"`
 	UpdatedAt time.Time `gorm:"autoUpdateTime" json:"updated_at"`
-	Tenants      []Tenant   `gorm:"many2many:user_tenants;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"tenants"`
+	UserTenants []UserTenant `gorm:"foreignKey:UserID" json:"user_tenants"`
 }
 
 

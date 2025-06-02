@@ -5,10 +5,12 @@ import (
 	"github.com/DanielChachagua/GestionCar/pkg/dependencies"
 	"github.com/DanielChachagua/GestionCar/pkg/key"
 	"github.com/DanielChachagua/GestionCar/pkg/models"
+	"github.com/DanielChachagua/GestionCar/pkg/utils"
+
 	// "github.com/DanielChachagua/GestionCar/pkg/services"
 	// "github.com/DanielChachagua/GestionCar/pkg/utils"
 	"github.com/gofiber/fiber/v2"
-	// "github.com/golang-jwt/jwt/v5"
+	"github.com/golang-jwt/jwt/v5"
 )
 
 func AuthMiddleware() fiber.Handler {
@@ -32,15 +34,15 @@ func AuthMiddleware() fiber.Handler {
 		deps := ctx.Value(key.AppKey).(*dependencies.Application)
 		deps.SetDBRepository(tenantDB)
 
-		// claims, err := utils.VerifyToken(token)
+		claims, err := utils.VerifyToken(token)
 
-		// if err != nil {
-		// 	return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
-		// 		"error": "Token inválido",
-		// 	})
-		// }
+		if err != nil {
+			return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
+				"error": "Token inválido",
+			})
+		}
 
-		// userId := claims.(jwt.MapClaims)["id"].(string)
+		userId := claims.(jwt.MapClaims)["id"].(string)
 
 		user, err := deps.AuthController.AuthService.AuthLogin("asdasd", "asdasdasd")
 

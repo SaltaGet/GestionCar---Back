@@ -60,43 +60,60 @@ func (a *AuthController) AuthLogin(c *fiber.Ctx) error {
 	})
 }
 
-// //  Login godoc
-// //	@Summary		Login Workplace
-// //	@Description	Login workplace required workplace_id
-// //	@Tags			Auth
-// //	@Accept			json
-// //	@Produce		json
-// //	@Security		BearerAuth
-// //	@Param			workplace_id	path		string	true	"workplace_id"
-// //	@Success		200				{object}	models.Response
-// //	@Failure		400				{object}	models.Response
-// //	@Failure		401				{object}	models.Response
-// //	@Failure		422				{object}	models.Response
-// //	@Failure		404				{object}	models.Response
-// //	@Failure		500				{object}	models.Response
-// //	@Router			/auth/workplace_login/{workplace_id} [get]
-// func AuthWorkplace(c *fiber.Ctx) error {
-// 	id := c.Params("workplace_id")
+//  LoginTenant godoc
+//	@Summary		Login Tenant
+//	@Description	Login tenant required tenant_id
+//	@Tags			Auth
+//	@Accept			json
+//	@Produce		json
+//	@Security		BearerAuth
+//	@Param			tenant_id	path		string	true	"tenant_id"
+//	@Success		200				{object}	models.Response
+//	@Failure		400				{object}	models.Response
+//	@Failure		401				{object}	models.Response
+//	@Failure		403				{object}	models.Response
+//	@Failure		404				{object}	models.Response
+//	@Failure		422				{object}	models.Response
+//	@Failure		500				{object}	models.Response
+//	@Router			/auth/tenant_login/{tenant_id} [get]
+func (a *AuthController) AuthTenant(c *fiber.Ctx) error {
+	id := c.Params("tenant_id")
+	if id == "" {
+		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
+			Status: false, 
+			Body: nil, 
+			Message: "ID is required",
+		})
+	}
 
-// 	token, err := services.AuthWorkplace(id)
-// 	if err != nil {
-// 		if errResp, ok := err.(*models.ErrorStruc); ok {
-// 			return c.Status(errResp.StatusCode).JSON(models.Response{
-// 				Status:  false,
-// 				Body:    nil,
-// 				Message: errResp.Message,
-// 			})
-// 		}
-// 		return c.Status(fiber.StatusInternalServerError).JSON(models.Response{
-// 			Status:  false,
-// 			Body:    nil,
-// 			Message: "Error interno",
-// 		})
-// 	}
+	user := c.Locals("user").(*models.User)
+	if user == nil {
+		return c.Status(401).JSON(models.Response{
+			Status: false, 
+			Body: nil, 
+			Message: "login is required",
+		})
+	}
 
-// 	return c.Status(200).JSON(models.Response{
-// 		Status:  true,
-// 		Body:    token,
-// 		Message: "Token obtenido con éxito",
-// 	})
-// }
+	token, err := a.AuthService.AuthTenant(user.ID, id)
+	if err != nil {
+		if errResp, ok := err.(*models.ErrorStruc); ok {
+			return c.Status(errResp.StatusCode).JSON(models.Response{
+				Status:  false,
+				Body:    nil,
+				Message: errResp.Message,
+			})
+		}
+		return c.Status(fiber.StatusInternalServerError).JSON(models.Response{
+			Status:  false,
+			Body:    nil,
+			Message: "Error interno",
+		})
+	}
+
+	return c.Status(200).JSON(models.Response{
+		Status:  true,
+		Body:    token,
+		Message: "Token obtenido con éxito",
+	})
+}
