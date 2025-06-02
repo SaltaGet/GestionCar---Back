@@ -9,7 +9,7 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 )
 
-func GenerateToken(user *models.User, tenantID string, memberID string, roleTenant string) (string, error) {
+func GenerateToken(user *models.User, tenantID string, memberID string, role *models.Role, permissions *[]string) (string, error) {
 	claims := jwt.MapClaims{
         "id":         user.ID,
         "first_name": user.FirstName,
@@ -19,15 +19,13 @@ func GenerateToken(user *models.User, tenantID string, memberID string, roleTena
 				"exp":        time.Now().Add(24 * time.Hour).Unix(),
     }
 
-		if tenantID != "" {
+		if tenantID != "" && memberID != "" && role != nil && permissions != nil {
 				claims["tenant_id"] = tenantID
+				claims["member_id"] = memberID
+				claims["role_id"] = role.ID
+				claims["role_name"] = role.Name
+        claims["permissions"] = permissions
 		}
-		if memberID != "" {
-			claims["member_id"] = memberID
-		}
-    if roleTenant != "" {
-        claims["role_tenant"] = roleTenant
-    }
 
     token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 

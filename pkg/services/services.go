@@ -29,8 +29,16 @@ type IncomeService struct {
 	IncomeRepository ports.IncomeRepository
 }
 
+type MemberService struct {
+	MemberRepository ports.MemberRepository
+}
+
 type MovementTypeService struct {
 	MovementTypeRepository ports.MovementTypeRepository
+}
+
+type PermissionService struct {
+	PermissionRepository ports.PermissionRepository
 }
 
 type ProductService struct {

@@ -15,7 +15,7 @@ func (a *AuthService) AuthLogin(username, password string) (string, error) {
 		return "", err
 	}
 
-	token, err := utils.GenerateToken(user, "", "", "")
+	token, err := utils.GenerateToken(user, "", "", nil, nil)
 	if err != nil {
 		return "", models.ErrorResponse(500, "Error al generar token", err)
 	}
@@ -23,35 +23,13 @@ func (a *AuthService) AuthLogin(username, password string) (string, error) {
 	return token, nil
 }
 
-func (a *AuthService) AuthTenant(userID string, tenantID string) (string, error) {
+func (a *AuthService) AuthTenant(userID string, tenantID string) (*models.Tenant, error) {
 	tenant, err := a.AuthRepository.AuthTenant(userID, tenantID)
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 
-	user, err := a.AuthRepository.CurrentUser(userID)
-	if err != nil {
-		return "", err
-	}
-
-	connection, err := utils.Decrypt(tenant.Connection)
-	if err != nil {
-		return "", models.ErrorResponse(500, "Error al desencriptar la conexión", err)
-	}
-
-	member, role, permissions, err := a.AuthRepository.GetUserRolePermissions(connection, userID)
-    if err != nil {
-        return "", err
-    }
-	
-
-
-	token, err := utils.GenerateToken(user, member.ID, role.ID, permissions)
-	if err != nil {
-		return "", models.ErrorResponse(500, "Error al generar token", err)
-	}
-
-	return token, nil
+	return tenant, nil
 }
 
 // func (a *AuthService) AuthWorkplace(id string) (string, error) {

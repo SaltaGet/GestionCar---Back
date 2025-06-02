@@ -9,7 +9,7 @@ import (
 	"gorm.io/gorm"
 )
 
-func (r *Repository) AuthLogin(username string, password string) (*models.User, error) {
+func (r *MainRepository) AuthLogin(username string, password string) (*models.User, error) {
 	var user models.User
 	if err := r.DB.Where("username = ?", username).First(&user).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
@@ -25,7 +25,7 @@ func (r *Repository) AuthLogin(username string, password string) (*models.User, 
 	return &user, nil
 }
 
-func (r *Repository) AuthTenant(userID string, tenantID string) (*models.Tenant, error) {
+func (r *MainRepository) AuthTenant(userID string, tenantID string) (*models.Tenant, error) {
 	var tenant models.Tenant
 	err := r.DB.
 		Model(&models.Tenant{}).
@@ -55,7 +55,7 @@ func (r *Repository) AuthTenant(userID string, tenantID string) (*models.Tenant,
 	return &tenant, nil
 }
 
-func (r *Repository) CurrentUser(userID string) (*models.User, error) {
+func (r *MainRepository) CurrentUser(userID string) (*models.User, error) {
 	var user models.User
 	if err := r.DB.Where("id = ?", userID).First(&user).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
@@ -66,26 +66,31 @@ func (r *Repository) CurrentUser(userID string) (*models.User, error) {
 	return &user, nil
 }
 
-func (r *Repository) GetUserRolePermissions(connection, userID string) (*models.Member, *models.Role, []models.Permission, error) {
-    db, err := database.GetTenantDB(connection)
-    if err != nil {
-        return nil, nil, nil, models.ErrorResponse(500, "Error retrieving the database", err)
-    }
+func (r *MainRepository) GetUserRolePermissions(connection, userID string) (*models.Member, *models.Role, *[]string, error) {
+	db, err := database.GetTenantDB(connection)
+	if err != nil {
+		return nil, nil, nil, models.ErrorResponse(500, "Error retrieving the database", err)
+	}
 
-    var member models.Member
-    if err := db.Where("user_id = ?", userID).First(&member).Error; err != nil {
-        return nil, nil, nil, models.ErrorResponse(404, "User not found", err)
-    }
+	var member models.Member
+	if err := db.Where("user_id = ?", userID).First(&member).Error; err != nil {
+		return nil, nil, nil, models.ErrorResponse(404, "User not found", err)
+	}
 
-    var role models.Role
-    if err := db.Where("id = ?", member.RoleID).First(&role).Error; err != nil {
-        return nil, nil, nil, models.ErrorResponse(404, "Role not found", err)
-    }
+	var role models.Role
+	if err := db.Where("id = ?", member.RoleID).First(&role).Error; err != nil {
+		return nil, nil, nil, models.ErrorResponse(404, "Role not found", err)
+	}
 
-    var permissions []models.Permission
-    if err := db.Model(&role).Association("Permissions").Find(&permissions); err != nil {
-        return nil, nil, nil, models.ErrorResponse(500, "Error al obtener los permisos", err)
-    }
+	var permissions []string
+	err = db.Model(&models.Permission{}).
+		Select("permissions.name").
+		Joins("JOIN role_permissions ON role_permissions.permission_id = permissions.id").
+		Where("role_permissions.role_id = ?", role.ID).
+		Pluck("permissions.name", &permissions).Error
+	if err != nil {
+		return nil, nil, nil, models.ErrorResponse(500, "Error al obtener los permisos", err)
+	}
 
-    return &member, &role, permissions, nil
+	return &member, &role, &permissions, nil
 }

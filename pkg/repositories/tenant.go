@@ -7,7 +7,7 @@ import (
 	"gorm.io/gorm"
 )
 
-func (r *Repository) TenantGetByID(id string) (*models.Tenant, error) {
+func (r *MainRepository) TenantGetByID(id string) (*models.Tenant, error) {
 	var tenant models.Tenant
 	err := r.DB.First(&tenant, "id = ?", id).Error
 	if err != nil {
@@ -19,7 +19,7 @@ func (r *Repository) TenantGetByID(id string) (*models.Tenant, error) {
 	return &tenant, nil
 }
 
-func (r *Repository) TenantGetAll(userID string) (*[]models.TenantResponse, error) {
+func (r *MainRepository) TenantGetAll(userID string) (*[]models.TenantResponse, error) {
 	var tenants []models.TenantResponse
 
 	err := r.DB.
@@ -39,7 +39,7 @@ func (r *Repository) TenantGetAll(userID string) (*[]models.TenantResponse, erro
 	return &tenants, nil
 }
 
-func (r *Repository) TenantCreate(tenant *models.Tenant) (string, error) {
+func (r *MainRepository) TenantCreate(tenant *models.Tenant) (string, error) {
 	if err := r.DB.Create(&tenant).Error; err != nil {
 		return "", models.ErrorResponse(500, "Error creating tenant", err)
 	}
@@ -47,7 +47,7 @@ func (r *Repository) TenantCreate(tenant *models.Tenant) (string, error) {
 	return tenant.ID, nil
 }
 
-func (r *Repository) TenantUpdate(userID string, tenant *models.TenantUpdate) error {
+func (r *MainRepository) TenantUpdate(userID string, tenant *models.TenantUpdate) error {
 	var userTenant models.UserTenant
 
 	err := r.DB.First(&userTenant, "user_id = ? AND tenant_id = ?", userID, tenant.ID).Error

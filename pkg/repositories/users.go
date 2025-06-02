@@ -8,7 +8,7 @@ import (
 	"gorm.io/gorm"
 )
 
-func (r *Repository) UserGetByID(id string) (*models.User, error) {
+func (r *MainRepository) UserGetByID(id string) (*models.User, error) {
 	var user models.User
 	err := r.DB.First(&user, "id = ?", id).Error
 	
@@ -19,7 +19,7 @@ func (r *Repository) UserGetByID(id string) (*models.User, error) {
 	return &user, nil
 }
 
-func (r *Repository) UserGetByUsername(username string) (*models.User, error) {
+func (r *MainRepository) UserGetByUsername(username string) (*models.User, error) {
 	var user models.User
 	err := r.DB.Where("username = ?", username).First(&user).Error
 	if err != nil {
@@ -32,7 +32,7 @@ func (r *Repository) UserGetByUsername(username string) (*models.User, error) {
 	return &user, nil
 }
 
-func (r *Repository) UserGetExistByUsernameEmail(username string, email string) (bool, error) {
+func (r *MainRepository) UserGetExistByUsernameEmail(username string, email string) (bool, error) {
 	err := r.DB.Where("email = ? OR username = ?", email, username).First(&models.User{}).Error
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
@@ -44,7 +44,7 @@ func (r *Repository) UserGetExistByUsernameEmail(username string, email string) 
 	return true, nil
 }
 
-func (r *Repository) UserCreate(user *models.UserCreate) (string, error) {
+func (r *MainRepository) UserCreate(user *models.UserCreate) (string, error) {
 	newID := uuid.NewString()
 	err := r.DB.Create(&models.User{Username: user.Username, Email: user.Email, Password: user.Password}).Error
 	if err != nil {

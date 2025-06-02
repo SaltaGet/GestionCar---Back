@@ -6,6 +6,7 @@ import (
 	"github.com/DanielChachagua/GestionCar/pkg/key"
 	"github.com/DanielChachagua/GestionCar/pkg/models"
 	"github.com/DanielChachagua/GestionCar/pkg/utils"
+	"gorm.io/gorm"
 
 	// "github.com/DanielChachagua/GestionCar/pkg/services"
 	// "github.com/DanielChachagua/GestionCar/pkg/utils"
@@ -22,17 +23,8 @@ func AuthMiddleware() fiber.Handler {
 			})
 		}
 
-		tenantDB, err := database.GetTenantDB("default")
-		if err != nil {
-			return c.Status(500).JSON(models.Response{
-				Status:  false,
-				Message: "Error de conexión al tenant",
-			})
-		}
-
 		ctx := c.UserContext()
 		deps := ctx.Value(key.AppKey).(*dependencies.Application)
-		deps.SetDBRepository(tenantDB)
 
 		claims, err := utils.VerifyToken(token)
 
@@ -44,7 +36,9 @@ func AuthMiddleware() fiber.Handler {
 
 		userId := claims.(jwt.MapClaims)["id"].(string)
 
-		user, err := deps.AuthController.AuthService.AuthLogin("asdasd", "asdasdasd")
+		tenantID := claims.(jwt.MapClaims)["tenant_id"].(string)
+
+		user, err := deps.AuthController.AuthService.CurrentUser(userId)
 
 		if err != nil {
 			if errResp, ok := err.(*models.ErrorStruc); ok {
@@ -60,7 +54,43 @@ func AuthMiddleware() fiber.Handler {
 				Message: "Error interno",
 			})
 		}
-		
+
+		if tenantID != "" {
+			tenant, err := deps.AuthController.AuthService.AuthTenant(userId, tenantID)
+			if err != nil {
+				return c.Status(fiber.StatusUnauthorized).JSON(models.Response{
+					Status:  false,
+					Body:    nil,
+					Message: err.Error(),
+				})
+			}
+
+			connection, err := utils.Decrypt(tenant.Connection)
+			if err != nil {
+				return c.Status(500).JSON(models.Response{
+					Status:  false,
+					Body:    nil,
+					Message: err.Error(),
+				})
+			}
+
+			db, err := database.GetTenantDB(connection)
+			if err != nil {
+				return c.Status(500).JSON(models.Response{
+					Status:  false,
+					Body:    nil,
+					Message: err.Error(),
+				})
+			}
+
+			// ctx := c.UserContext()
+			// db = ctx.Value(key.TenantDBKey).(*gorm.DB)
+			tenantApp := dependencies.TenantDBRepository(db)
+
+			tenantApp.MemberController.MemberService.MemberGetRolePermissions(user, tenant)
+
+		}
+
 		c.Locals("user", user)
 
 		return c.Next()

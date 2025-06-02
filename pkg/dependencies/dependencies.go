@@ -30,12 +30,12 @@ type Application struct {
 	TenantController *controllers.TenantController
 }
 
-func NewApplication(db *gorm.DB) *Application {
-	repo := &repositories.Repository{DB: db,}
-	
-	authServ := &services.AuthService{AuthRepository: repo, UserRepository: repo}
-	userServ := &services.UserService{UserRepository: repo}
-	tenantServ := &services.TenantService{TenantRepository: repo}
+func NewApplication(mainDB *gorm.DB) *Application {
+	mainRepo := &repositories.MainRepository{DB: mainDB}
+
+	authServ := &services.AuthService{AuthRepository: mainRepo, UserRepository: mainRepo}
+	userServ := &services.UserService{UserRepository: mainRepo}
+	tenantServ := &services.TenantService{TenantRepository: mainRepo}
 
 	return &Application{
 		AuthController: &controllers.AuthController{AuthService: authServ},
@@ -44,14 +44,25 @@ func NewApplication(db *gorm.DB) *Application {
 	}
 }
 
-func (app *Application) SetDBRepository(db *gorm.DB) {
-	repo := &repositories.Repository{DB: db,}
-	
-	authServ := &services.AuthService{AuthRepository: repo, UserRepository: repo}
-	userServ := &services.UserService{UserRepository: repo}
-	tenantServ := &services.TenantService{TenantRepository: repo}
+var TenantApp *TenantApplication
 
-	app.AuthController.AuthService = authServ
-	app.UserController.UserService = userServ
-	app.TenantController.TenantService = tenantServ
+type TenantApplication struct {
+	MemberController *controllers.MemberController
+	RoleController *controllers.RoleController
+	PermissionController *controllers.PermissionController
+}
+
+func TenantDBRepository(db *gorm.DB) *TenantApplication {
+	tenantRepo := &repositories.TenantRepository{DB: db,}
+	
+	memberService := &services.MemberService{MemberRepository: tenantRepo}
+	roleService := &services.RoleService{RoleRepository: tenantRepo}
+	permissionService := &services.PermissionService{PermissionRepository: tenantRepo}
+
+
+	return &TenantApplication{
+		MemberController: &controllers.MemberController{MemberService: memberService},
+		RoleController: &controllers.RoleController{RoleService: roleService},
+		PermissionController: &controllers.PermissionController{PermissionService: permissionService},
+	}
 }

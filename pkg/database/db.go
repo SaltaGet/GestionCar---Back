@@ -2,8 +2,10 @@ package database
 
 import (
 	// "fmt"
+	"fmt"
 	"log"
 	"os"
+	"strings"
 	"sync"
 	"time"
 
@@ -165,13 +167,13 @@ func ConnectDB(uri string) (*gorm.DB, error) {
 	}
 
 	db.Create(&models.User{
-		ID: newId, 
-		FirstName: os.Getenv("FIRSTNAME_ADMIN"), 
-		LastName: os.Getenv("LASTNAME_ADMIN"), 
-		Username: os.Getenv("ADMIN_USERNAME"), 
-		Email: os.Getenv("ADMIN_EMAIL"), 
-		Password: pass, 
-		IsAdmin: true,
+		ID:        newId,
+		FirstName: os.Getenv("FIRSTNAME_ADMIN"),
+		LastName:  os.Getenv("LASTNAME_ADMIN"),
+		Username:  os.Getenv("ADMIN_USERNAME"),
+		Email:     os.Getenv("ADMIN_EMAIL"),
+		Password:  pass,
+		IsAdmin:   true,
 	})
 
 	mainDB = db
@@ -180,8 +182,9 @@ func ConnectDB(uri string) (*gorm.DB, error) {
 }
 
 func GetTenantDB(uri string) (*gorm.DB, error) {
-	if uri == "" {
-		return mainDB, nil
+	filePath := filePathFromURI(uri)
+	if _, err := os.Stat(filePath); os.IsNotExist(err) {
+		return nil, fmt.Errorf("la base de datos del tenant no existe: %s", uri)
 	}
 
 	mu.RLock()
@@ -197,7 +200,10 @@ func GetTenantDB(uri string) (*gorm.DB, error) {
 		return db, nil
 	}
 
-	// uri := getTenantURI(tenantID)
+	db, err := gorm.Open(sqlite.Open(uri), &gorm.Config{})
+	if err != nil {
+		return nil, err
+	}
 	sqlDB, err := db.DB()
 	if err != nil {
 		return nil, err
@@ -247,3 +253,12 @@ func CloseAllTenantDBs() {
 		delete(tenantDBs, tenant)
 	}
 }
+
+func filePathFromURI(uri string) string {
+    uri = strings.TrimPrefix(uri, "file:")
+    if idx := strings.Index(uri, "?"); idx != -1 {
+        uri = uri[:idx]
+    }
+    return uri
+}
+
