@@ -19,16 +19,6 @@ import (
 //		@Failure		500	{object}	models.Response
 //		@Router			/member/get_all [get]
 func (m *MemberController) MemberGetAll(c *fiber.Ctx) error {
-	tenantRaw := c.Locals("tenant")
-	tenant, ok := tenantRaw.(*models.Tenant)
-	if !ok || tenant == nil {
-		return c.Status(401).JSON(models.Response{
-			Status:  false,
-			Body:    nil,
-			Message: "login tenant is required",
-		})
-	}
-
 	memebers, err := m.MemberService.MemberGetAll()
 	if err != nil {
 		if errResp, ok := err.(*models.ErrorStruc); ok {

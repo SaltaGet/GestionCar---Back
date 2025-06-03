@@ -18,15 +18,3 @@ func InjectApp(app *dependencies.Application, tenantApp *dependencies.TenantAppl
 	}
 }
 
-// func InjectTenantDB() fiber.Handler {
-//     return func(c *fiber.Ctx) error {
-//         tenantURI := c.Get("X-Tenant-Uri") // O como determines el tenant
-//         db, err := database.GetTenantDB(tenantURI)
-//         if err != nil {
-//             return c.Status(500).SendString("DB error")
-//         }
-//         ctx := context.WithValue(c.UserContext(), key.TenantDBKey, db)
-//         c.SetUserContext(ctx)
-//         return c.Next()
-//     }
-// }

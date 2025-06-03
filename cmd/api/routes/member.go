@@ -7,6 +7,6 @@ import (
 )
 
 func MemberRoutes(app *fiber.App, controllers *controllers.MemberController){
-	auth := app.Group("/member")
-	auth.Get("/get_all", middleware.AuthMiddleware(), controllers.MemberGetAll)
+	auth := app.Group("/member", middleware.AuthMiddleware(), middleware.TenantMiddleware())
+	auth.Get("/get_all", controllers.MemberGetAll)
 }

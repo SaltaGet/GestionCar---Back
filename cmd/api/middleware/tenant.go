@@ -1,52 +1,22 @@
 package middleware
 
-// import (
-// 	"github.com/DanielChachagua/GestionCar/pkg/models"
-// 	"github.com/DanielChachagua/GestionCar/pkg/services"
-// 	"github.com/DanielChachagua/GestionCar/pkg/utils"
-// 	"github.com/gofiber/fiber/v2"
-// 	"github.com/golang-jwt/jwt/v5"
-// )
+import (
+	"github.com/DanielChachagua/GestionCar/pkg/models"
+	"github.com/gofiber/fiber/v2"
+)
 
-// func TenantMiddleware() fiber.Handler {
-// 	return func(c *fiber.Ctx) error {
-// 		token := c.Get("X-Workplace-Token")
+func TenantMiddleware() fiber.Handler {
+	return func(c *fiber.Ctx) error {
+		tenantRaw := c.Locals("tenant")
+		tenant, ok := tenantRaw.(*models.Tenant)
+		if !ok || tenant == nil {
+			return c.Status(401).JSON(models.Response{
+				Status:  false,
+				Body:    nil,
+				Message: "login tenant is required",
+			})
+		}
 
-// 		if token == "" {
-// 			return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
-// 				"error": "Token no proporcionado",
-// 			})
-// 		}
-
-// 		claims, err := utils.VerifyWorkplaceToken(token)
-
-// 		if err != nil {
-// 			return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
-// 				"error": "Token inválido",
-// 			})
-// 		}
-
-// 		workplaceId := claims.(jwt.MapClaims)["id"].(string)
-
-// 		workplace, err := services.CurrentWorkplace(workplaceId)
-
-// 		if err != nil {
-// 			if errResp, ok := err.(*models.ErrorStruc); ok {
-// 				return c.Status(errResp.StatusCode).JSON(models.Response{
-// 					Status:  false,
-// 					Body:    nil,
-// 					Message: errResp.Message,
-// 				})
-// 			}
-// 			return c.Status(fiber.StatusInternalServerError).JSON(models.Response{
-// 				Status:  false,
-// 				Body:    nil,
-// 				Message: "Error interno",
-// 			})
-// 		}
-		
-// 		c.Locals("workplace", workplace)
-
-// 		return c.Next()
-// 	}
-// }
+		return c.Next()
+	}
+}
