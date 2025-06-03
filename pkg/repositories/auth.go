@@ -25,13 +25,12 @@ func (r *MainRepository) AuthLogin(username string, password string) (*models.Us
 	return &user, nil
 }
 
-func (r *MainRepository) AuthTenant(userID string, tenantID string) (*models.Tenant, error) {
+func (r *MainRepository) AuthGetTenant(userID string, tenantID string) (*models.Tenant, error) {
 	var tenant models.Tenant
 	err := r.DB.
-		Model(&models.Tenant{}).
 		Preload("UserTenants", "user_id = ? AND tenant_id = ?", userID, tenantID).
 		Where("id = ?", tenantID).
-		Scan(&tenant).Error
+		First(&tenant).Error
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, models.ErrorResponse(404, "Tenant not found", err)
@@ -66,7 +65,7 @@ func (r *MainRepository) CurrentUser(userID string) (*models.User, error) {
 	return &user, nil
 }
 
-func (r *MainRepository) GetUserRolePermissions(connection, userID string) (*models.Member, *models.Role, *[]string, error) {
+func (r *MainRepository) UserGetRolePermissions(connection, userID string) (*models.Member, *models.Role, *[]string, error) {
 	db, err := database.GetTenantDB(connection)
 	if err != nil {
 		return nil, nil, nil, models.ErrorResponse(500, "Error retrieving the database", err)
@@ -85,8 +84,8 @@ func (r *MainRepository) GetUserRolePermissions(connection, userID string) (*mod
 	var permissions []string
 	err = db.Model(&models.Permission{}).
 		Select("permissions.name").
-		Joins("JOIN role_permissions ON role_permissions.permission_id = permissions.id").
-		Where("role_permissions.role_id = ?", role.ID).
+		Joins("JOIN user_permissions ON user_permissions.permission_id = permissions.id").
+		Where("user_permissions.role_id = ?", role.ID).
 		Pluck("permissions.name", &permissions).Error
 	if err != nil {
 		return nil, nil, nil, models.ErrorResponse(500, "Error al obtener los permisos", err)

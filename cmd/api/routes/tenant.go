@@ -7,6 +7,7 @@ import (
 )
 
 func TenantRoutes(app *fiber.App, controllers *controllers.TenantController){
-	auth := app.Group("/workplace")
-	auth.Get("/get_all", middleware.AuthMiddleware(), controllers.GetWorkplaces)
+	tenant := app.Group("/tenant")
+	tenant.Get("/get_all", middleware.AuthMiddleware(), controllers.GetTenants)
+	tenant.Post("/create", middleware.AuthMiddleware(), controllers.TenantUserCreate)
 }

@@ -5,13 +5,14 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-func SetupRoutes(app *fiber.App, appDependencies *dependencies.Application) {
+func SetupRoutes(app *fiber.App, appDependencies *dependencies.Application, tenantDependencies *dependencies.TenantApplication) {
 	// AttendanceRoutes(app)
 	AuthRoutes(app, appDependencies.AuthController)
 	// ClientRoutes(app)
 	// EmployeeRoutes(app)
 	// ExpenseRoutes(app)
 	// IncomeRoutes(app)
+	MemberRoutes(app, tenantDependencies.MemberController)
 	// MovementRoutes(app)
 	// ProductRoutes(app)
 	// PurchaseOrderRoutes(app)

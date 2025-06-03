@@ -1,21 +1,15 @@
 package services
 
 import (
-	"fmt"
-	"os"
-	"strings"
-
 	"github.com/DanielChachagua/GestionCar/pkg/models"
-	"github.com/DanielChachagua/GestionCar/pkg/utils"
-	"github.com/google/uuid"
 )
 
-func (t *TenantService) TenantGetByID(id string) (string, error) {
-	tenant, err := t.TenantRepository.TenantGetByID(id)
+func (t *TenantService) TenantGetByID(userID, id string) (*models.Tenant, error) {
+	tenant, err := t.TenantRepository.TenantGetByID(userID, id)
 	if err != nil {
-		return "", err
+		return nil, err
 	}
-	return tenant.Name, nil
+	return tenant, nil
 }
 
 func (t *TenantService) TenantGetAll(userID string) (*[]models.TenantResponse, error) {
@@ -26,23 +20,8 @@ func (t *TenantService) TenantGetAll(userID string) (*[]models.TenantResponse, e
 	return tenants, nil
 }
 
-func (t *TenantService) TenantCreate(tenantCreate *models.TenantCreate) (string, error) {
-	tenantName := strings.ReplaceAll(tenantCreate.Name, " ", "_")
-	uri := fmt.Sprintf("%s%s_%s.db%s",os.Getenv("URI_PATH"),tenantName,uuid.NewString(),os.Getenv("URI_CONFIG"))
-	connection, err := utils.Encrypt(uri)
-	if err != nil {
-		return "", err
-	}
-
-	id, err := t.TenantRepository.TenantCreate(&models.Tenant{
-		ID:        uuid.NewString(),
-		Name:      tenantCreate.Name,
-		Address:   tenantCreate.Address,
-		Phone:     tenantCreate.Phone,
-		Email:     tenantCreate.Email,
-		CUITPDV:   tenantCreate.CUITPDV,
-		Connection: connection,
-	})
+func (t *TenantService) TenantUserCreate(tenantUserCreate *models.TenantUserCreate) (string, error) {
+	id, err := t.TenantRepository.TenantUserCreate(tenantUserCreate)
 	if err != nil {
 		return "", err
 	}

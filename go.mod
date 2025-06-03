@@ -7,7 +7,7 @@ require (
 	github.com/golang-jwt/jwt/v5 v5.2.2
 	github.com/google/uuid v1.6.0
 	github.com/joho/godotenv v1.5.1
-	golang.org/x/crypto v0.37.0
+	golang.org/x/crypto v0.37.0 // indirect
 	gorm.io/driver/sqlite v1.5.7 // direct
 	gorm.io/gorm v1.26.0 // direct
 )
@@ -57,6 +57,7 @@ require (
 )
 
 require (
+	github.com/alexedwards/argon2id v1.0.0
 	github.com/philhofer/fwd v1.1.3-0.20240916144458-20a13a1f6b7c // indirect
 	github.com/tinylib/msgp v1.2.5 // indirect
 )

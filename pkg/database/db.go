@@ -149,6 +149,7 @@ func ConnectDB(uri string) (*gorm.DB, error) {
 	db.AutoMigrate(
 		&models.User{},
 		&models.Tenant{},
+		&models.UserTenant{},
 	)
 
 	var email string

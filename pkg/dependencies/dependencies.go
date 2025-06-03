@@ -66,3 +66,16 @@ func TenantDBRepository(db *gorm.DB) *TenantApplication {
 		PermissionController: &controllers.PermissionController{PermissionService: permissionService},
 	}
 }
+
+
+func (app *TenantApplication) SetDBTenantRepository(db *gorm.DB) {
+	tenantRepo := &repositories.TenantRepository{DB: db,}
+	
+	memberService := &services.MemberService{MemberRepository: tenantRepo}
+	roleService := &services.RoleService{RoleRepository: tenantRepo}
+	permissionService := &services.PermissionService{PermissionRepository: tenantRepo}
+
+	app.MemberController.MemberService = memberService
+	app.RoleController.RoleService = roleService
+	app.PermissionController.PermissionService = permissionService
+}

@@ -56,9 +56,10 @@ func main() {
 	}))
 
 	appDependencies := dependencies.NewApplication(db)
+	tenantDependencies := dependencies.TenantDBRepository(nil)
 
 	app.Use(middleware.LoggingMiddleware)
-	app.Use(middleware.InjectApp(appDependencies))
+	app.Use(middleware.InjectApp(appDependencies, tenantDependencies))
 	// app.Use(middleware.AuditMiddleware())
 
 	app.Use(limiter.New(limiter.Config{
@@ -71,7 +72,7 @@ func main() {
 		},
 	}))
 
-	routes.SetupRoutes(app, appDependencies)
+	routes.SetupRoutes(app, appDependencies, tenantDependencies)
 
 	// repositories.Repo = dep.Repository
 

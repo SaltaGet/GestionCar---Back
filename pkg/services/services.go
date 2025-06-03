@@ -67,6 +67,7 @@ type SupplierService struct {
 }
 
 type TenantService struct {
+	UserRepository ports.UserRepository
 	TenantRepository ports.TenantRepository
 }
 

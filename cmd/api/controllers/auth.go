@@ -68,13 +68,13 @@ func (a *AuthController) AuthLogin(c *fiber.Ctx) error {
 //	@Produce		json
 //	@Security		BearerAuth
 //	@Param			tenant_id	path		string	true	"tenant_id"
-//	@Success		200				{object}	models.Response
-//	@Failure		400				{object}	models.Response
-//	@Failure		401				{object}	models.Response
-//	@Failure		403				{object}	models.Response
-//	@Failure		404				{object}	models.Response
-//	@Failure		422				{object}	models.Response
-//	@Failure		500				{object}	models.Response
+//	@Success		200			{object}	models.Response
+//	@Failure		400			{object}	models.Response
+//	@Failure		401			{object}	models.Response
+//	@Failure		403			{object}	models.Response
+//	@Failure		404			{object}	models.Response
+//	@Failure		422			{object}	models.Response
+//	@Failure		500			{object}	models.Response
 //	@Router			/auth/tenant_login/{tenant_id} [get]
 func (a *AuthController) AuthTenant(c *fiber.Ctx) error {
 	id := c.Params("tenant_id")
@@ -95,7 +95,7 @@ func (a *AuthController) AuthTenant(c *fiber.Ctx) error {
 		})
 	}
 
-	token, err := a.AuthService.AuthTenant(user.ID, id)
+	token, err := a.AuthService.AuthGetTenant(user, id)
 	if err != nil {
 		if errResp, ok := err.(*models.ErrorStruc); ok {
 			return c.Status(errResp.StatusCode).JSON(models.Response{

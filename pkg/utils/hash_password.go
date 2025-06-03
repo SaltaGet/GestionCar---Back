@@ -1,20 +1,19 @@
 package utils
 
 import (
-	"golang.org/x/crypto/bcrypt"
+	"github.com/alexedwards/argon2id"
 )
 
-// Hashear una contraseña
 func HashPassword(password string) (string, error) {
-	hash, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
-	if err != nil {
-		return "", err
-	}
-	return string(hash), nil
+    hash, err := argon2id.CreateHash(password, argon2id.DefaultParams)
+    if err != nil {
+        return "", err
+    }
+    return hash, nil
 }
 
 // Verificar una contraseña
 func CheckPasswordHash(password, hash string) bool {
-	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
-	return err == nil
+    match, err := argon2id.ComparePasswordAndHash(password, hash)
+    return err == nil && match
 }

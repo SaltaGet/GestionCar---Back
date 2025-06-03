@@ -13,7 +13,7 @@ type Tenant struct {
 	Address     string       `gorm:"not null" json:"address"`
 	Phone       string       `gorm:"not null" json:"phone"`
 	Email       string       `gorm:"Index;not null" json:"email"`
-	CUITPDV        string       `gorm:"uniqueIndex;not null" json:"cuit_pdv"`
+	CuitPdv        string       `gorm:"uniqueIndex;not null" json:"cuit_pdv"`
 	// Identifier  string       `gorm:"Index;not null;unique" json:"identifier"`
 	IsActive    bool         `gorm:"not null;default:true" json:"is_active"`
 	Connection  string       `gorm:"not null" json:"connection"`
@@ -27,7 +27,7 @@ type TenantCreate struct {
 	Address    string `json:"address" validate:"required"`
 	Phone      string `json:"phone" validate:"required"`
 	Email      string `json:"email" validate:"required,email"`
-	CUITPDV       string `json:"cuit" validate:"required"`
+	CuitPdv       string `json:"cuit" validate:"required"`
 	// Identifier string `json:"identifier" validate:"required"`
 }
 
@@ -42,37 +42,7 @@ func (t *TenantCreate) Validate() error {
 	field := validationErr.Field()
 	tag := validationErr.Tag()
 
-	// switch field {
-	// case "Name":
-	// 	if tag == "required" {
-	// 		return fmt.Errorf("name is requered")
-	// 	}
-	// case "Address":
-	// 	if tag == "required" {
-	// 		return fmt.Errorf("address is requered")
-	// 	}
-	// case "Phone":
-	// 	if tag == "required" {
-	// 		return fmt.Errorf("phone is requered")
-	// 	}
-	// case "Email":
-	// 	if tag == "required" {
-	// 		return fmt.Errorf("email is requered")
-	// 	}
-	// 	if tag == "email" {
-	// 		return fmt.Errorf("email is invalid")
-	// 	}
-	// case "Identifier":
-	// 	if tag == "required" {
-	// 		return fmt.Errorf("identifier is requered")
-	// 	}
-	// case "Connection":
-	// 	if tag == "required" {
-	// 		return fmt.Errorf("connection is requered")
-	// 	}
-	// }
-
-	return fmt.Errorf("el campo %s es inválido (%s)", field, tag)
+	return fmt.Errorf("field %s is invalid (%s)", field, tag)
 }
 
 type TenantUpdate struct {
@@ -103,9 +73,18 @@ type TenantResponse struct {
 	Address      string    `json:"address"`
 	Phone        string    `json:"phone"`
 	Email        string    `json:"email"`
-	Identifier   string    `json:"identifier"`
 	IsActive     bool      `json:"is_active"`
 	UserIsActive bool      `json:"user_is_active"`
 	CreatedAt    time.Time `json:"created_at"`
 	UpdatedAt    time.Time `json:"updated_at"`
+}
+
+type TenantUserCreate struct {
+	TenantCreate TenantCreate `json:"tenant_create" validate:"required"`
+	UserCreate    UserCreate    `json:"user_create" validate:"required"`
+}
+
+func (t *TenantUserCreate) Validate() error {
+	validate := validator.New()
+	return validate.Struct(t)
 }

@@ -23,13 +23,37 @@ func (a *AuthService) AuthLogin(username, password string) (string, error) {
 	return token, nil
 }
 
-func (a *AuthService) AuthTenant(userID string, tenantID string) (*models.Tenant, error) {
-	tenant, err := a.AuthRepository.AuthTenant(userID, tenantID)
+func (a *AuthService) AuthGetTenant(user *models.User, tenantID string) (string, error) {
+	tenant, err := a.AuthRepository.AuthGetTenant(user.ID, tenantID)
+	if err != nil {
+		return "", err
+	}
+
+	connection, err := utils.Decrypt(tenant.Connection)
+	if err != nil {
+		return "", err
+	}
+
+	member, role, permissions, err := a.AuthRepository.UserGetRolePermissions(connection,user.ID)
+	if err != nil {
+		return "", err
+	}
+
+	token, err := utils.GenerateToken(user, tenant.ID, member.ID, role, permissions)
+	if err != nil {
+		return "", models.ErrorResponse(500, "Error al generar token", err)
+	}
+
+	return token, nil
+}
+
+func (a *AuthService) CurrentUser(userID string) (*models.User, error) {
+	user, err := a.AuthRepository.CurrentUser(userID)
 	if err != nil {
 		return nil, err
 	}
 
-	return tenant, nil
+	return user, nil
 }
 
 // func (a *AuthService) AuthWorkplace(id string) (string, error) {

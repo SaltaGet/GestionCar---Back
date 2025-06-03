@@ -6,10 +6,6 @@ import (
 	"github.com/DanielChachagua/GestionCar/pkg/key"
 	"github.com/DanielChachagua/GestionCar/pkg/models"
 	"github.com/DanielChachagua/GestionCar/pkg/utils"
-	"gorm.io/gorm"
-
-	// "github.com/DanielChachagua/GestionCar/pkg/services"
-	// "github.com/DanielChachagua/GestionCar/pkg/utils"
 	"github.com/gofiber/fiber/v2"
 	"github.com/golang-jwt/jwt/v5"
 )
@@ -35,11 +31,8 @@ func AuthMiddleware() fiber.Handler {
 		}
 
 		userId := claims.(jwt.MapClaims)["id"].(string)
-
-		tenantID := claims.(jwt.MapClaims)["tenant_id"].(string)
-
 		user, err := deps.AuthController.AuthService.CurrentUser(userId)
-
+		
 		if err != nil {
 			if errResp, ok := err.(*models.ErrorStruc); ok {
 				return c.Status(errResp.StatusCode).JSON(models.Response{
@@ -54,9 +47,16 @@ func AuthMiddleware() fiber.Handler {
 				Message: "Error interno",
 			})
 		}
+		
+		tenantID, ok := claims.(jwt.MapClaims)["tenant_id"].(string)
+		if !ok {
+			tenantID = ""
+		}
+
+		c.Locals("tenant", nil)
 
 		if tenantID != "" {
-			tenant, err := deps.AuthController.AuthService.AuthTenant(userId, tenantID)
+			tenant, err := deps.TenantController.TenantService.TenantGetByID(userId, tenantID)
 			if err != nil {
 				return c.Status(fiber.StatusUnauthorized).JSON(models.Response{
 					Status:  false,
@@ -83,14 +83,13 @@ func AuthMiddleware() fiber.Handler {
 				})
 			}
 
-			// ctx := c.UserContext()
-			// db = ctx.Value(key.TenantDBKey).(*gorm.DB)
-			tenantApp := dependencies.TenantDBRepository(db)
-
-			tenantApp.MemberController.MemberService.MemberGetRolePermissions(user, tenant)
+			ctx := c.UserContext()
+			depsTenant := ctx.Value(key.TenantDBKey).(*dependencies.TenantApplication)
+			depsTenant.SetDBTenantRepository(db)
+			c.Locals("tenant", tenant)
 
 		}
-
+		
 		c.Locals("user", user)
 
 		return c.Next()

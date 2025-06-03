@@ -6,7 +6,6 @@ import (
 )
 
 func (u *UserService) UserCreate(userCreate *models.UserCreate) (string, error) {
-	// Check if the user already exists
 	existingUser, err := u.UserRepository.UserGetExistByUsernameEmail(userCreate.Username, userCreate.Email)
 	if err != nil {
 		return "", models.ErrorResponse(500, "Error al buscar el usuario", err)
