@@ -6,7 +6,7 @@ import (
 	"gorm.io/gorm"
 )
 
-func (r *TenantRepository) GetPurchaseOrderByID(id string) (*models.PurchaseOrder, error) {
+func (r *TenantRepository) PurchaseOrderGetByID(id string) (*models.PurchaseOrder, error) {
 	var purchaseOrder models.PurchaseOrder
 	if err := r.DB.Where("id = ?", id).First(&purchaseOrder).Error; err != nil {
 		return nil, err
@@ -15,7 +15,7 @@ func (r *TenantRepository) GetPurchaseOrderByID(id string) (*models.PurchaseOrde
 
 }
 
-func (r *TenantRepository) GetAllPurchaseOrders() (*[]models.PurchaseOrder, error) {
+func (r *TenantRepository) PurchaseOrderGetAll() (*[]models.PurchaseOrder, error) {
 	var purchaseOrders []models.PurchaseOrder
 	if err := r.DB.Find(&purchaseOrders).Error; err != nil {
 		return nil, err
@@ -24,7 +24,7 @@ func (r *TenantRepository) GetAllPurchaseOrders() (*[]models.PurchaseOrder, erro
 
 }
 
-func (r *TenantRepository) CreatePurchaseOrder(purchaseOrder *models.PurchaseOrderCreate) (string, error) {
+func (r *TenantRepository) PurchaseOrderCreate(purchaseOrder *models.PurchaseOrderCreate) (string, error) {
 	newID := uuid.NewString()
 	err := r.DB.Transaction(func(tx *gorm.DB) error {
 		if err := tx.Create(&models.PurchaseOrder{
@@ -57,37 +57,7 @@ func (r *TenantRepository) CreatePurchaseOrder(purchaseOrder *models.PurchaseOrd
 	return newID, nil
 }
 
-// func (r *Repository) UpdatePurchaseOrder(purchaseOrder *models.PurchaseOrderUpdate, workplace string) error {
-// 	return r.DB.Transaction(func(tx *gorm.DB) error {
-// 		switch workplace {
-// 		case "laundry":
-// 			if err := r.DB.Where("id = ?", purchaseOrder.ID).Updates(&models.PurchaseOrderLaundry{
-// 				OrderNumber: purchaseOrder.OrderNumber,
-// 				OrderDate: purchaseOrder.OrderDate,
-// 				Amount: purchaseOrder.Amount,
-// 				SupplierID: purchaseOrder.SupplierID,
-// 			}).Error; err != nil {
-// 				return err
-// 			}
-
-// 			return nil
-// 		case "workshop":
-// 			if err := r.DB.Where("id = ?", purchaseOrder.ID).Updates(&models.PurchaseOrderWorkshop{
-// 				OrderNumber: purchaseOrder.OrderNumber,
-// 				OrderDate: purchaseOrder.OrderDate,
-// 				Amount: purchaseOrder.Amount,
-// 				SupplierID: purchaseOrder.SupplierID,
-// 			}).Error; err != nil {
-// 				return err
-// 			}
-// 			return nil
-// 		default:
-// 			return fmt.Errorf("tipo de movimiento no soportado")
-// 		}
-// 	})
-// }
-
-func (r *TenantRepository) UpdatePurchaseOrder(purchaseOrder *models.PurchaseOrderUpdate) error {
+func (r *TenantRepository) PurchaseOrderUpdate(purchaseOrder *models.PurchaseOrderUpdate) error {
 	return r.DB.Transaction(func(tx *gorm.DB) error {
 		if err := tx.Where("id = ?", purchaseOrder.ID).Updates(&models.PurchaseOrder{
 			OrderNumber: purchaseOrder.OrderNumber,
@@ -153,7 +123,7 @@ func (r *TenantRepository) UpdatePurchaseOrder(purchaseOrder *models.PurchaseOrd
 	})
 }
 
-func (r *TenantRepository) DeletePurchaseOrderByID(id string) error {
+func (r *TenantRepository) PurchaseOrderDelete(id string) error {
 	return r.DB.Transaction(func(tx *gorm.DB) error {
 		if err := tx.Where("purchase_order_id = ?", id).Delete(&models.PurchaseProduct{}).Error; err != nil {
 			return err
@@ -165,12 +135,3 @@ func (r *TenantRepository) DeletePurchaseOrderByID(id string) error {
 	})
 }
 
-// var order PurchaseOrderWorkshop
-
-// err := db.Preload("Supplier").
-//           Preload("PurchaseParts.PartWorkshop").
-//           First(&order, "id = ?", someID).Error
-
-// if err != nil {
-//     // manejar error
-// }

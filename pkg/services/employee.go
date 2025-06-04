@@ -7,8 +7,8 @@ import (
 	"gorm.io/gorm"
 )
 
-func (e *EmployeeService) GetEmployeeByID(id string) (*models.Employee, error) {
-	employee, err := e.EmployeeRepository.GetEmployeeByID(id)
+func (e *EmployeeService) EmployeeGetByID(id string) (*models.Employee, error) {
+	employee, err := e.EmployeeRepository.EmployeeGetByID(id)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, models.ErrorResponse(404, "Empleado no encontrado", err)
@@ -18,32 +18,32 @@ func (e *EmployeeService) GetEmployeeByID(id string) (*models.Employee, error) {
 	return employee, nil
 }
 
-func (e *EmployeeService) GetEmployeeByName(name string) (*[]models.Employee, error) {
-	employees, err := e.EmployeeRepository.GetEmployeeByName(name)
+func (e *EmployeeService) EmployeeGetByName(name string) (*[]models.Employee, error) {
+	employees, err := e.EmployeeRepository.EmployeeGetByName(name)
 	if err != nil {
 		return nil, models.ErrorResponse(500, "Error al obtener clientes", err)
 	}
 	return employees, nil
 }
 
-func (e *EmployeeService) GetAllEmployees(workplace string) (*[]models.Employee, error) {
-	employees, err := e.EmployeeRepository.GetAllEmployees()
+func (e *EmployeeService) EmployeeGetAll(workplace string) (*[]models.Employee, error) {
+	employees, err := e.EmployeeRepository.EmployeeGetAll()
 	if err != nil {
 		return nil, models.ErrorResponse(500, "Error al actualizar cliente", err)
 	}
 	return employees, nil
 }
 
-func (e *EmployeeService) CreateEmployee(employee *models.EmployeeCreate) (string, error) {
-	id, err := e.EmployeeRepository.CreateEmployee(employee)
+func (e *EmployeeService) EmployeeCreate(employee *models.EmployeeCreate) (string, error) {
+	id, err := e.EmployeeRepository.EmployeeCreate(employee)
 	if err != nil {
 		return "", models.ErrorResponse(500, "Error al actualizar cliente", err)
 	}
 	return id, nil
 }
 
-func (e *EmployeeService) UpdateEmployee(employee *models.EmployeeUpdate) error {
-	err := e.EmployeeRepository.UpdateEmployee(employee)
+func (e *EmployeeService) EmployeeUpdate(employee *models.EmployeeUpdate) error {
+	err := e.EmployeeRepository.EmployeeUpdate(employee)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return models.ErrorResponse(404, "Empleado no encontrado", err)
@@ -53,8 +53,8 @@ func (e *EmployeeService) UpdateEmployee(employee *models.EmployeeUpdate) error 
 	return nil
 }
 
-func (e *EmployeeService) DeleteEmployee(id string) error {
-	err := e.EmployeeRepository.DeleteEmployee(id)
+func (e *EmployeeService) EmployeeDelete(id string) error {
+	err := e.EmployeeRepository.EmployeeDelete(id)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return models.ErrorResponse(404, "Empleado no encontrado", err)

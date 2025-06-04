@@ -7,8 +7,27 @@ import (
 	"gorm.io/gorm"
 )
 
+func (s *ServiceService) ServiceGetByID(id string) (*models.Service, error) {
+	service, err := s.ServiceRepository.ServiceGetByID(id)
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, models.ErrorResponse(404, "Servicio no encontrado", err)
+		}
+		return nil, models.ErrorResponse(500, "Error al buscar servicio", err)
+	}
+	return service, nil
+}
+
+func (s *ServiceService) ServiceGetAll() (*[]models.Service, error) {
+	services, err := s.ServiceRepository.ServiceGetAll()
+	if err != nil {
+		return nil, models.ErrorResponse(500, "Error al obtener servicios", err)
+	}
+	return services, nil
+}
+
 func (s *ServiceService) ServiceCreate(service *models.ServiceCreate) (string, error) {
-	exist, err := s.ServiceRepository.ServiceGetByName(service.Name)
+	exist, err := s.ServiceRepository.ServiceExistByName(service.Name)
 	if err != nil {
 		return "", models.ErrorResponse(500, "Error al buscar servicio", err)
 	}
@@ -35,8 +54,8 @@ func (s *ServiceService) ServiceUpdate(service *models.ServiceUpdate) error {
 	return nil
 }
 
-func (s *ServiceService) ServiceDeleteByID(id string) error {
-	err := s.ServiceRepository.ServiceDeleteByID(id)
+func (s *ServiceService) ServiceDelete(id string) error {
+	err := s.ServiceRepository.ServiceDelete(id)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return models.ErrorResponse(404, "Servicio no encontrado", err)
@@ -44,23 +63,4 @@ func (s *ServiceService) ServiceDeleteByID(id string) error {
 		return models.ErrorResponse(500, "Error al buscar servicio", err)
 	}
 	return nil
-}
-
-func (s *ServiceService) ServiceGetAll() (*[]models.Service, error) {
-	services, err := s.ServiceRepository.ServiceGetAll()
-	if err != nil {
-		return nil, models.ErrorResponse(500, "Error al obtener servicios", err)
-	}
-	return services, nil
-}
-
-func (s *ServiceService) ServiceGetByID(id string) (*models.Service, error) {
-	service, err := s.ServiceRepository.ServiceGetByID(id)
-	if err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, models.ErrorResponse(404, "Servicio no encontrado", err)
-		}
-		return nil, models.ErrorResponse(500, "Error al buscar servicio", err)
-	}
-	return service, nil
 }

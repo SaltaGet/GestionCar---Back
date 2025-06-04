@@ -5,7 +5,7 @@ import (
 	"github.com/google/uuid"
 )
 
-func (r *TenantRepository) GetPurchaseElementByID(id string) (*models.PurchaseProduct, error) {
+func (r *TenantRepository) PurchaseProdcutGetByID(id string) (*models.PurchaseProduct, error) {
 	var purchaseProduct models.PurchaseProduct
 	if err := r.DB.Where("id = ?", id).First(&purchaseProduct).Error; err != nil {
 		return nil, err
@@ -13,7 +13,7 @@ func (r *TenantRepository) GetPurchaseElementByID(id string) (*models.PurchasePr
 	return &purchaseProduct, nil
 }
 
-func (r *TenantRepository) GetPurchaseElementByPurchaseID(purchaseID string) (*[]models.PurchaseProduct, error) {
+func (r *TenantRepository) PurchaseProductGetByPurchaseID(purchaseID string) (*[]models.PurchaseProduct, error) {
 	var purchaseProduct []models.PurchaseProduct
 	if err := r.DB.Where("purchase_order_id = ?", purchaseID).Find(&purchaseProduct).Error; err != nil {
 		return nil, err
@@ -21,7 +21,7 @@ func (r *TenantRepository) GetPurchaseElementByPurchaseID(purchaseID string) (*[
 	return &purchaseProduct, nil
 }
 
-func (r *TenantRepository) GetAllPurchaseElements() ([]models.PurchaseProduct, error) {
+func (r *TenantRepository) PurchaseProductGetAll() ([]models.PurchaseProduct, error) {
 	var purchaseProducts []models.PurchaseProduct
 	if err := r.DB.Find(&purchaseProducts).Error; err != nil {
 		return nil, err
@@ -29,7 +29,7 @@ func (r *TenantRepository) GetAllPurchaseElements() ([]models.PurchaseProduct, e
 	return purchaseProducts, nil
 }
 
-func (r *TenantRepository) CreatePurchaseElement(element *models.PurchaseProductCreate) (string, error) {
+func (r *TenantRepository) PurchaseProductCreate(element *models.PurchaseProductCreate) (string, error) {
 	newID := uuid.NewString()
 	if err := r.DB.Create(&models.PurchaseProduct{
 		ID:         newID,
@@ -45,7 +45,7 @@ func (r *TenantRepository) CreatePurchaseElement(element *models.PurchaseProduct
 
 }
 
-func (r *TenantRepository) UpdatePurchaseElement(element *models.PurchaseProductUpdate) error {
+func (r *TenantRepository) PurchaseProductUpdate(element *models.PurchaseProductUpdate) error {
 	if err := r.DB.Where("id = ?", element.ID).Updates(&models.PurchaseProduct{
 		ProductID:  element.ProductID,
 		ExpiredAt:  element.ExpiredAt,
@@ -59,7 +59,7 @@ func (r *TenantRepository) UpdatePurchaseElement(element *models.PurchaseProduct
 
 }
 
-func (r *TenantRepository) DeletePurchaseElementByID(id string) error {
+func (r *TenantRepository) PurchaseProductDelete(id string) error {
 	var purchaseProduct models.PurchaseProduct
 	if err := r.DB.Where("id = ?", id).Delete(&purchaseProduct).Error; err != nil {
 		return err

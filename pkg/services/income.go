@@ -7,8 +7,8 @@ import (
 	"gorm.io/gorm"
 )
 
-func (i *IncomeService) GetIncomeByID(id string) (*models.Income, error) {
-	income, err := i.IncomeRepository.GetIncomeByID(id)
+func (i *IncomeService) IncomeGetByID(id string) (*models.Income, error) {
+	income, err := i.IncomeRepository.IncomeGetByID(id)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, models.ErrorResponse(404, "Movimiento no encontrado", err)
@@ -19,8 +19,8 @@ func (i *IncomeService) GetIncomeByID(id string) (*models.Income, error) {
 	return income, nil
 }
 
-func (i *IncomeService) GetAllIncomes() (*[]models.Income, error) {
-	incomes, err := i.IncomeRepository.GetAllIncomes()
+func (i *IncomeService) IncomeGetAll() (*[]models.Income, error) {
+	incomes, err := i.IncomeRepository.IncomeGetAll()
 	
 	if err != nil {
 		return nil, models.ErrorResponse(500, "Error al buscar movimientos", err)
@@ -29,8 +29,8 @@ func (i *IncomeService) GetAllIncomes() (*[]models.Income, error) {
 	return incomes, nil
 }
 
-func (i *IncomeService) GetIncomeToday() (*[]models.Income, error) {
-	incomes, err := i.IncomeRepository.GetIncomeToday()
+func (i *IncomeService) IncomeGetToday() (*[]models.Income, error) {
+	incomes, err := i.IncomeRepository.IncomeGetToday()
 	
 	if err != nil {
 		return nil, models.ErrorResponse(500, "Error al buscar movimientos", err)
@@ -39,24 +39,24 @@ func (i *IncomeService) GetIncomeToday() (*[]models.Income, error) {
 	return incomes, nil
 }
 
-func (i *IncomeService) CreateIncome(incomeCreate *models.IncomeCreate) (string, error) {
-	id, err := i.IncomeRepository.CreateIncome(incomeCreate)
+func (i *IncomeService) IncomeCreate(incomeCreate *models.IncomeCreate) (string, error) {
+	id, err := i.IncomeRepository.IncomeCreate(incomeCreate)
 	if err != nil {
 		return "", models.ErrorResponse(500, "Error al crear movimiento", err)
 	}
 	return id, nil
 }
 
-func (i *IncomeService) UpdateIncome(incomeUpdate *models.IncomeUpdate) error {
-	err := i.IncomeRepository.UpdateIncome(incomeUpdate)
+func (i *IncomeService) IncomeUpdate(incomeUpdate *models.IncomeUpdate) error {
+	err := i.IncomeRepository.IncomeUpdate(incomeUpdate)
 	if err != nil {
 		return models.ErrorResponse(500, "Error al actualizar movimiento", err)
 	}
 	return nil
 }
 
-func (i *IncomeService) DeleteIncome(id string) error {
-	err := i.IncomeRepository.DeleteIncome(id)
+func (i *IncomeService) IncomeDelete(id string) error {
+	err := i.IncomeRepository.IncomeDelete(id)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return models.ErrorResponse(404, "Movimiento no encontrado", err)

@@ -8,7 +8,7 @@ import (
 	"gorm.io/gorm"
 )
 
-func (r *TenantRepository) GetIncomeByID(id string) (*models.Income, error) {
+func (r *TenantRepository) IncomeGetByID(id string) (*models.Income, error) {
 		var income models.Income
 		if err := r.DB.Where("id = ?", id).First(&income).Error; err != nil {
 			return nil, err
@@ -16,7 +16,7 @@ func (r *TenantRepository) GetIncomeByID(id string) (*models.Income, error) {
 		return &income, nil
 }
 
-func (r *TenantRepository) GetAllIncomes() (*[]models.Income, error) {
+func (r *TenantRepository) IncomeGetAll() (*[]models.Income, error) {
 		var incomes []models.Income
 		if err := r.DB.Limit(100).Order("created_at desc").Find(&incomes).Error; err != nil {
 			return nil, err
@@ -24,7 +24,7 @@ func (r *TenantRepository) GetAllIncomes() (*[]models.Income, error) {
 		return &incomes, nil
 }
 
-func (r *TenantRepository) GetIncomeToday() (*[]models.Income, error) {
+func (r *TenantRepository) IncomeGetToday() (*[]models.Income, error) {
 	today := time.Now().Format("2006-01-02")
 		var incomes []models.Income
 		if err := r.DB.Where("DATE(created_at) = ?", today).Order("created_at desc").Find(&incomes).Error; err != nil {
@@ -33,7 +33,7 @@ func (r *TenantRepository) GetIncomeToday() (*[]models.Income, error) {
 		return &incomes, nil
 }
 
-func (r *TenantRepository) CreateIncome(income *models.IncomeCreate) (string, error) {
+func (r *TenantRepository) IncomeCreate(income *models.IncomeCreate) (string, error) {
 	newID := uuid.NewString()
 	err := r.DB.Transaction(func(tx *gorm.DB) error {
 			if err := r.DB.Create(&models.Income{
@@ -66,7 +66,7 @@ func (r *TenantRepository) CreateIncome(income *models.IncomeCreate) (string, er
 	return newID, nil
 }
 
-func (r *TenantRepository) UpdateIncome(income *models.IncomeUpdate) error {
+func (r *TenantRepository) IncomeUpdate(income *models.IncomeUpdate) error {
 	return r.DB.Transaction(func(tx *gorm.DB) error {
 			if err := tx.Where("id = ?", income.ID).
 				Updates(&models.Income{
@@ -127,7 +127,7 @@ func (r *TenantRepository) UpdateIncome(income *models.IncomeUpdate) error {
 	})
 }
 
-func (r *TenantRepository) DeleteIncomeByID(id string) error {
+func (r *TenantRepository) IncomeDelete(id string) error {
 	return r.DB.Transaction(func(tx *gorm.DB) error {
 			if err := tx.Where("income_laundry_id = ?", id).Delete(&models.IncomeService{}).Error; err != nil {
 				return err

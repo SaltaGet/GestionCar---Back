@@ -5,7 +5,7 @@ import (
 	"github.com/google/uuid"
 )
 
-func (r *TenantRepository) GetMovementTypeByID(id string) (*models.MovementType, error) {
+func (r *TenantRepository) MovementTypeGetByID(id string) (*models.MovementType, error) {
 		var movementType models.MovementType
 		if err := r.DB.Where("id = ?", id).First(&movementType).Error; err != nil {
 			return nil, err
@@ -13,7 +13,7 @@ func (r *TenantRepository) GetMovementTypeByID(id string) (*models.MovementType,
 		return &movementType, nil
 }
 
-func (r *TenantRepository) GetAllMovementTypes(isIncome bool) (*[]models.MovementType, error) {
+func (r *TenantRepository) MovementTypeGetAll(isIncome bool) (*[]models.MovementType, error) {
 		var movementTypes []models.MovementType
 		if err := r.DB.Where("is_income = ?", isIncome).Find(&movementTypes).Error; err != nil {
 			return nil, err
@@ -21,7 +21,7 @@ func (r *TenantRepository) GetAllMovementTypes(isIncome bool) (*[]models.Movemen
 		return &movementTypes, nil
 }
 
-func (r *TenantRepository) CreateMovementType(movementType *models.MovementTypeCreate) (string, error) {
+func (r *TenantRepository) MovementTypeCreate(movementType *models.MovementTypeCreate) (string, error) {
 	newID := uuid.NewString()
 			if err := r.DB.Create(&models.MovementType{
 				ID: newID,
@@ -33,7 +33,7 @@ func (r *TenantRepository) CreateMovementType(movementType *models.MovementTypeC
 			return newID, nil
 }
 
-func (r *TenantRepository) UpdateMovementType(movementTypeUpdate *models.MovementTypeUpdate) error {
+func (r *TenantRepository) MovementTypeUpdate(movementTypeUpdate *models.MovementTypeUpdate) error {
 			if err := r.DB.Model(&models.MovementType{}).Where("id = ?", movementTypeUpdate.ID).Updates(&models.MovementType{
 				Name: movementTypeUpdate.Name,
 				IsIncome: movementTypeUpdate.IsIncome,
@@ -43,7 +43,7 @@ func (r *TenantRepository) UpdateMovementType(movementTypeUpdate *models.Movemen
 			return nil
 }
 
-func (r *TenantRepository) DeleteMovementType(id string) error {
+func (r *TenantRepository) MovementTypeDelete(id string) error {
 		var movementType models.MovementType
 		if err := r.DB.Where("id = ?", id).Delete(&movementType).Error; err != nil {
 			return err

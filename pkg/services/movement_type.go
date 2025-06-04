@@ -8,7 +8,7 @@ import (
 )
 
 func (m *MovementTypeService) MovementTypeCreate(movementType *models.MovementTypeCreate) (string, error) {
-	id, err := m.MovementTypeRepository.CreateMovementType(movementType)
+	id, err := m.MovementTypeRepository.MovementTypeCreate(movementType)
 	if err != nil {
 		return "", models.ErrorResponse(500, "Error al actualizar cliente", err)
 	}
@@ -17,7 +17,7 @@ func (m *MovementTypeService) MovementTypeCreate(movementType *models.MovementTy
 }
 
 func (m *MovementTypeService) MovementTypeUpdate(movementType *models.MovementTypeUpdate) error {
-	err := m.MovementTypeRepository.UpdateMovementType(movementType)
+	err := m.MovementTypeRepository.MovementTypeUpdate(movementType)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return models.ErrorResponse(404, "Empleado no encontrado", err)
@@ -29,7 +29,7 @@ func (m *MovementTypeService) MovementTypeUpdate(movementType *models.MovementTy
 }
 
 func (m *MovementTypeService) MovementTypeDelete(id string) error {
-	err := m.MovementTypeRepository.DeleteMovementType(id)
+	err := m.MovementTypeRepository.MovementTypeDelete(id)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return models.ErrorResponse(404, "Empleado no encontrado", err)
@@ -39,8 +39,8 @@ func (m *MovementTypeService) MovementTypeDelete(id string) error {
 	return nil
 }
 
-func (m *MovementTypeService) GetMovementTypeByID(id string) (*models.MovementType, error) {
-	movementType, err := m.MovementTypeRepository.GetMovementTypeByID(id)
+func (m *MovementTypeService) MovementTypeGetByID(id string) (*models.MovementType, error) {
+	movementType, err := m.MovementTypeRepository.MovementTypeGetByID(id)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, models.ErrorResponse(404, "Empleado no encontrado", err)
@@ -50,8 +50,8 @@ func (m *MovementTypeService) GetMovementTypeByID(id string) (*models.MovementTy
 	return movementType, nil
 }
 
-func (m *MovementTypeService) GetAllMovementTypes(isIncome bool) (*[]models.MovementType, error) {
-	movementTypes, err := m.MovementTypeRepository.GetAllMovementTypes(isIncome)
+func (m *MovementTypeService) MovementTypeGetAll(isIncome bool) (*[]models.MovementType, error) {
+	movementTypes, err := m.MovementTypeRepository.MovementTypeGetAll(isIncome)
 	if err != nil {
 		return nil, models.ErrorResponse(500, "Error al actualizar cliente", err)
 	}

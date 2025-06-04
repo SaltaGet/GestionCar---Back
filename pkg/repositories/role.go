@@ -4,7 +4,7 @@ import (
 	"github.com/DanielChachagua/GestionCar/pkg/models"
 )
 
-func (r *TenantRepository) GetRoleAll(roleName string) (*[]models.Role, error) {
+func (r *TenantRepository) RoleGetAll(roleName string) (*[]models.Role, error) {
 	var currentRole models.Role
 
 	if err := r.DB.Where("name = ?", roleName).First(&currentRole).Error; err != nil {
