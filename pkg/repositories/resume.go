@@ -19,7 +19,7 @@ func (r *TenantRepository) ResumeExpenseCreate(resume *models.ResumeExpenseCreat
 	return "", nil
 }
 
-func (r *TenantRepository) ResumeExpenseUpdate(resume *models.ResumeExpense) error {
+func (r *TenantRepository) ResumeExpenseUpdate(resume *models.ResumeExpenseUpdate) error {
 	return nil
 }
 
@@ -36,7 +36,7 @@ func (r *TenantRepository) ResumeIncomeGetByID(id string) (*models.ResumeIncome,
 	return nil, nil
 }
 
-func (r *TenantRepository) ResumeIncomeCreate(resume *models.ResumeIncome) (string, error) {
+func (r *TenantRepository) ResumeIncomeCreate(resume *models.ResumeIncomeCreate) (string, error) {
 	err := r.DB.Create(&resume).Error
 	if err != nil {
 		return "",err
@@ -44,6 +44,6 @@ func (r *TenantRepository) ResumeIncomeCreate(resume *models.ResumeIncome) (stri
 	return "", nil
 }
 
-func (r *TenantRepository) ResumeIncomeUpdate(resume *models.ResumeIncome) error {
+func (r *TenantRepository) ResumeIncomeUpdate(resume *models.ResumeIncomeUpdate) error {
 	return nil
 }

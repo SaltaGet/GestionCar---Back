@@ -227,7 +227,7 @@ func (s *ServiceController) ServiceDeleteByID(c *fiber.Ctx) error {
 		})
 	}
 
-	err := s.ServiceService.ServiceDeleteByID(id)
+	err := s.ServiceService.ServiceDelete(id)
 	if err != nil {
 		if errResp, ok := err.(*models.ErrorStruc); ok {
 			return c.Status(errResp.StatusCode).JSON(models.Response{

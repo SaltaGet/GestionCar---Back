@@ -8,7 +8,7 @@ type SupplierService interface {
 	SupplierGetAll() (suppliers *[]models.Supplier, err error)
 	SupplierCreate(supplier *models.SupplierCreate) (id string, err error)
 	SupplierUpdate(supplierUpdate *models.SupplierUpdate) (err error)
-	SupplierDeleteByID(id string) (err error)
+	SupplierDelete(id string) (err error)
 }
 
 type SupplierRepository interface {
@@ -17,5 +17,5 @@ type SupplierRepository interface {
 	SupplierGetAll() (suppliers *[]models.Supplier, err error)
 	SupplierCreate(supplier *models.SupplierCreate) (id string, err error)
 	SupplierUpdate(supplierUpdate *models.SupplierUpdate) (err error)
-	SupplierDeleteByID(id string) (err error)
+	SupplierDelete(id string) (err error)
 }

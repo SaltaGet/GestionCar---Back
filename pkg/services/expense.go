@@ -19,7 +19,7 @@ func (e *ExpenseService) ExpenseGetByID(id string) (*models.Expense, error) {
 	return expense, nil
 }
 
-func (e *ExpenseService) ExpenseGetAll(workplace string) (*[]models.Expense, error) {
+func (e *ExpenseService) ExpenseGetAll() (*[]models.Expense, error) {
 	expenses, err := e.ExpenseRepository.ExpenseGetAll()
 	
 	if err != nil {
@@ -29,7 +29,7 @@ func (e *ExpenseService) ExpenseGetAll(workplace string) (*[]models.Expense, err
 	return expenses, nil
 }
 
-func (e *ExpenseService) ExpenseGetToday(workplace string) (*[]models.Expense, error) {
+func (e *ExpenseService) ExpenseGetToday() (*[]models.Expense, error) {
 	expenses, err := e.ExpenseRepository.ExpenseGetToday()
 	
 	if err != nil {

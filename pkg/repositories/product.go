@@ -66,26 +66,26 @@ func (r *TenantRepository) ProductUpdate(element *models.ProductUpdate) error {
 
 }
 
-func (r *TenantRepository) UpdateStock(stock int32, id string) error {
+func (r *TenantRepository) UpdateStock(stockUpdate *models.StockUpdate) error {
 	if err := r.DB.Model(&models.Product{}).
-		Where("id = ?", id).
-		Update("stock", stock).Error; err != nil {
+		Where("id = ?", stockUpdate.ID).
+		Update("stock", stockUpdate.Stock).Error; err != nil {
 		return err
 	}
 	return nil
 
 }
 
-func (r *TenantRepository) AddToStock(id string, cantidad int32) error {
+func (r *TenantRepository) AddToStock(stockUpdate *models.StockUpdate) error {
 	return r.DB.Model(&models.Product{}).
-		Where("id = ?", id).
-		UpdateColumn("stock", gorm.Expr("stock + ?", cantidad)).Error
+		Where("id = ?", stockUpdate.ID).
+		UpdateColumn("stock", gorm.Expr("stock + ?", stockUpdate.Stock)).Error
 }
 
-func (r *TenantRepository) SubtractFromStockToStock(id string, cantidad int32) error {
+func (r *TenantRepository) SubtractFromStockToStock(stockUpdate *models.StockUpdate) error {
 	return r.DB.Model(&models.Product{}).
-		Where("id = ?", id).
-		UpdateColumn("stock", gorm.Expr("stock - ?", cantidad)).Error
+		Where("id = ?", stockUpdate.ID).
+		UpdateColumn("stock", gorm.Expr("stock - ?", stockUpdate.Stock)).Error
 }
 
 func (r *TenantRepository) ProductDelete(id string) error {

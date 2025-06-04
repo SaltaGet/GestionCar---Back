@@ -29,7 +29,7 @@ func (p *ProductService) ProductGetByIdentifier(identifier string) (*[]models.Pr
 	return product, nil
 }
 
-func (p *ProductService) ProductGetAll(workplace string) (*[]models.Product, error) {
+func (p *ProductService) ProductGetAll() (*[]models.Product, error) {
 	products, err := p.ProductRepository.ProductGetAll()
 	if err != nil {
 		return nil, models.ErrorResponse(500, "Error al actualizar cliente", err)

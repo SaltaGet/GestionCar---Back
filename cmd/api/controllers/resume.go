@@ -22,7 +22,7 @@ func (r *ResumeController) ExpenseResumeCreate(c *fiber.Ctx) error {
 		})
 	}
 
-	id, err := r.ResumeService.ExpenseResumeCreate(resume)
+	id, err := r.ResumeExpenseService.ResumeExpenseCreate(resume)
 	if err != nil {
 		if errResp, ok := err.(*models.ErrorStruc); ok {
 			return c.Status(errResp.StatusCode).JSON(models.Response{
@@ -56,7 +56,7 @@ func (r *ResumeController) ExpenseResumeGetByDateBetween(c *fiber.Ctx) error {
 		})
 	}
 
-	resumes, err := r.ResumeService.GetExpenseResumeByDateBetween(fromDate, toDate)
+	resumes, err := r.ResumeExpenseService.ResumeExpenseGetByDateBetween(fromDate, toDate)
 	if err != nil {
 		if errResp, ok := err.(*models.ErrorStruc); ok {
 			return c.Status(errResp.StatusCode).JSON(models.Response{
@@ -89,7 +89,7 @@ func (r *ResumeController) ExpenseResumeGetByID(c *fiber.Ctx) error {
 		})
 	}
 
-	resume, err := r.ResumeService.ExpenseResumeGetByID(id)
+	resume, err := r.ResumeExpenseService.ResumeExpenseGetByID(id)
 	if err != nil {
 		if errResp, ok := err.(*models.ErrorStruc); ok {
 			return c.Status(errResp.StatusCode).JSON(models.Response{
@@ -129,7 +129,7 @@ func (r *ResumeController) ExpenseResumeUpdate(c *fiber.Ctx) error {
 		})
 	}
 
-	err := r.ResumeService.ResumeExpenseUpdate(resume)
+	err := r.ResumeExpenseService.ResumeExpenseUpdate(resume)
 	if err != nil {
 		if errResp, ok := err.(*models.ErrorStruc); ok {
 			return c.Status(errResp.StatusCode).JSON(models.Response{
@@ -172,7 +172,7 @@ func (r *ResumeController) IncomeResumeCreate(c *fiber.Ctx) error {
 		})
 	}
 
-	id, err := r.ResumeService.CreateIncomeResume(resume)
+	id, err := r.ResumeIncomeService.ResumeIncomeCreate(resume)
 	if err != nil {
 		if errResp, ok := err.(*models.ErrorStruc); ok {
 			return c.Status(errResp.StatusCode).JSON(models.Response{
@@ -206,7 +206,7 @@ func (r *ResumeController) IncomeResumeGetByDateBetween(c *fiber.Ctx) error {
 		})
 	}
 
-	resume, err := r.ResumeService.IncomeResumeGetByDateBetween(fromDate, toDate)
+	resume, err := r.ResumeIncomeService.ResumeIncomeGetByDateBetween(fromDate, toDate)
 	if err != nil {
 		if errResp, ok := err.(*models.ErrorStruc); ok {
 			return c.Status(errResp.StatusCode).JSON(models.Response{
@@ -239,7 +239,7 @@ func (r *ResumeController) IncomeResumeGetByID(c *fiber.Ctx) error {
 		})
 	}
 
-	resume, err := r.ResumeService.IncomeResumeGetByID(id)
+	resume, err := r.ResumeIncomeService.ResumeIncomeGetByID(id)
 	if err != nil {
 		if errResp, ok := err.(*models.ErrorStruc); ok {
 			return c.Status(errResp.StatusCode).JSON(models.Response{
@@ -279,7 +279,7 @@ func (r *ResumeController) IncomeResumeUpdate(c *fiber.Ctx) error {
 		})
 	}
 
-	err := r.ResumeService.UpdateIncomeResume(resume)
+	err := r.ResumeIncomeService.ResumeIncomeUpdate(resume)
 	if err != nil {
 		if errResp, ok := err.(*models.ErrorStruc); ok {
 			return c.Status(errResp.StatusCode).JSON(models.Response{

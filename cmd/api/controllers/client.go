@@ -2,7 +2,6 @@ package controllers
 
 import (
 	"github.com/DanielChachagua/GestionCar/pkg/models"
-	"github.com/DanielChachagua/GestionCar/pkg/services"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -173,7 +172,7 @@ func (cl *ClientController) ClientUpdate(c *fiber.Ctx) error {
 			Message: err.Error(),
 		})
 	}
-	clientCreated, err := cl.ClientService.ClientUpdate(&clientUpdate)
+	err := cl.ClientService.ClientUpdate(&clientUpdate)
 	if err != nil {
 		if errResp, ok := err.(*models.ErrorStruc); ok {
 			return c.Status(errResp.StatusCode).JSON(models.Response{
@@ -191,7 +190,7 @@ func (cl *ClientController) ClientUpdate(c *fiber.Ctx) error {
 
 	return c.Status(200).JSON(models.Response{
 		Status:  true,
-		Body:    clientCreated,
+		Body:    nil,
 		Message: "Cliente actualizado con éxito",
 	})
 }
@@ -221,7 +220,7 @@ func (cl *ClientController) ClientDelete(c *fiber.Ctx) error {
 		})
 	}
 
-	client, err := cl.ClientService.ClientDelete(id)
+	err := cl.ClientService.ClientDelete(id)
 	if err != nil {
 		if errResp, ok := err.(*models.ErrorStruc); ok {
 			return c.Status(errResp.StatusCode).JSON(models.Response{
@@ -239,7 +238,7 @@ func (cl *ClientController) ClientDelete(c *fiber.Ctx) error {
 
 	return c.Status(200).JSON(models.Response{
 		Status:  true,
-		Body:    client,
+		Body:    nil,
 		Message: "Cliente eliminado con éxito",
 	})
 }

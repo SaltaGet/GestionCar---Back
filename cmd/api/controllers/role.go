@@ -27,7 +27,7 @@ func (r *RoleController) GetRolesWorkplace( c*fiber.Ctx) error {
 		})
 	}
 
-	roles, err := r.RoleService.GetRoleAll(user.Username)
+	roles, err := r.RoleService.RoleGetAll(user.Username)
 	if err != nil {
 		if errResp, ok := err.(*models.ErrorStruc); ok {
 			return c.Status(errResp.StatusCode).JSON(models.Response{

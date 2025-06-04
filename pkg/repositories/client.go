@@ -1,7 +1,11 @@
 package repositories
 
 import (
+	"errors"
+
 	"github.com/DanielChachagua/GestionCar/pkg/models"
+	"github.com/google/uuid"
+	"gorm.io/gorm"
 )
 
 func (r *TenantRepository) ClientGetByID(id string) (*models.Client, error) {
@@ -20,30 +24,37 @@ func (r *TenantRepository) ClientGetByName(name string) (*[]models.Client, error
 	return &client, nil
 }
 
-func (r *TenantRepository) ClientGetAll() ([]models.Client, error) {
+func (r *TenantRepository) ClientGetAll() (*[]models.Client, error) {
 	var clients []models.Client
 	if err := r.DB.Find(&clients).Error; err != nil {
 		return nil, err
 	}
-	return clients, nil
+	return &clients, nil
 }
 
-func (r *TenantRepository) ClientCreate(client *models.Client) (string, error) {
-	if err := r.DB.Create(client).Error; err != nil {
+func (r *TenantRepository) ClientCreate(client *models.ClientCreate) (string, error) {
+	newClient := models.Client{
+		ID: uuid.NewString(),
+		FirstName: client.FirstName,
+		LastName:  client.LastName,
+		CUIL:      client.CUIL,
+		DNI:       client.DNI,
+		Email:     client.Email,
+	}
+	if err := r.DB.Create(&newClient).Error; err != nil {
 		return "", err
 	}
-	return client.ID, nil
+	return newClient.ID, nil
 }
 
-func (r *TenantRepository) ClientUpdate(client *models.Client) error {
-	var existing models.Client
-	if err := r.DB.First(&existing, "id = ?", client.ID).Error; err != nil {
-			return err 
+func (r *TenantRepository) ClientUpdate(client *models.ClientUpdate) error {
+	if err := r.DB.Where("id = ?", client.ID).Updates(&client).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return models.ErrorResponse(404, "Cliente no encontrado", err)
+		}	
+		return err 
 	}
-
-	if err := r.DB.Save(client).Error; err != nil {
-			return err
-	}
+	
 	return nil
 }
 

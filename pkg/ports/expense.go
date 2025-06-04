@@ -4,7 +4,7 @@ import "github.com/DanielChachagua/GestionCar/pkg/models"
 
 type ExpenseRepository interface {
 	ExpenseGetByID(id string) (expense *models.Expense, err error)
-	ExpenseGetByName(name string) (expenses *[]models.Expense, err error)
+	// ExpenseGetByName(name string) (expenses *[]models.Expense, err error)
 	ExpenseGetAll() (expenses *[]models.Expense, err error)
 	ExpenseGetToday() (expenses *[]models.Expense, err error)
 	ExpenseCreate(expenseCreate *models.ExpenseCreate) (id string, err error)
@@ -14,7 +14,7 @@ type ExpenseRepository interface {
 
 type ExpenseService interface {
 	ExpenseGetByID(id string) (expense *models.Expense, err error)
-	ExpenseGetByName(name string) (expenses *[]models.Expense, err error)
+	// ExpenseGetByName(name string) (expenses *[]models.Expense, err error)
 	ExpenseGetAll() (expenses *[]models.Expense, err error)
 	ExpenseGetToday() (expenses *[]models.Expense, err error)
 	ExpenseCreate(expenseCreate *models.ExpenseCreate) (id string, err error)

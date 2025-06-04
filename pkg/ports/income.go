@@ -4,7 +4,7 @@ import "github.com/DanielChachagua/GestionCar/pkg/models"
 
 type IncomeRepository interface {
 	IncomeGetByID(id string) (income *models.Income, err error)
-	IncomeGetByName(name string) (incomes *[]models.Expense, err error)
+	// IncomeGetByName(name string) (incomes *[]models.Expense, err error)
 	IncomeGetAll() (incomes *[]models.Income, err error)
 	IncomeGetToday() (incomes *[]models.Income, err error)
 	IncomeCreate(incomeCreate *models.IncomeCreate) (id string, err error)
@@ -14,7 +14,7 @@ type IncomeRepository interface {
 
 type IncomeService interface {
 	IncomeGetByID(id string) (income *models.Income, err error)
-	IncomeGetByName(name string) (incomes *[]models.Income, err error)
+	// IncomeGetByName(name string) (incomes *[]models.Income, err error)
 	IncomeGetAll() (incomes *[]models.Income, err error)
 	IncomeGetToday() (incomes *[]models.Income, err error)
 	IncomeCreate(incomeCreate *models.IncomeCreate) (id string, err error)

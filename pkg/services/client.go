@@ -47,24 +47,24 @@ func (c *ClientService) ClientCreate(clientCreate *models.ClientCreate) (string,
 	return client, nil
 }
 
-func (c *ClientService) ClientUpdate(clientUpdate *models.ClientUpdate) (string, error) {
+func (c *ClientService) ClientUpdate(clientUpdate *models.ClientUpdate) (error) {
 	err := c.ClientRepository.ClientUpdate(clientUpdate)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return "", models.ErrorResponse(404, "Cliente no encontrado", err)
+			return models.ErrorResponse(404, "Cliente no encontrado", err)
 		}
-		return "", models.ErrorResponse(500, "Error al actualizar cliente", err)
+		return models.ErrorResponse(500, "Error al actualizar cliente", err)
 	}
-	return clientUpdate.ID, nil
+	return nil
 }
 
-func (c *ClientService) ClientDelete(id string) (string, error) {
+func (c *ClientService) ClientDelete(id string) (error) {
 	err := c.ClientRepository.ClientDelete(id)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return "", models.ErrorResponse(404, "Cliente no encontrado", err)
+			return models.ErrorResponse(404, "Cliente no encontrado", err)
 		}
-		return "", models.ErrorResponse(500, "Error al eliminar cliente", err)
+		return models.ErrorResponse(500, "Error al eliminar cliente", err)
 	}
-	return id, nil
+	return nil
 }

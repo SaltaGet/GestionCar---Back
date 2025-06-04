@@ -26,7 +26,7 @@ func (e *EmployeeService) EmployeeGetByName(name string) (*[]models.Employee, er
 	return employees, nil
 }
 
-func (e *EmployeeService) EmployeeGetAll(workplace string) (*[]models.Employee, error) {
+func (e *EmployeeService) EmployeeGetAll() (*[]models.Employee, error) {
 	employees, err := e.EmployeeRepository.EmployeeGetAll()
 	if err != nil {
 		return nil, models.ErrorResponse(500, "Error al actualizar cliente", err)

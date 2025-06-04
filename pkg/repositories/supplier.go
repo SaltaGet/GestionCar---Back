@@ -13,12 +13,12 @@ func (r *TenantRepository) SupplierGetByID(id string) (*models.Supplier, error) 
 		return &supplier, nil
 }
 
-func (r *TenantRepository) SupplierGetAll() ([]models.Supplier, error) {
+func (r *TenantRepository) SupplierGetAll() (*[]models.Supplier, error) {
 		var suppliers []models.Supplier
 		if err := r.DB.Find(&suppliers).Error; err != nil {
 			return nil, err
 		}
-		return suppliers, nil
+		return &suppliers, nil
 }
 
 func (r *TenantRepository) SupplierGetByName(name string) (*[]models.Supplier, error) {

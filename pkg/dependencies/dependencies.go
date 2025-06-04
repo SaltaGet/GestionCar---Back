@@ -51,17 +51,48 @@ type TenantApplication struct {
 }
 
 func TenantDBRepository(db *gorm.DB) *TenantApplication {
+	// tenantRepo := &repositories.TenantRepository{DB: db,}
+	
+	// memberService := &services.MemberService{MemberRepository: tenantRepo}
+	// roleService := &services.RoleService{RoleRepository: tenantRepo}
+	// permissionService := &services.PermissionService{PermissionRepository: tenantRepo}
+
 	tenantRepo := &repositories.TenantRepository{DB: db,}
 	
+	attendanceService := &services.AttendanceService{AttendanceRepository: tenantRepo}
+	clientService := &services.ClientService{ClientRepository: tenantRepo}
+	employeeService := &services.EmployeeService{EmployeeRepository: tenantRepo}
+	expenseService := &services.ExpenseService{ExpenseRepository: tenantRepo}
+	incomeService := &services.IncomeService{IncomeRepository: tenantRepo}
 	memberService := &services.MemberService{MemberRepository: tenantRepo}
-	roleService := &services.RoleService{RoleRepository: tenantRepo}
+	movementService := &services.MovementTypeService{MovementTypeRepository: tenantRepo}
 	permissionService := &services.PermissionService{PermissionRepository: tenantRepo}
-
+	productService := &services.ProductService{ProductRepository: tenantRepo}
+	purchaseOrderService := &services.PurchaseOrderService{PurchaseOrderRepository: tenantRepo}
+	purchaseProductService := &services.PurchaseProductService{PurchaseProductRepository: tenantRepo}
+	resumeService := &services.ResumeService{ResumeExpenseRepository: tenantRepo, ResumeIncomeRepository: tenantRepo}
+	roleService := &services.RoleService{RoleRepository: tenantRepo}
+	serviceService := &services.ServiceService{ServiceRepository: tenantRepo}
+	supplierService := &services.SupplierService{SupplierRepository: tenantRepo}
+	vehicleService := &services.VehicleService{VehicleRepository: tenantRepo}
 
 	return &TenantApplication{
+		AttendanceController: &controllers.AttendanceController{AttendanceService: attendanceService},
+		ClientController: &controllers.ClientController{ClientService: clientService},
+		EmployeeController: &controllers.EmployeeController{EmployeeService: employeeService},
+		ExpenseController: &controllers.ExpenseController{ExpenseService: expenseService},
+		IncomeController: &controllers.IncomeController{IncomeService: incomeService},
 		MemberController: &controllers.MemberController{MemberService: memberService},
-		RoleController: &controllers.RoleController{RoleService: roleService},
+		MovementTypeController: &controllers.MovementTypeController{MovementTypeService: movementService},
 		PermissionController: &controllers.PermissionController{PermissionService: permissionService},
+		ProductController: &controllers.ProductController{ProductService: productService},
+		PurchaseOrderController: &controllers.PurchaseOrderController{PurchaseOrderService: purchaseOrderService},
+		PurchaseProductController: &controllers.PurchaseProductController{PurchaseProductService: purchaseProductService},
+		ResumeController: &controllers.ResumeController{ResumeExpenseService: resumeService, ResumeIncomeService: resumeService},
+		RoleController: &controllers.RoleController{RoleService: roleService},
+		ServiceController: &controllers.ServiceController{ServiceService: serviceService},
+		SupplierController: &controllers.SupplierController{SupplierService: supplierService},
+		VehicleController: &controllers.VehicleController{VehicleService: vehicleService},
 	}
 }
 
@@ -92,12 +123,13 @@ func (app *TenantApplication) SetDBTenantRepository(db *gorm.DB) {
 	app.ExpenseController.ExpenseService = expenseService
 	app.IncomeController.IncomeService = incomeService
 	app.MemberController.MemberService = memberService
-	app.MovementTypeController.MovementService = movementService
+	app.MovementTypeController.MovementTypeService = movementService
 	app.PermissionController.PermissionService = permissionService
 	app.ProductController.ProductService = productService
 	app.PurchaseOrderController.PurchaseOrderService = purchaseOrderService
 	app.PurchaseProductController.PurchaseProductService = purchaseProductService
-	app.ResumeController.ExpenseResumeService = resumeService
+	app.ResumeController.ResumeExpenseService = resumeService
+	app.ResumeController.ResumeIncomeService = resumeService
 	app.RoleController.RoleService = roleService
 	app.ServiceController.ServiceService = serviceService
 	app.SupplierController.SupplierService = supplierService

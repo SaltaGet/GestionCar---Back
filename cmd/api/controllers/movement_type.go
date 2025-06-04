@@ -4,7 +4,6 @@ import (
 	"strconv"
 
 	"github.com/DanielChachagua/GestionCar/pkg/models"
-	"github.com/DanielChachagua/GestionCar/pkg/services"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -34,7 +33,7 @@ func (m *MovementTypeController) GetMovementTypeByID(c *fiber.Ctx) error {
 		})
 	}
 
-	movement, err := m.MovementTypeService.GetMovementTypeByID(id)
+	movement, err := m.MovementTypeService.MovementTypeGetByID(id)
 	if err != nil {
 		if errResp, ok := err.(*models.ErrorStruc); ok {
 			return c.Status(errResp.StatusCode).JSON(models.Response{
@@ -88,7 +87,7 @@ func (m *MovementTypeController) GetAllMovementTypes(c *fiber.Ctx) error {
 		}
 	}
 
-	movements, err := m.MovementTypeService.GetAllMovementTypes(isIncome)
+	movements, err := m.MovementTypeService.MovementTypeGetAll(isIncome)
 	if err != nil {
 		if errResp, ok := err.(*models.ErrorStruc); ok {
 			return c.Status(errResp.StatusCode).JSON(models.Response{

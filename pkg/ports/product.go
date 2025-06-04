@@ -22,6 +22,6 @@ type ProductService interface {
 	ProductGetAll() (products *[]models.Product, err error)
 	ProductCreate(productCreate *models.ProductCreate) (id string, err error)
 	ProductUpdate(productUpdate *models.ProductUpdate) (err error)
-	ProductUpdateStock(productUpdate *models.StockUpdate, method string) (err error)
+	ProductUpdateStock(productUpdate *models.StockUpdate) (err error)
 	ProductDelete(id string) (err error)
 }

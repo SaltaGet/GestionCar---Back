@@ -69,7 +69,7 @@ func (r *TenantRepository) AttendanceDelete(id string) error {
 	return nil
 }
 
-func (r *TenantRepository) AttendancesGetByDate(date_start string, date_end string) (*[]models.Attendance, error) {
+func (r *TenantRepository) AttendanceGetByDate(date_start string, date_end string) (*[]models.Attendance, error) {
 	var attendances []models.Attendance
 	if err := r.DB.Where("DATE(date) >= ? AND DATE(date) <= ?", date_start, date_end).Find(&attendances).Error; err != nil {
 		return nil, err

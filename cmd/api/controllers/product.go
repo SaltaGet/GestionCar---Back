@@ -237,7 +237,7 @@ func (p *ProductController) ProductUpdateStock(c *fiber.Ctx) error {
 		})
 	}
 
-	err := p.ProductService.ProductUpdateStock(id, &stockUpdate, method)
+	err := p.ProductService.ProductUpdateStock(&stockUpdate)
 	if err != nil {
 		if errResp, ok := err.(*models.ErrorStruc); ok {
 			return c.Status(errResp.StatusCode).JSON(models.Response{

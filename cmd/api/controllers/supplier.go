@@ -274,7 +274,7 @@ func (s *SupplierController) SupplierDeleteByID(c *fiber.Ctx) error {
 		})
 	}
 
-	err := s.SupplierService.SupplierDeleteByID(id)
+	err := s.SupplierService.SupplierDelete(id)
 	if err != nil {
 		if errResp, ok := err.(*models.ErrorStruc); ok {
 			return c.Status(errResp.StatusCode).JSON(models.Response{

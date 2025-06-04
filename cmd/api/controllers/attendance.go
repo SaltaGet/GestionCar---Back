@@ -29,7 +29,7 @@ func (a *AttendanceController) GetAttendanceByID(c *fiber.Ctx) error {
 		})
 	}
 
-	attendance, err := a.AttendanceService.GetAttendanceByID(id)
+	attendance, err := a.AttendanceService.AttendanceGetByID(id)
 	if err != nil {
 		if errResp, ok := err.(*models.ErrorStruc); ok {
 			return c.Status(errResp.StatusCode).JSON(models.Response{
@@ -67,7 +67,7 @@ func (a *AttendanceController) GetAttendanceByID(c *fiber.Ctx) error {
 //	@Failure		500					{object}	models.Response
 //	@Router			/attendance/get_all [get]
 func (a *AttendanceController) GetAllAttendances(c *fiber.Ctx) error {
-	attendances, err := a.AttendanceService.GetAllAttendances()
+	attendances, err := a.AttendanceService.AttendanceGetAll()
 	if err != nil {
 		if errResp, ok := err.(*models.ErrorStruc); ok {
 			return c.Status(errResp.StatusCode).JSON(models.Response{
@@ -122,7 +122,7 @@ func (a *AttendanceController) GetAllAttendancesByDate(c *fiber.Ctx) error {
 		})
 	}
 
-	attendances, err := a.AttendanceService.GetAllAttendancesByDate(dateBeetwen.DateFrom, dateBeetwen.DateTo)
+	attendances, err := a.AttendanceService.AttendanceGetByDate(dateBeetwen.DateFrom, dateBeetwen.DateTo)
 	if err != nil {
 		if errResp, ok := err.(*models.ErrorStruc); ok {
 			return c.Status(errResp.StatusCode).JSON(models.Response{
@@ -170,7 +170,7 @@ func (a *AttendanceController) GetAttendanceByEmployeeID(c *fiber.Ctx) error {
 		})
 	}
 
-	attendances, err := a.AttendanceService.GetAttendanceByEmployeeID(employee_id)
+	attendances, err := a.AttendanceService.AttendanceGetByEmployeeID(employee_id)
 	if err != nil {
 		if errResp, ok := err.(*models.ErrorStruc); ok {
 			return c.Status(errResp.StatusCode).JSON(models.Response{
@@ -226,7 +226,7 @@ func (a *AttendanceController) CreateAttendance(c *fiber.Ctx) error {
 		})
 	}
 
-	id, err := a.AttendanceService.CreateAttendance(&attendanceCreate)
+	id, err := a.AttendanceService.AttendanceCreate(&attendanceCreate)
 	if err != nil {
 		if errResp, ok := err.(*models.ErrorStruc); ok {
 			return c.Status(errResp.StatusCode).JSON(models.Response{
@@ -282,7 +282,7 @@ func (a *AttendanceController) UpdateAttendance(c *fiber.Ctx) error {
 		})
 	}
 
-	err := a.AttendanceService.UpdateAttendance(&attendanceUpdate)
+	err := a.AttendanceService.AttendanceUpdate(&attendanceUpdate)
 	if err != nil {
 		if errResp, ok := err.(*models.ErrorStruc); ok {
 			return c.Status(errResp.StatusCode).JSON(models.Response{
@@ -332,7 +332,7 @@ func (a *AttendanceController) DeleteAttendance(c *fiber.Ctx) error {
 		})
 	}
 
-	err := a.AttendanceService.DeleteAttendance(id)
+	err := a.AttendanceService.AttendanceDelete(id)
 	if err != nil {
 		if errResp, ok := err.(*models.ErrorStruc); ok {
 			return c.Status(errResp.StatusCode).JSON(models.Response{

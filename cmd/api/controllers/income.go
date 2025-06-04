@@ -30,7 +30,7 @@ func (i *IncomeController) GetIncomeByID(c *fiber.Ctx) error {
 		})
 	}
 
-	income, err := i.IncomeService.GetIncomeByID(id)
+	income, err := i.IncomeService.IncomeGetByID(id)
 	if err != nil {
 		if errResp, ok := err.(*models.ErrorStruc); ok {
 			return c.Status(errResp.StatusCode).JSON(models.Response{
@@ -68,7 +68,7 @@ func (i *IncomeController) GetIncomeByID(c *fiber.Ctx) error {
 //	@Failure		500					{object}	models.Response									"Internal server error"
 //	@Router			/income/get_all [get]
 func (i *IncomeController) GetAllIncomes(c *fiber.Ctx) error {
-	incomes, err := i.IncomeService.GetAllIncomes()
+	incomes, err := i.IncomeService.IncomeGetAll()
 	if err != nil {
 		if errResp, ok := err.(*models.ErrorStruc); ok {
 			return c.Status(errResp.StatusCode).JSON(models.Response{
@@ -106,7 +106,7 @@ func (i *IncomeController) GetAllIncomes(c *fiber.Ctx) error {
 //	@Failure		500					{object}	models.Response									"Internal server error"
 //	@Router			/income/get_today [get]
 func (i *IncomeController) GetIncomeToday(c *fiber.Ctx) error {
-	incomes, err := i.IncomeService.GetIncomeToday()
+	incomes, err := i.IncomeService.IncomeGetToday()
 	if err != nil {
 		if errResp, ok := err.(*models.ErrorStruc); ok {
 			return c.Status(errResp.StatusCode).JSON(models.Response{
@@ -162,7 +162,7 @@ func (i *IncomeController) CreateIncome(c *fiber.Ctx) error {
 		})
 	}
 
-	id, err := i.IncomeService.CreateIncome(&incomeCreate)
+	id, err := i.IncomeService.IncomeCreate(&incomeCreate)
 	if err != nil {
 		if errResp, ok := err.(*models.ErrorStruc); ok {
 			return c.Status(errResp.StatusCode).JSON(models.Response{
@@ -218,7 +218,7 @@ func (i *IncomeController) UpdateIncome(c *fiber.Ctx) error {
 		})
 	}
 
-	err := i.IncomeService.UpdateIncome(&incomeUpdate)
+	err := i.IncomeService.IncomeUpdate(&incomeUpdate)
 	if err != nil {
 		if errResp, ok := err.(*models.ErrorStruc); ok {
 			return c.Status(errResp.StatusCode).JSON(models.Response{
@@ -266,7 +266,7 @@ func (i *IncomeController) DeleteIncome(c *fiber.Ctx) error {
 		})
 	}
 
-	err := i.IncomeService.DeleteIncome(id)
+	err := i.IncomeService.IncomeDelete(id)
 	if err != nil {
 		if errResp, ok := err.(*models.ErrorStruc); ok {
 			return c.Status(errResp.StatusCode).JSON(models.Response{

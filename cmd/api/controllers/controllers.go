@@ -51,7 +51,8 @@ type PurchaseProductController struct {
 }
 
 type ResumeController struct {
-	ResumeService ports.ResumeService
+	ResumeExpenseService ports.ResumeExpenseService
+	ResumeIncomeService ports.ResumeIncomeService
 }
 
 type RoleController struct {

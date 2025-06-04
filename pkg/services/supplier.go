@@ -45,8 +45,8 @@ func (s *SupplierService) SupplierGetByName(name string) (*[]models.Supplier, er
 	return supplier, nil
 }
 
-func (s *SupplierService) SupplierDeleteByID(id string) error {
-	err := s.SupplierRepository.SupplierDeleteByID(id)
+func (s *SupplierService) SupplierDelete(id string) error {
+	err := s.SupplierRepository.SupplierDelete(id)
 	if err != nil {
 		return models.ErrorResponse(500, "Error al eliminar proveedor", err)
 	}

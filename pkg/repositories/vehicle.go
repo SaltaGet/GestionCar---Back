@@ -4,6 +4,7 @@ import (
 	"errors"
 
 	"github.com/DanielChachagua/GestionCar/pkg/models"
+	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
 
@@ -34,12 +35,12 @@ func (r *TenantRepository) VehicleExistByDomain(domain string) (bool, error) {
 	return true, nil
 }
 
-func (r *TenantRepository) VehicleGetAll() ([]models.Vehicle, error) {
+func (r *TenantRepository) VehicleGetAll() (*[]models.Vehicle, error) {
 	var vehicles []models.Vehicle
 	if err := r.DB.Find(&vehicles).Error; err != nil {
 		return nil, err
 	}
-	return vehicles, nil
+	return &vehicles, nil
 }
 
 func (r *TenantRepository) VehicleGetByClientID(clientID string) (*[]models.Vehicle, error) {
@@ -50,22 +51,30 @@ func (r *TenantRepository) VehicleGetByClientID(clientID string) (*[]models.Vehi
 	return &vehicles, nil
 }
 
-func (r *TenantRepository) VehicleCreate(vehicle *models.Vehicle) (string, error) {
-	if err := r.DB.Create(vehicle).Error; err != nil {
+func (r *TenantRepository) VehicleCreate(vehicle *models.VehicleCreate) (string, error) {
+	newVehicle := models.Vehicle{
+		ID: uuid.NewString(),
+		Brand: vehicle.Brand,
+		Model: vehicle.Model,
+		Color: vehicle.Color,
+		Year: vehicle.Year,
+		Domain: vehicle.Domain,
+		ClientID: vehicle.ClientID,
+	}
+	if err := r.DB.Create(&newVehicle).Error; err != nil {
 		return "", err
 	}
-	return vehicle.ID, nil
+	return newVehicle.ID, nil
 }
 
-func (r *TenantRepository) VehicleUpdate(vehicle *models.Vehicle) error {
-	var existing models.Vehicle
-	if err := r.DB.First(&existing, "id = ?", vehicle.ID).Error; err != nil {
+func (r *TenantRepository) VehicleUpdate(vehicle *models.VehicleUpdate) error {
+	if err := r.DB.Where("id = ?", vehicle.ID).Updates(&vehicle).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return models.ErrorResponse(404, "Vehiculo no encontrado", err)
+		}
 		return err 
 	}
 
-	if err := r.DB.Updates(vehicle).Error; err != nil {
-		return err
-	}
 	return nil
 }
 

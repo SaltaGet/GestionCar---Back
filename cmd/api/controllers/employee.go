@@ -31,7 +31,7 @@ func (e *EmployeeController) GetEmployeeByID(c *fiber.Ctx) error {
 		})
 	}
 
-	employee, err := e.EmployeeService.GetEmployeeByID(id)
+	employee, err := e.EmployeeService.EmployeeGetByID(id)
 	if err != nil {
 		if errResp, ok := err.(*models.ErrorStruc); ok {
 			return c.Status(errResp.StatusCode).JSON(models.Response{
@@ -68,7 +68,7 @@ func (e *EmployeeController) GetEmployeeByID(c *fiber.Ctx) error {
 // 	@Failure		500					{object}	models.Response									"Internal server error"
 // 	@Router			/employee/get_all [get]
 func (e *EmployeeController) GetAllEmployees(c *fiber.Ctx) error {
-	employees, err := e.EmployeeService.GetAllEmployees()
+	employees, err := e.EmployeeService.EmployeeGetAll()
 	if err != nil {
 		if errResp, ok := err.(*models.ErrorStruc); ok {
 			return c.Status(errResp.StatusCode).JSON(models.Response{
@@ -115,7 +115,7 @@ func (e *EmployeeController) GetEmployeeByName(c *fiber.Ctx) error {
 		})
 	}
 
-	employees, err := e.EmployeeService.GetEmployeeByName(name)
+	employees, err := e.EmployeeService.EmployeeGetByName(name)
 	if err != nil {
 		if errResp, ok := err.(*models.ErrorStruc); ok {
 			return c.Status(errResp.StatusCode).JSON(models.Response{
@@ -170,7 +170,7 @@ func (e *EmployeeController) CreateEmployee(c *fiber.Ctx) error {
 		})
 	}
 
-	id, err := e.EmployeeService.CreateEmployee(&employeeCreate)
+	id, err := e.EmployeeService.EmployeeCreate(&employeeCreate)
 	if err != nil {
 		if errResp, ok := err.(*models.ErrorStruc); ok {
 			return c.Status(errResp.StatusCode).JSON(models.Response{
@@ -226,7 +226,7 @@ func (e *EmployeeController) UpdateEmployee(c *fiber.Ctx) error {
 		})
 	}
 
-	err := e.EmployeeService.UpdateEmployee(&employeeUpdate)
+	err := e.EmployeeService.EmployeeUpdate(&employeeUpdate)
 	if err != nil {
 		if errResp, ok := err.(*models.ErrorStruc); ok {
 			return c.Status(errResp.StatusCode).JSON(models.Response{
@@ -274,7 +274,7 @@ func (e *EmployeeController) DeleteEmployee(c *fiber.Ctx) error {
 		})
 	}
 
-	err := e.EmployeeService.DeleteEmployee(id)
+	err := e.EmployeeService.EmployeeDelete(id)
 	if err != nil {
 		if errResp, ok := err.(*models.ErrorStruc); ok {
 			return c.Status(errResp.StatusCode).JSON(models.Response{

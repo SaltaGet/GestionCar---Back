@@ -18,6 +18,17 @@ func (s *ServiceService) ServiceGetByID(id string) (*models.Service, error) {
 	return service, nil
 }
 
+func (s *ServiceService) ServiceGetByName(name string) (*[]models.Service, error) {
+	services, err := s.ServiceRepository.ServiceGetByName(name)
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, models.ErrorResponse(404, "Servicio no encontrado", err)
+		}
+		return nil, models.ErrorResponse(500, "Error al buscar servicio", err)
+	}
+	return services, nil
+}
+
 func (s *ServiceService) ServiceGetAll() (*[]models.Service, error) {
 	services, err := s.ServiceRepository.ServiceGetAll()
 	if err != nil {

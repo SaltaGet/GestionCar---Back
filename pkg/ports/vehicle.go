@@ -4,7 +4,6 @@ import "github.com/DanielChachagua/GestionCar/pkg/models"
 
 type VehicleService interface {
 	VehicleGetByID(id string) (vehicle *models.Vehicle, err error)
-	GetClientByName(name string) (clients *[]models.Client, err error)
 	VehicleGetAll() (vehicles *[]models.Vehicle, err error)
 	VehicleGetByDomain(domain string) (vehicles *[]models.Vehicle, err error)
 	VehicleGetByClientID(clientID string) (vehicles *[]models.Vehicle, err error)
@@ -15,7 +14,6 @@ type VehicleService interface {
 
 type VehicleRepository interface {
 	VehicleGetByID(id string) (vehicle *models.Vehicle, err error)
-	GetClientByName(name string) (clients *[]models.Client, err error)
 	VehicleGetAll() (vehicles *[]models.Vehicle, err error)
 	VehicleGetByDomain(domain string) (vehicles *[]models.Vehicle, err error)
 	VehicleExistByDomain(domain string) (exist bool, err error)

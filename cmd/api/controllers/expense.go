@@ -31,7 +31,7 @@ func (e *ExpenseController) GetExpenseByID(c *fiber.Ctx) error {
 		})
 	}
 
-	expense, err := e.ExpenseService.GetExpenseByID(id)
+	expense, err := e.ExpenseService.ExpenseGetByID(id)
 	if err != nil {
 		if errResp, ok := err.(*models.ErrorStruc); ok {
 			return c.Status(errResp.StatusCode).JSON(models.Response{
@@ -68,7 +68,7 @@ func (e *ExpenseController) GetExpenseByID(c *fiber.Ctx) error {
 //	@Failure		500					{object}	models.Response									"Internal server error"
 //	@Router			/expense/get_all [get]
 func (e *ExpenseController) GetAllExpenses(c *fiber.Ctx) error {
-	expenses, err := e.ExpenseService.GetAllExpenses()
+	expenses, err := e.ExpenseService.ExpenseGetAll()
 	if err != nil {
 		if errResp, ok := err.(*models.ErrorStruc); ok {
 			return c.Status(errResp.StatusCode).JSON(models.Response{
@@ -105,7 +105,7 @@ func (e *ExpenseController) GetAllExpenses(c *fiber.Ctx) error {
 //	@Failure		500					{object}	models.Response									"Internal server error"
 //	@Router			/expense/get_today [get]
 func (e *ExpenseController) GetExpenseToday(c *fiber.Ctx) error {
-	expenses, err := e.ExpenseService.GetExpenseToday()
+	expenses, err := e.ExpenseService.ExpenseGetToday()
 	if err != nil {
 		if errResp, ok := err.(*models.ErrorStruc); ok {
 			return c.Status(errResp.StatusCode).JSON(models.Response{
@@ -160,7 +160,7 @@ func (e *ExpenseController) CreateExpense(c *fiber.Ctx) error {
 		})
 	}
 
-	id, err := e.ExpenseService.CreateExpense(&expenseCreate)
+	id, err := e.ExpenseService.ExpenseCreate(&expenseCreate)
 	if err != nil {
 		if errResp, ok := err.(*models.ErrorStruc); ok {
 			return c.Status(errResp.StatusCode).JSON(models.Response{
@@ -215,7 +215,7 @@ func (e *ExpenseController) UpdateExpense(c *fiber.Ctx) error {
 		})
 	}
 
-	err := e.ExpenseService.UpdateExpense(&expenseUpdate)
+	err := e.ExpenseService.ExpenseUpdate(&expenseUpdate)
 	if err != nil {
 		if errResp, ok := err.(*models.ErrorStruc); ok {
 			return c.Status(errResp.StatusCode).JSON(models.Response{
@@ -262,7 +262,7 @@ func (e *ExpenseController) DeleteExpense(c *fiber.Ctx) error {
 		})
 	}
 
-	err := e.ExpenseService.DeleteExpense(id)
+	err := e.ExpenseService.ExpenseDelete(id)
 	if err != nil {
 		if errResp, ok := err.(*models.ErrorStruc); ok {
 			return c.Status(errResp.StatusCode).JSON(models.Response{
