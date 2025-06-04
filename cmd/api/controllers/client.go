@@ -22,7 +22,7 @@ import (
 //	@Failure		404	{object}	models.Response
 //	@Failure		500	{object}	models.Response
 //	@Router			/client/{id} [get]
-func ClientGetByID(c *fiber.Ctx) error {
+func (cl *ClientController) ClientGetByID(c *fiber.Ctx) error {
 	id := c.Params("id")
 	if id == "" {
 		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
@@ -32,7 +32,7 @@ func ClientGetByID(c *fiber.Ctx) error {
 		})
 	}
 
-	client, err := services.ClientGetByID(id)
+	client, err := cl.ClientService.ClientGetByID(id)
 	if err != nil {
 		if errResp, ok := err.(*models.ErrorStruc); ok {
 			return c.Status(errResp.StatusCode).JSON(models.Response{
@@ -69,8 +69,8 @@ func ClientGetByID(c *fiber.Ctx) error {
 //	@Failure		404	{object}	models.Response
 //	@Failure		500	{object}	models.Response
 //	@Router			/client/get_all [get]
-func ClientGetAll(c *fiber.Ctx) error {
-	clients, err := services.ClientGetAll()
+func (cl *ClientController) ClientGetAll(c *fiber.Ctx) error {
+	clients, err := cl.ClientService.ClientGetAll()
 	if err != nil {
 		if errResp, ok := err.(*models.ErrorStruc); ok {
 			return c.Status(errResp.StatusCode).JSON(models.Response{
@@ -108,7 +108,7 @@ func ClientGetAll(c *fiber.Ctx) error {
 //	@Failure		404		{object}	models.Response
 //	@Failure		500		{object}	models.Response
 //	@Router			/client/get_by_name [get]
-func ClientGetByName(c *fiber.Ctx) error {
+func (cl *ClientController) ClientGetByName(c *fiber.Ctx) error {
 	name := c.Query("name")
 	if name == "" || len(name) < 3 {
 		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
@@ -118,7 +118,7 @@ func ClientGetByName(c *fiber.Ctx) error {
 		})
 	}
 
-	clients, err := services.ClientGetByName(name)
+	clients, err := cl.ClientService.ClientGetByName(name)
 	if err != nil {
 		if errResp, ok := err.(*models.ErrorStruc); ok {
 			return c.Status(errResp.StatusCode).JSON(models.Response{
@@ -157,7 +157,7 @@ func ClientGetByName(c *fiber.Ctx) error {
 //	@Failure		422				{object}	models.Response
 //	@Failure		500				{object}	models.Response
 //	@Router			/client/update [put]
-func ClientUpdate(c *fiber.Ctx) error {
+func (cl *ClientController) ClientUpdate(c *fiber.Ctx) error {
 	var clientUpdate models.ClientUpdate
 	if err := c.BodyParser(&clientUpdate); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
@@ -173,7 +173,7 @@ func ClientUpdate(c *fiber.Ctx) error {
 			Message: err.Error(),
 		})
 	}
-	clientCreated, err := services.ClientUpdate(&clientUpdate)
+	clientCreated, err := cl.ClientService.ClientUpdate(&clientUpdate)
 	if err != nil {
 		if errResp, ok := err.(*models.ErrorStruc); ok {
 			return c.Status(errResp.StatusCode).JSON(models.Response{
@@ -211,7 +211,7 @@ func ClientUpdate(c *fiber.Ctx) error {
 //	@Failure		404	{object}	models.Response
 //	@Failure		500	{object}	models.Response
 //	@Router			/client/delete/{id} [delete]
-func ClientDelete(c *fiber.Ctx) error {
+func (cl *ClientController) ClientDelete(c *fiber.Ctx) error {
 	id := c.Params("id")
 	if id == "" {
 		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
@@ -221,7 +221,7 @@ func ClientDelete(c *fiber.Ctx) error {
 		})
 	}
 
-	client, err := services.ClientDelete(id)
+	client, err := cl.ClientService.ClientDelete(id)
 	if err != nil {
 		if errResp, ok := err.(*models.ErrorStruc); ok {
 			return c.Status(errResp.StatusCode).JSON(models.Response{
@@ -259,7 +259,7 @@ func ClientDelete(c *fiber.Ctx) error {
 //	@Failure		422				{object}	models.Response
 //	@Failure		500				{object}	models.Response
 //	@Router			/client/create [post]
-func CreateClient(c *fiber.Ctx) error {
+func (cl *ClientController) CreateClient(c *fiber.Ctx) error {
 	var clientCreate models.ClientCreate
 	if err := c.BodyParser(&clientCreate); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
@@ -275,7 +275,7 @@ func CreateClient(c *fiber.Ctx) error {
 			Message: err.Error(),
 		})
 	}
-	clientCreated, err := services.ClientCreate(&clientCreate)
+	clientCreated, err := cl.ClientService.ClientCreate(&clientCreate)
 	if err != nil {
 		if errResp, ok := err.(*models.ErrorStruc); ok {
 			return c.Status(errResp.StatusCode).JSON(models.Response{

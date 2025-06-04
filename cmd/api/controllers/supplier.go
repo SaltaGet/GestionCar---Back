@@ -2,7 +2,6 @@ package controllers
 
 import (
 	"github.com/DanielChachagua/GestionCar/pkg/models"
-	"github.com/DanielChachagua/GestionCar/pkg/services"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -13,7 +12,6 @@ import (
 //	@Accept			json
 //	@Produce		json
 //	@Security		BearerAuth
-//	@Param			X-Workplace-Token	header		string											true	"Workplace Token"
 //	@Param			id					path		string											true	"ID of the supplier"
 //	@Success		200					{object}	models.Response{body=models.SupplierLaundry}	"Supplier obtained with success"
 //	@Failure		400					{object}	models.Response									"Bad Request"
@@ -22,7 +20,7 @@ import (
 //	@Failure		404					{object}	models.Response									"Supplier not found"
 //	@Failure		500					{object}	models.Response									"Internal server error"
 //	@Router			/supplier/{id} [get]
-func SupplierGetByID(c *fiber.Ctx) error {
+func (s *SupplierController) SupplierGetByID(c *fiber.Ctx) error {
 	id := c.Params("id")
 	if id == "" {
 		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
@@ -32,16 +30,7 @@ func SupplierGetByID(c *fiber.Ctx) error {
 		})
 	}
 
-	workplace := c.Locals("workplace").(*models.Workplace)
-	if workplace == nil {
-		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
-			Status:  false,
-			Body:    nil,
-			Message: "Workplace is required",
-		})
-	}
-
-	laundry, workshop, err := services.SupplierGetByID(id, workplace.Identifier)
+	supplier, err := s.SupplierService.SupplierGetByID(id)
 	if err != nil {
 		if errResp, ok := err.(*models.ErrorStruc); ok {
 			return c.Status(errResp.StatusCode).JSON(models.Response{
@@ -57,17 +46,9 @@ func SupplierGetByID(c *fiber.Ctx) error {
 		})
 	}
 
-	if laundry != nil {
-		return c.Status(200).JSON(models.Response{
-			Status:  true,
-			Body:    laundry,
-			Message: "Proveedor obtenido con éxito",
-		})
-	}
-
 	return c.Status(200).JSON(models.Response{
 		Status:  true,
-		Body:    workshop,
+		Body:    supplier,
 		Message: "Proveedor obtenido con éxito",
 	})
 }
@@ -79,24 +60,14 @@ func SupplierGetByID(c *fiber.Ctx) error {
 //	@Accept			json
 //	@Produce		json
 //	@Security		BearerAuth
-//	@Param			X-Workplace-Token	header		string											true	"Workplace Token"
 //	@Success		200					{object}	models.Response{body=[]models.SupplierLaundry}	"Suppliers obtained with success"
 //	@Failure		400					{object}	models.Response									"Bad Request"
 //	@Failure		401					{object}	models.Response									"Auth is required"
 //	@Failure		403					{object}	models.Response									"Not Authorized"
 //	@Failure		500					{object}	models.Response									"Internal server error"
 //	@Router			/supplier/get_all [get]
-func SupplierGetAll(c *fiber.Ctx) error {
-	workplace := c.Locals("workplace").(*models.Workplace)
-	if workplace == nil {
-		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
-			Status:  false,
-			Body:    nil,
-			Message: "Workplace is required",
-		})
-	}
-
-	laundry, workshop, err := services.SupplierGetAll(workplace.Identifier)
+func (s *SupplierController) SupplierGetAll(c *fiber.Ctx) error {
+	suppliers, err := s.SupplierService.SupplierGetAll()
 	if err != nil {
 		if errResp, ok := err.(*models.ErrorStruc); ok {
 			return c.Status(errResp.StatusCode).JSON(models.Response{
@@ -112,17 +83,9 @@ func SupplierGetAll(c *fiber.Ctx) error {
 		})
 	}
 
-	if laundry != nil {
-		return c.Status(200).JSON(models.Response{
-			Status:  true,
-			Body:    laundry,
-			Message: "Proveedores obtenidos con éxito",
-		})
-	}
-
 	return c.Status(200).JSON(models.Response{
 		Status:  true,
-		Body:    workshop,
+		Body:    suppliers,
 		Message: "Proveedores obtenidos con éxito",
 	})
 }
@@ -134,7 +97,6 @@ func SupplierGetAll(c *fiber.Ctx) error {
 //	@Accept			json
 //	@Produce		json
 //	@Security		BearerAuth
-//	@Param			X-Workplace-Token	header		string											true	"Workplace Token"
 //	@Param			name				query		string											true	"Name of the Supplier"
 //	@Success		200					{object}	models.Response{body=[]models.SupplierLaundry}	"List of suppliers"
 //	@Failure		400					{object}	models.Response									"Bad Request"
@@ -143,7 +105,7 @@ func SupplierGetAll(c *fiber.Ctx) error {
 //	@Failure		500					{object}	models.Response									"Internal server error"
 //	@Router			/supplier/get_by_name [get]
 //	@Security		BearerAuth
-func SupplierGetByName(c *fiber.Ctx) error {
+func (s *SupplierController) SupplierGetByName(c *fiber.Ctx) error {
 	name := c.Query("name")
 	if name == "" || len(name) < 3 {
 		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
@@ -153,16 +115,7 @@ func SupplierGetByName(c *fiber.Ctx) error {
 		})
 	}
 
-	workplace := c.Locals("workplace").(*models.Workplace)
-	if workplace == nil {
-		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
-			Status:  false,
-			Body:    nil,
-			Message: "Workplace is required",
-		})
-	}
-
-	laundry, workshop, err := services.SupplierGetByName(name, workplace.Identifier)
+	supplies, err := s.SupplierService.SupplierGetByName(name)
 	if err != nil {
 		if errResp, ok := err.(*models.ErrorStruc); ok {
 			return c.Status(errResp.StatusCode).JSON(models.Response{
@@ -178,17 +131,9 @@ func SupplierGetByName(c *fiber.Ctx) error {
 		})
 	}
 
-	if laundry != nil {
-		return c.Status(200).JSON(models.Response{
-			Status:  true,
-			Body:    laundry,
-			Message: "Proveedores obtenidos con éxito",
-		})
-	}
-
 	return c.Status(200).JSON(models.Response{
 		Status:  true,
-		Body:    workshop,
+		Body:    supplies,
 		Message: "Proveedores obtenidos con éxito",
 	})
 }
@@ -200,7 +145,6 @@ func SupplierGetByName(c *fiber.Ctx) error {
 //	@Accept			json
 //	@Produce		json
 //	@Security		BearerAuth
-//	@Param			X-Workplace-Token	header		string							true	"Workplace Token"
 //	@Param			supplier			body		models.SupplierCreate			true	"Details of the supplier to create"
 //	@Success		200					{object}	models.Response{body=string}	"Supplier created successfully"
 //	@Failure		400					{object}	models.Response					"Bad Request"
@@ -209,7 +153,7 @@ func SupplierGetByName(c *fiber.Ctx) error {
 //	@Failure		422					{object}	models.Response					"Model is invalid"
 //	@Failure		500					{object}	models.Response					"Internal server error"
 //	@Router			/supplier/create [post]
-func SupplierCreate(c *fiber.Ctx) error {
+func (s *SupplierController) SupplierCreate(c *fiber.Ctx) error {
 	var supplierCreate models.SupplierCreate
 	if err := c.BodyParser(&supplierCreate); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
@@ -226,16 +170,7 @@ func SupplierCreate(c *fiber.Ctx) error {
 		})
 	}
 
-	workplace := c.Locals("workplace").(*models.Workplace)
-	if workplace == nil {
-		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
-			Status:  false,
-			Body:    nil,
-			Message: "Workplace is required",
-		})
-	}
-
-	id, err := services.SupplierCreate(&supplierCreate, workplace.Identifier)
+	id, err := s.SupplierService.SupplierCreate(&supplierCreate)
 	if err != nil {
 		if errResp, ok := err.(*models.ErrorStruc); ok {
 			return c.Status(errResp.StatusCode).JSON(models.Response{
@@ -257,8 +192,7 @@ func SupplierCreate(c *fiber.Ctx) error {
 		Message: "Proveedor creado con éxito",
 	})
 }
-// eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjBlYzIzOGU5LThkZTEtNDg2MS05OGY0LTc5NjY4ZmUzZjZhNCJ9.iT0dBWAfpeFtHSYzuh7MxZrQzZ6XVzypKsreFVXksnw
-// eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Ijg3OGZkNWRhLTdiNDctNDI2ZS1iZmRhLTFiMjMwMTBlMWJhNCJ9.yGhFvYKi6Zm2HpxNravhZUzE2stcr6AwrWWsNI5W-o8
+
 // SupplierUpdate godoc
 //	@Summary		Update Supplier
 //	@Description	Update a supplier's information from the specified workplace.
@@ -266,7 +200,6 @@ func SupplierCreate(c *fiber.Ctx) error {
 //	@Accept			json
 //	@Produce		json
 //	@Security		BearerAuth
-//	@Param			X-Workplace-Token	header		string					true	"Workplace Token"
 //	@Param			body				body		models.SupplierUpdate	true	"Supplier information"
 //	@Success		200					{object}	models.Response			"Supplier updated with success"
 //	@Failure		400					{object}	models.Response			"Bad Request"
@@ -276,7 +209,7 @@ func SupplierCreate(c *fiber.Ctx) error {
 //	@Failure		422					{object}	models.Response			"Model is invalid"
 //	@Failure		500					{object}	models.Response			"Internal server error"
 //	@Router			/supplier/update [put]
-func SupplierUpdate(c *fiber.Ctx) error {
+func (s *SupplierController) SupplierUpdate(c *fiber.Ctx) error {
 	var supplierUpdate models.SupplierUpdate
 	if err := c.BodyParser(&supplierUpdate); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
@@ -293,16 +226,7 @@ func SupplierUpdate(c *fiber.Ctx) error {
 		})
 	}
 
-	workplace := c.Locals("workplace").(*models.Workplace)
-	if workplace == nil {
-		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
-			Status:  false,
-			Body:    nil,
-			Message: "Workplace is required",
-		})
-	}
-
-	err := services.SupplierUpdate(&supplierUpdate, workplace.Identifier)
+	err := s.SupplierService.SupplierUpdate(&supplierUpdate)
 	if err != nil {
 		if errResp, ok := err.(*models.ErrorStruc); ok {
 			return c.Status(errResp.StatusCode).JSON(models.Response{
@@ -332,7 +256,6 @@ func SupplierUpdate(c *fiber.Ctx) error {
 //	@Accept			json
 //	@Produce		json
 //	@Security		BearerAuth
-//	@Param			X-Workplace-Token	header		string			true	"Workplace Token"
 //	@Param			id					path		string			true	"ID of the supplier"
 //	@Success		200					{object}	models.Response	"Supplier deleted with success"
 //	@Failure		400					{object}	models.Response	"Bad Request"
@@ -341,7 +264,7 @@ func SupplierUpdate(c *fiber.Ctx) error {
 //	@Failure		404					{object}	models.Response	"Supplier not found"
 //	@Failure		500					{object}	models.Response	"Internal server error"
 //	@Router			/supplier/delete/{id} [delete]
-func SupplierDeleteByID(c *fiber.Ctx) error {
+func (s *SupplierController) SupplierDeleteByID(c *fiber.Ctx) error {
 	id := c.Params("id")
 	if id == "" {
 		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
@@ -351,16 +274,7 @@ func SupplierDeleteByID(c *fiber.Ctx) error {
 		})
 	}
 
-	workplace := c.Locals("workplace").(*models.Workplace)
-	if workplace == nil {
-		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
-			Status:  false,
-			Body:    nil,
-			Message: "Workplace is required",
-		})
-	}
-
-	err := services.SupplierDeleteByID(id, workplace.Identifier)
+	err := s.SupplierService.SupplierDeleteByID(id)
 	if err != nil {
 		if errResp, ok := err.(*models.ErrorStruc); ok {
 			return c.Status(errResp.StatusCode).JSON(models.Response{

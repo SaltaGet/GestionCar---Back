@@ -2,27 +2,25 @@ package controllers
 
 import (
 	"github.com/DanielChachagua/GestionCar/pkg/models"
-	"github.com/DanielChachagua/GestionCar/pkg/services"
 	"github.com/gofiber/fiber/v2"
 )
 
 // GetIncomeByID godoc
 //	@Summary		Get Income By ID
-//	@Description	Fetches income details from either laundry or workshop based on the provided ID and workplace context.
+//	@Description	Fetches income details from based on the provided ID and tenant context.
 //	@Tags			Income
 //	@Accept			json
 //	@Produce		json
 //	@Security		BearerAuth
-//	@Param			X-Workplace-Token	header		string										true	"Workplace Token"
 //	@Param			id					path		string										true	"ID of the income"
-//	@Success		200					{object}	models.Response{body=models.IncomeLaundry}	"Income details fetched successfully"
+//	@Success		200					{object}	models.Response{body=models.Income}	"Income details fetched successfully"
 //	@Failure		400					{object}	models.Response								"Bad Request"
 //	@Failure		401					{object}	models.Response								"Auth is required"
 //	@Failure		403					{object}	models.Response								"Not Authorized"
 //	@Failure		404					{object}	models.Response								"Expense not found"
 //	@Failure		500					{object}	models.Response								"Internal server error"
 //	@Router			/income/{id} [get]
-func GetIncomeByID(c *fiber.Ctx) error {
+func (i *IncomeController) GetIncomeByID(c *fiber.Ctx) error {
 	id := c.Params("id")
 	if id == "" {
 		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
@@ -32,16 +30,7 @@ func GetIncomeByID(c *fiber.Ctx) error {
 		})
 	}
 
-	workplace := c.Locals("workplace").(*models.Workplace)
-	if workplace == nil {
-		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
-			Status:  false,
-			Body:    nil,
-			Message: "Workplace is required",
-		})
-	}
-
-	laundry, workshop, err := services.GetIncomeByID(id, workplace.Identifier)
+	income, err := i.IncomeService.GetIncomeByID(id)
 	if err != nil {
 		if errResp, ok := err.(*models.ErrorStruc); ok {
 			return c.Status(errResp.StatusCode).JSON(models.Response{
@@ -57,47 +46,29 @@ func GetIncomeByID(c *fiber.Ctx) error {
 		})
 	}
 
-	if laundry != nil {
-		return c.Status(200).JSON(models.Response{
-			Status:  true,
-			Body:    laundry,
-			Message: "Ingreso obtenido con éxito",
-		})
-	}
-
 	return c.Status(200).JSON(models.Response{
 		Status:  true,
-		Body:    workshop,
+		Body:    income,
 		Message: "Ingreso obtenido con éxito",
 	})
 }
 
 // GetAllIncomes godoc
 //	@Summary		Get all incomes
-//	@Description	Fetches all incomes from the specified workplace, either in laundry or workshop.
+//	@Description	Fetches all incomes from the specified tenant.
 //	@Tags			Income
 //	@Accept			json
 //	@Produce		json
 //	@Security		BearerAuth
-//	@Param			X-Workplace-Token	header		string											true	"Workplace Token"
-//	@Success		200					{object}	models.Response{body=[]models.IncomeLaundry}	"List of incomes"
+//	@Success		200					{object}	models.Response{body=[]models.Income}	"List of incomes"
 //	@Failure		400					{object}	models.Response									"Bad Request"
 //	@Failure		401					{object}	models.Response									"Auth is required"
 //	@Failure		403					{object}	models.Response									"Not Authorized"
 //	@Failure		404					{object}	models.Response									"Expense not found"
 //	@Failure		500					{object}	models.Response									"Internal server error"
 //	@Router			/income/get_all [get]
-func GetAllIncomes(c *fiber.Ctx) error {
-	workplace := c.Locals("workplace").(*models.Workplace)
-	if workplace == nil {
-		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
-			Status:  false,
-			Body:    nil,
-			Message: "Workplace is required",
-		})
-	}
-
-	laundry, workshop, err := services.GetAllIncomes(workplace.Identifier)
+func (i *IncomeController) GetAllIncomes(c *fiber.Ctx) error {
+	incomes, err := i.IncomeService.GetAllIncomes()
 	if err != nil {
 		if errResp, ok := err.(*models.ErrorStruc); ok {
 			return c.Status(errResp.StatusCode).JSON(models.Response{
@@ -113,47 +84,29 @@ func GetAllIncomes(c *fiber.Ctx) error {
 		})
 	}
 
-	if laundry != nil {
-		return c.Status(200).JSON(models.Response{
-			Status:  true,
-			Body:    laundry,
-			Message: "Ingresos obtenidos con éxito",
-		})
-	}
-
 	return c.Status(200).JSON(models.Response{
 		Status:  true,
-		Body:    workshop,
+		Body:    incomes,
 		Message: "Ingresos obtenidos con éxito",
 	})
 }
 
 // GetIncomeToday godoc
 //	@Summary		Get Income Today
-//	@Description	Fetches all incomes from the specified workplace, either in laundry or workshop, on the current day.
+//	@Description	Fetches all incomes from the specified tenant, on the current day.
 //	@Tags			Income
 //	@Accept			json
 //	@Produce		json
 //	@Security		BearerAuth
-//	@Param			X-Workplace-Token	header		string											true	"Workplace Token"
-//	@Success		200					{object}	models.Response{body=[]models.IncomeLaundry}	"List of laundry incomes"
+//	@Success		200					{object}	models.Response{body=[]models.Income}	"List of all incomes"
 //	@Failure		400					{object}	models.Response									"Bad Request"
 //	@Failure		401					{object}	models.Response									"Auth is required"
 //	@Failure		403					{object}	models.Response									"Not Authorized"
 //	@Failure		404					{object}	models.Response									"Expense not found"
 //	@Failure		500					{object}	models.Response									"Internal server error"
 //	@Router			/income/get_today [get]
-func GetIncomeToday(c *fiber.Ctx) error {
-	workplace := c.Locals("workplace").(*models.Workplace)
-	if workplace == nil {
-		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
-			Status:  false,
-			Body:    nil,
-			Message: "Workplace is required",
-		})
-	}
-
-	laundry, workshop, err := services.GetIncomeToday(workplace.Identifier)
+func (i *IncomeController) GetIncomeToday(c *fiber.Ctx) error {
+	incomes, err := i.IncomeService.GetIncomeToday()
 	if err != nil {
 		if errResp, ok := err.(*models.ErrorStruc); ok {
 			return c.Status(errResp.StatusCode).JSON(models.Response{
@@ -169,17 +122,9 @@ func GetIncomeToday(c *fiber.Ctx) error {
 		})
 	}
 
-	if laundry != nil {
-		return c.Status(200).JSON(models.Response{
-			Status:  true,
-			Body:    laundry,
-			Message: "Ingresos obtenidos con éxito",
-		})
-	}
-
 	return c.Status(200).JSON(models.Response{
 		Status:  true,
-		Body:    workshop,
+		Body:    incomes,
 		Message: "Ingresos obtenidos con éxito",
 	})
 }
@@ -191,7 +136,6 @@ func GetIncomeToday(c *fiber.Ctx) error {
 //	@Accept			json
 //	@Produce		json
 //	@Security		BearerAuth
-//	@Param			X-Workplace-Token	header		string							true	"Workplace Token"
 //	@Param			incomeCreate		body		models.IncomeCreate				true	"Income information"
 //	@Success		200					{object}	models.Response{body=string}	"Income created successfully"
 //	@Failure		400					{object}	models.Response					"Bad Request"
@@ -201,7 +145,7 @@ func GetIncomeToday(c *fiber.Ctx) error {
 //	@Failure		422					{object}	models.Response					"Model Invalid"
 //	@Failure		500					{object}	models.Response					"Internal server error"
 //	@Router			/income/create [post]
-func CreateIncome(c *fiber.Ctx) error {
+func (i *IncomeController) CreateIncome(c *fiber.Ctx) error {
 	var incomeCreate models.IncomeCreate
 	if err := c.BodyParser(&incomeCreate); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
@@ -218,16 +162,7 @@ func CreateIncome(c *fiber.Ctx) error {
 		})
 	}
 
-	workplace := c.Locals("workplace").(*models.Workplace)
-	if workplace == nil {
-		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
-			Status:  false,
-			Body:    nil,
-			Message: "Workplace is required",
-		})
-	}
-
-	id, err := services.CreateIncome(&incomeCreate, workplace.Identifier)
+	id, err := i.IncomeService.CreateIncome(&incomeCreate)
 	if err != nil {
 		if errResp, ok := err.(*models.ErrorStruc); ok {
 			return c.Status(errResp.StatusCode).JSON(models.Response{
@@ -257,7 +192,6 @@ func CreateIncome(c *fiber.Ctx) error {
 //	@Accept			json
 //	@Produce		json
 //	@Security		BearerAuth
-//	@Param			X-Workplace-Token	header		string				true	"Workplace Token"
 //	@Param			incomeUpdate		body		models.IncomeUpdate	true	"Income data to update"
 //	@Success		200					{object}	models.Response		"Income updated successfully"
 //	@Failure		400					{object}	models.Response		"Bad Request"
@@ -267,7 +201,7 @@ func CreateIncome(c *fiber.Ctx) error {
 //	@Failure		422					{object}	models.Response		"Model Invalid"
 //	@Failure		500					{object}	models.Response		"Internal server error"
 //	@Router			/income/update [put]
-func UpdateIncome(c *fiber.Ctx) error {
+func (i *IncomeController) UpdateIncome(c *fiber.Ctx) error {
 	var incomeUpdate models.IncomeUpdate
 	if err := c.BodyParser(&incomeUpdate); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
@@ -284,16 +218,7 @@ func UpdateIncome(c *fiber.Ctx) error {
 		})
 	}
 
-	workplace := c.Locals("workplace").(*models.Workplace)
-	if workplace == nil {
-		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
-			Status:  false,
-			Body:    nil,
-			Message: "Workplace is required",
-		})
-	}
-
-	err := services.UpdateIncome(&incomeUpdate, workplace.Identifier)
+	err := i.IncomeService.UpdateIncome(&incomeUpdate)
 	if err != nil {
 		if errResp, ok := err.(*models.ErrorStruc); ok {
 			return c.Status(errResp.StatusCode).JSON(models.Response{
@@ -323,7 +248,6 @@ func UpdateIncome(c *fiber.Ctx) error {
 //	@Accept			json
 //	@Produce		json
 //	@Security		BearerAuth
-//	@Param			X-Workplace-Token	header		string			true	"Workplace Token"
 //	@Param			id					path		string			true	"ID of the income"
 //	@Success		200					{object}	models.Response	"Income deleted successfully"
 //	@Failure		400					{object}	models.Response	"Bad Request"
@@ -332,7 +256,7 @@ func UpdateIncome(c *fiber.Ctx) error {
 //	@Failure		404					{object}	models.Response	"Expense not found"
 //	@Failure		500					{object}	models.Response	"Error interno"
 //	@Router			/income/delete/{id} [delete]
-func DeleteIncome(c *fiber.Ctx) error {
+func (i *IncomeController) DeleteIncome(c *fiber.Ctx) error {
 	id := c.Params("id")
 	if id == "" {
 		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
@@ -342,16 +266,7 @@ func DeleteIncome(c *fiber.Ctx) error {
 		})
 	}
 
-	workplace := c.Locals("workplace").(*models.Workplace)
-	if workplace == nil {
-		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
-			Status:  false,
-			Body:    nil,
-			Message: "Workplace is required",
-		})
-	}
-
-	err := services.DeleteIncome(id, workplace.Identifier)
+	err := i.IncomeService.DeleteIncome(id)
 	if err != nil {
 		if errResp, ok := err.(*models.ErrorStruc); ok {
 			return c.Status(errResp.StatusCode).JSON(models.Response{

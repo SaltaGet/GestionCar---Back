@@ -2,8 +2,6 @@ package controllers
 
 import (
 	"github.com/DanielChachagua/GestionCar/pkg/models"
-	"github.com/DanielChachagua/GestionCar/pkg/repositories"
-	"github.com/DanielChachagua/GestionCar/pkg/services"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -23,7 +21,7 @@ import (
 //	@Failure		422					{object}	models.Response	"Model is invalid"
 //	@Failure		500					{object}	models.Response
 //	@Router			/vehicle/create [post]
-func VehicleCreate(c *fiber.Ctx) error{
+func (v *VehicleController) VehicleCreate(c *fiber.Ctx) error{
 	var vehicleCreate models.VehicleCreate
 	if err := c.BodyParser(&vehicleCreate); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
@@ -40,7 +38,7 @@ func VehicleCreate(c *fiber.Ctx) error{
 		})
 	}
 
-	vehicle, err := services.VehicleCreate(&vehicleCreate)
+	vehicle, err := v.VehicleService.VehicleCreate(&vehicleCreate)
 	if err != nil {
 		if errResp, ok := err.(*models.ErrorStruc); ok {
 			return c.Status(errResp.StatusCode).JSON(models.Response{
@@ -75,8 +73,8 @@ func VehicleCreate(c *fiber.Ctx) error{
 //	@Failure		403					{object}	models.Response		"Not Authorized"
 //	@Failure		500					{object}	models.Response		"Internal server error"
 //	@Router			/vehicle/get_all [get]
-func VehicleGetAll(c *fiber.Ctx) error {
-	vehicles, err := services.VehicleGetAll()
+func (v *VehicleController) VehicleGetAll(c *fiber.Ctx) error {
+	vehicles, err := v.VehicleService.VehicleGetAll()
 	if err != nil {
 		if errResp, ok := err.(*models.ErrorStruc); ok {
 			return c.Status(errResp.StatusCode).JSON(models.Response{
@@ -114,7 +112,7 @@ func VehicleGetAll(c *fiber.Ctx) error {
 //	@Failure		404					{object}	models.Response	"Vehicle not found"
 //	@Failure		500					{object}	models.Response
 //	@Router			/vehicle/{id} [get]
-func VehicleGetByID(c *fiber.Ctx) error {
+func (v *VehicleController) VehicleGetByID(c *fiber.Ctx) error {
 	id := c.Params("id")
 	if id == "" {
 		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
@@ -124,7 +122,7 @@ func VehicleGetByID(c *fiber.Ctx) error {
 		})
 	}
 
-	vehicle, err := services.VehicleGetByID(id)
+	vehicle, err := v.VehicleService.VehicleGetByID(id)
 	if err != nil {
 		if errResp, ok := err.(*models.ErrorStruc); ok {
 			return c.Status(errResp.StatusCode).JSON(models.Response{
@@ -159,7 +157,7 @@ func VehicleGetByID(c *fiber.Ctx) error {
 //	@Failure		403					{object}	models.Response		"Not Authorized"
 //	@Failure		500					{object}	models.Response		"Internal server error"
 //	@Router			/vehicle/get_by_domain [get]
-func VehicleGetByDomain(c *fiber.Ctx) error {
+func (v *VehicleController) VehicleGetByDomain(c *fiber.Ctx) error {
 	domain := c.Query("domain")
 	if domain == "" || len(domain) < 3 {
 		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
@@ -169,7 +167,7 @@ func VehicleGetByDomain(c *fiber.Ctx) error {
 		})
 	}
 
-	vehicles, err := repositories.Repo.GetVehicleByDomain(domain)
+	vehicles, err := v.VehicleService.VehicleGetByDomain(domain)
 	if err != nil {
 		if errResp, ok := err.(*models.ErrorStruc); ok {
 			return c.Status(errResp.StatusCode).JSON(models.Response{
@@ -205,7 +203,7 @@ func VehicleGetByDomain(c *fiber.Ctx) error {
 //	@Failure		403					{object}	models.Response		"Not Authorized"
 //	@Failure		500					{object}	models.Response		"Internal server error"
 //	@Router			/vehicle/get_by_client/{client_id} [get]
-func VehicleGetByClientID(c *fiber.Ctx) error {
+func (v *VehicleController) VehicleGetByClientID(c *fiber.Ctx) error {
 	clientID := c.Params("client_id")
 	if clientID == "" {
 		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
@@ -215,7 +213,7 @@ func VehicleGetByClientID(c *fiber.Ctx) error {
 		})
 	}
 
-	vehicles, err := repositories.Repo.GetVehicleByClientID(clientID)
+	vehicles, err := v.VehicleService.VehicleGetByClientID(clientID)
 	if err != nil {
 		if errResp, ok := err.(*models.ErrorStruc); ok {
 			return c.Status(errResp.StatusCode).JSON(models.Response{
@@ -254,7 +252,7 @@ func VehicleGetByClientID(c *fiber.Ctx) error {
 //	@Failure		422					{object}	models.Response			"Model is invalid"
 //	@Failure		500					{object}	models.Response
 //	@Router			/vehicle/update [put]
-func VehicleUpdate(c *fiber.Ctx) error {
+func (v *VehicleController) VehicleUpdate(c *fiber.Ctx) error {
 	var vehicleUpdate models.VehicleUpdate
 	if err := c.BodyParser(&vehicleUpdate); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
@@ -272,7 +270,7 @@ func VehicleUpdate(c *fiber.Ctx) error {
 		})
 	}
 
-	err := services.VehicleUpdate(&vehicleUpdate)
+	err := v.VehicleService.VehicleUpdate(&vehicleUpdate)
 	if err != nil {
 		if errResp, ok := err.(*models.ErrorStruc); ok {
 			return c.Status(errResp.StatusCode).JSON(models.Response{
@@ -310,7 +308,7 @@ func VehicleUpdate(c *fiber.Ctx) error {
 //	@Failure		404					{object}	models.Response	"Vehicle not found"
 //	@Failure		500					{object}	models.Response
 //	@Router			/vehicle/delete/{id} [delete]
-func VehicleDelete(c *fiber.Ctx) error {
+func (v *VehicleController) VehicleDelete(c *fiber.Ctx) error {
 	id := c.Params("id")
 	if id == "" {
 		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
@@ -320,7 +318,7 @@ func VehicleDelete(c *fiber.Ctx) error {
 		})
 	}
 
-	err := services.VehicleDelete(id)
+	err := v.VehicleService.VehicleDelete(id)
 	if err != nil {
 		if errResp, ok := err.(*models.ErrorStruc); ok {
 			return c.Status(errResp.StatusCode).JSON(models.Response{

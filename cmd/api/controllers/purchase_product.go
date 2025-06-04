@@ -13,7 +13,6 @@ import (
 //	@Accept			json
 //	@Produce		json
 //	@Security		BearerAuth
-//	@Param			X-Workplace-Token	header		string												true	"Workplace Token"
 //	@Param			id					path		string												true	"ID of the purchase product"
 //	@Success		200					{object}	models.Response{body=models.PurchaseProductLaundry}	"Product obtained successfully"
 //	@Failure		400					{object}	models.Response										"Bad Request"
@@ -22,7 +21,7 @@ import (
 //	@Failure		404					{object}	models.Response										"Purchase Product not found"
 //	@Failure		500					{object}	models.Response										"Internal server error"
 //	@Router			/purchase_product/{id} [get]
-func PurchaseProductGetByID(c *fiber.Ctx) error {
+func (p *PurchaseProductController) PurchaseProductGetByID(c *fiber.Ctx) error {
 	id := c.Params("id")
 	if id == "" {
 		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
@@ -32,16 +31,7 @@ func PurchaseProductGetByID(c *fiber.Ctx) error {
 		})
 	}
 
-	workplace := c.Locals("workplace").(*models.Workplace)
-	if workplace == nil {
-		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
-			Status:  false,
-			Body:    nil,
-			Message: "Workplace is required",
-		})
-	}
-
-	laundry, workshop, err := services.PurchaseProductGetByID(id, workplace.Identifier)
+	purchaseProduct, err := p.PurchaseProductService.PurchaseProductGetByID(id)
 	if err != nil {
 		if errResp, ok := err.(*models.ErrorStruc); ok {
 			return c.Status(errResp.StatusCode).JSON(models.Response{
@@ -57,17 +47,9 @@ func PurchaseProductGetByID(c *fiber.Ctx) error {
 		})
 	}
 
-	if laundry != nil {
-		return c.Status(200).JSON(models.Response{
-			Status:  true,
-			Body:    laundry,
-			Message: "Producto de compra obtenida con éxito",
-		})
-	}
-
 	return c.Status(200).JSON(models.Response{
 		Status:  true,
-		Body:    workshop,
+		Body:    purchaseProduct,
 		Message: "Producto de compra obtenida con éxito",
 	})
 }
@@ -79,7 +61,6 @@ func PurchaseProductGetByID(c *fiber.Ctx) error {
 //	@Accept			json
 //	@Produce		json
 //	@Security		BearerAuth
-//	@Param			X-Workplace-Token	header		string													true	"Workplace Token"
 //	@Param			purchase_id			path		string													true	"ID of Purchase Order"
 //	@Success		200					{object}	models.Response{body=[]models.PurchaseProductLaundry}	"Products obtained with success"
 //	@Failure		400					{object}	models.Response											"Bad Request"
@@ -88,7 +69,7 @@ func PurchaseProductGetByID(c *fiber.Ctx) error {
 //	@Failure		404					{object}	models.Response											"Purchase Order not found"
 //	@Failure		500					{object}	models.Response											"Internal server error"
 //	@Router			/purchase_product/get_purchase/{purchase_id} [get]
-func PurchaseProductGetAllByPurhcaseID(c *fiber.Ctx) error {
+func (p *PurchaseProductController) PurchaseProductGetAllByPurhcaseID(c *fiber.Ctx) error {
 	purchaseId := c.Params("purchase_id")
 	if purchaseId == "" {
 		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
@@ -98,16 +79,7 @@ func PurchaseProductGetAllByPurhcaseID(c *fiber.Ctx) error {
 		})
 	}
 
-	workplace := c.Locals("workplace").(*models.Workplace)
-	if workplace == nil {
-		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
-			Status:  false,
-			Body:    nil,
-			Message: "Workplace is required",
-		})
-	}
-
-	laundry, workshop, err := services.PurchaseProductGetAllByPurhcaseID(purchaseId, workplace.Identifier)
+	purchaseProducts, err := p.PurchaseProductService.PurchaseProductGetAllByPurhcaseID(purchaseId)
 	if err != nil {
 		if errResp, ok := err.(*models.ErrorStruc); ok {
 			return c.Status(errResp.StatusCode).JSON(models.Response{
@@ -123,17 +95,9 @@ func PurchaseProductGetAllByPurhcaseID(c *fiber.Ctx) error {
 		})
 	}
 
-	if laundry != nil {
-		return c.Status(200).JSON(models.Response{
-			Status:  true,
-			Body:    laundry,
-			Message: "Productos de orden de compra obtenida con éxito",
-		})
-	}
-
 	return c.Status(200).JSON(models.Response{
 		Status:  true,
-		Body:    workshop,
+		Body:    purchaseProducts,
 		Message: "Productos de orden de compra obtenida con éxito",
 	})
 }
@@ -146,7 +110,6 @@ func PurchaseProductGetAllByPurhcaseID(c *fiber.Ctx) error {
 //	@Accept			json
 //	@Produce		json
 //	@Security		BearerAuth
-//	@Param			X-Workplace-Token		header		string							true	"Workplace Token"
 //	@Param			purchaseProductCreate	body		models.PurchaseProductCreate	true	"Purchase product creation data"
 //	@Success		200						{object}	models.Response{body=string}	"Purchase product created successfully"
 //	@Failure		400						{object}	models.Response					"Bad Request"
@@ -155,7 +118,7 @@ func PurchaseProductGetAllByPurhcaseID(c *fiber.Ctx) error {
 //	@Failure		422						{object}	models.Response					"Model is invalid"
 //	@Failure		500						{object}	models.Response					"Internal server error"
 //	@Router			/purchase_product/create   [post]
-func PurchaseProductCreate(c *fiber.Ctx) error {
+func (p *PurchaseProductController) PurchaseProductCreate(c *fiber.Ctx) error {
 	var purchaseProductCreate models.PurchaseProductCreate
 	if err := c.BodyParser(&purchaseProductCreate); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
@@ -172,16 +135,7 @@ func PurchaseProductCreate(c *fiber.Ctx) error {
 		})
 	}
 
-	workplace := c.Locals("workplace").(*models.Workplace)
-	if workplace == nil {
-		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
-			Status:  false,
-			Body:    nil,
-			Message: "Workplace is required",
-		})
-	}
-
-	id, err := services.PurchaseProductCreate(&purchaseProductCreate, workplace.Identifier)
+	id, err := p.PurchaseProductService.PurchaseProductCreate(&purchaseProductCreate)
 	if err != nil {
 		if errResp, ok := err.(*models.ErrorStruc); ok {
 			return c.Status(errResp.StatusCode).JSON(models.Response{
@@ -211,7 +165,6 @@ func PurchaseProductCreate(c *fiber.Ctx) error {
 //	@Accept			json
 //	@Produce		json
 //	@Security		BearerAuth
-//	@Param			X-Workplace-Token	header		string							true	"Workplace Token"
 //	@Param			id					path		string							true	"ID of the purchase product"
 //	@Param			product				body		models.PurchaseProductUpdate	true	"Purchase product update details"
 //	@Success		200					{object}	models.Response					"Purchase product updated successfully"
@@ -222,7 +175,7 @@ func PurchaseProductCreate(c *fiber.Ctx) error {
 //	@Failure		422					{object}	models.Response					"Model is invalid"
 //	@Failure		500					{object}	models.Response					"Internal server error"
 //	@Router			/purchase_product/update/{id} [put]
-func PurchaseProductUpdate(c *fiber.Ctx) error {
+func (p *PurchaseProductController) PurchaseProductUpdate(c *fiber.Ctx) error {
 	var purchaseProductUpdate models.PurchaseProductUpdate
 	if err := c.BodyParser(&purchaseProductUpdate); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
@@ -239,16 +192,7 @@ func PurchaseProductUpdate(c *fiber.Ctx) error {
 		})
 	}
 
-	workplace := c.Locals("workplace").(*models.Workplace)
-	if workplace == nil {
-		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
-			Status:  false,
-			Body:    nil,
-			Message: "Workplace is required",
-		})
-	}
-
-	err := services.PurchaseProductUpdate(&purchaseProductUpdate, workplace.Identifier)
+	err := p.PurchaseProductService.PurchaseProductUpdate(&purchaseProductUpdate)
 	if err != nil {
 		if errResp, ok := err.(*models.ErrorStruc); ok {
 			return c.Status(errResp.StatusCode).JSON(models.Response{
@@ -278,7 +222,6 @@ func PurchaseProductUpdate(c *fiber.Ctx) error {
 //	@Accept			json
 //	@Produce		json
 //	@Security		BearerAuth
-//	@Param			X-Workplace-Token	header		string			true	"Workplace Token"
 //	@Param			id					path		string			true	"ID of Purchase Product"
 //	@Success		200					{object}	models.Response	"Purchase product deleted successfully"
 //	@Failure		400					{object}	models.Response	"Bad Request"
@@ -287,7 +230,7 @@ func PurchaseProductUpdate(c *fiber.Ctx) error {
 //	@Failure		404					{object}	models.Response	"Purchase Product not found"
 //	@Failure		500					{object}	models.Response	"Internal server error"
 //	@Router			/purchase_product/{id} [delete]
-func PurchaseProductDelete(c *fiber.Ctx) error {
+func (p *PurchaseProductController) PurchaseProductDelete(c *fiber.Ctx) error {
 	id := c.Params("id")
 	if id == "" {
 		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
@@ -297,16 +240,7 @@ func PurchaseProductDelete(c *fiber.Ctx) error {
 		})
 	}
 
-	workplace := c.Locals("workplace").(*models.Workplace)
-	if workplace == nil {
-		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
-			Status:  false,
-			Body:    nil,
-			Message: "Workplace is required",
-		})
-	}
-
-	err := services.PurchaseProductDelete(id, workplace.Identifier)
+	err := p.PurchaseProductService.PurchaseProductDelete(id)
 	if err != nil {
 		if errResp, ok := err.(*models.ErrorStruc); ok {
 			return c.Status(errResp.StatusCode).JSON(models.Response{

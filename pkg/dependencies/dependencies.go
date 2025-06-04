@@ -7,21 +7,6 @@ import (
 	"gorm.io/gorm"
 )
 
-// type Dependency struct {
-// 	Repository *repositories.Repository
-// }
-
-// func NewDependency(db *gorm.DB) *Dependency {
-
-// 	repo := &repositories.Repository{
-// 		DB: db,
-// 	}
-
-// 	return &Dependency{
-// 		Repository: repo,
-// 	}
-// }
-
 var App *Application
 
 type Application struct {
@@ -47,6 +32,19 @@ func NewApplication(mainDB *gorm.DB) *Application {
 var TenantApp *TenantApplication
 
 type TenantApplication struct {
+	AttendanceController *controllers.AttendanceController
+	ClientController *controllers.ClientController
+	EmployeeController *controllers.EmployeeController
+	ExpenseController *controllers.ExpenseController	
+	IncomeController *controllers.IncomeController
+	MovementTypeController *controllers.MovementTypeController
+	ProductController *controllers.ProductController
+	PurchaseOrderController *controllers.PurchaseOrderController
+	PurchaseProductController *controllers.PurchaseProductController
+	ServiceController *controllers.ServiceController
+	SupplierController *controllers.SupplierController
+	VehicleController *controllers.VehicleController
+	ResumeController *controllers.ResumeController
 	MemberController *controllers.MemberController
 	RoleController *controllers.RoleController
 	PermissionController *controllers.PermissionController
@@ -71,11 +69,37 @@ func TenantDBRepository(db *gorm.DB) *TenantApplication {
 func (app *TenantApplication) SetDBTenantRepository(db *gorm.DB) {
 	tenantRepo := &repositories.TenantRepository{DB: db,}
 	
+	attendanceService := &services.AttendanceService{AttendanceRepository: tenantRepo}
+	clientService := &services.ClientService{ClientRepository: tenantRepo}
+	employeeService := &services.EmployeeService{EmployeeRepository: tenantRepo}
+	expenseService := &services.ExpenseService{ExpenseRepository: tenantRepo}
+	incomeService := &services.IncomeService{IncomeRepository: tenantRepo}
 	memberService := &services.MemberService{MemberRepository: tenantRepo}
-	roleService := &services.RoleService{RoleRepository: tenantRepo}
+	movementService := &services.MovementTypeService{MovementTypeRepository: tenantRepo}
 	permissionService := &services.PermissionService{PermissionRepository: tenantRepo}
+	productService := &services.ProductService{ProductRepository: tenantRepo}
+	purchaseOrderService := &services.PurchaseOrderService{PurchaseOrderRepository: tenantRepo}
+	purchaseProductService := &services.PurchaseProductService{PurchaseProductRepository: tenantRepo}
+	resumeService := &services.ResumeService{ResumeExpenseRepository: tenantRepo, ResumeIncomeRepository: tenantRepo}
+	roleService := &services.RoleService{RoleRepository: tenantRepo}
+	serviceService := &services.ServiceService{ServiceRepository: tenantRepo}
+	supplierService := &services.SupplierService{SupplierRepository: tenantRepo}
+	vehicleService := &services.VehicleService{VehicleRepository: tenantRepo}
 
+	app.AttendanceController.AttendanceService = attendanceService
+	app.ClientController.ClientService = clientService
+	app.EmployeeController.EmployeeService = employeeService
+	app.ExpenseController.ExpenseService = expenseService
+	app.IncomeController.IncomeService = incomeService
 	app.MemberController.MemberService = memberService
-	app.RoleController.RoleService = roleService
+	app.MovementTypeController.MovementService = movementService
 	app.PermissionController.PermissionService = permissionService
+	app.ProductController.ProductService = productService
+	app.PurchaseOrderController.PurchaseOrderService = purchaseOrderService
+	app.PurchaseProductController.PurchaseProductService = purchaseProductService
+	app.ResumeController.ExpenseResumeService = resumeService
+	app.RoleController.RoleService = roleService
+	app.ServiceController.ServiceService = serviceService
+	app.SupplierController.SupplierService = supplierService
+	app.VehicleController.VehicleService = vehicleService
 }

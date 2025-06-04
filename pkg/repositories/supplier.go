@@ -5,7 +5,7 @@ import (
 	"github.com/google/uuid"
 )
 
-func (r *Repository) GetSupplierByID(id string) (*models.Supplier, error) {
+func (r *TenantRepository) GetSupplierByID(id string) (*models.Supplier, error) {
 		var supplier models.Supplier
 		if err := r.DB.Where("id = ?", id).First(&supplier).Error; err != nil {
 			return nil, err
@@ -13,7 +13,7 @@ func (r *Repository) GetSupplierByID(id string) (*models.Supplier, error) {
 		return &supplier, nil
 }
 
-func (r *Repository) GetAllSuppliers() ([]models.Supplier, error) {
+func (r *TenantRepository) GetAllSuppliers() ([]models.Supplier, error) {
 		var suppliers []models.Supplier
 		if err := r.DB.Find(&suppliers).Error; err != nil {
 			return nil, err
@@ -21,7 +21,7 @@ func (r *Repository) GetAllSuppliers() ([]models.Supplier, error) {
 		return suppliers, nil
 }
 
-func (r *Repository) CreateSupplier(supplierCreate *models.SupplierCreate) (string, error) {
+func (r *TenantRepository) CreateSupplier(supplierCreate *models.SupplierCreate) (string, error) {
 	var supplierID string
 			supplier := models.Supplier{
 					ID:      uuid.NewString(),
@@ -37,7 +37,7 @@ func (r *Repository) CreateSupplier(supplierCreate *models.SupplierCreate) (stri
 	return supplierID, nil
 }
 
-func (r *Repository) UpdateSupplier(supplierUpdate *models.SupplierUpdate) error {
+func (r *TenantRepository) UpdateSupplier(supplierUpdate *models.SupplierUpdate) error {
 		var supplierLaundry models.Supplier
 		if err := r.DB.Where("id = ?", supplierUpdate.ID).First(&supplierLaundry).Error; err != nil {
 			return err
@@ -52,7 +52,7 @@ func (r *Repository) UpdateSupplier(supplierUpdate *models.SupplierUpdate) error
 	return nil
 }
 
-func (r *Repository) DeleteSupplierByID(id string) error {
+func (r *TenantRepository) DeleteSupplierByID(id string) error {
 		var supplier models.Supplier
 		if err := r.DB.Where("id = ?", id).Delete(&supplier).Error; err != nil {
 			return err
@@ -60,7 +60,7 @@ func (r *Repository) DeleteSupplierByID(id string) error {
 	return nil
 }
 
-func (r *Repository) GetSupplierByName(name string) (*[]models.Supplier, error) {
+func (r *TenantRepository) GetSupplierByName(name string) (*[]models.Supplier, error) {
 		var supplier []models.Supplier
 		if err := r.DB.Where("name LIKE ?", "%"+name +"%").Find(&supplier).Error; err != nil {
 			return nil, err

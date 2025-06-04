@@ -49,6 +49,10 @@ type PurchaseOrderService struct{
 	PurchaseOrderRepository ports.PurchaseOrderRepository
 }
 
+type PurchaseProductService struct{
+	PurchaseProductRepository ports.PurchaseProductRepository
+}
+
 type ResumeService struct {
 	ResumeExpenseRepository ports.ResumeExpenseRepository
 	ResumeIncomeRepository ports.ResumeIncomeRepository

@@ -2,7 +2,6 @@ package controllers
 
 import (
 	"github.com/DanielChachagua/GestionCar/pkg/models"
-	"github.com/DanielChachagua/GestionCar/pkg/services"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -13,16 +12,15 @@ import (
 //	@Accept			json
 //	@Produce		json
 //	@Security		BearerAuth
-//	@Param			X-Workplace-Token	header		string										true	"Workplace Token"
 //	@Param			id					path		string										true	"ID of the product"
-//	@Success		200					{object}	models.Response{body=models.ProductLaundry}	"Product obtained with success"
+//	@Success		200					{object}	models.Response{body=models.Product}	"Product obtained with success"
 //	@Failure		400					{object}	models.Response								"Bad Request"
 //	@Failure		401					{object}	models.Response								"Auth is required"
 //	@Failure		403					{object}	models.Response								"Not Authorized"
 //	@Failure		404					{object}	models.Response								"Expense not found"
 //	@Failure		500					{object}	models.Response								"Internal server error"
 //	@Router			/product/{id} [get]
-func ProductGetByID(c *fiber.Ctx) error {
+func (p *ProductController) ProductGetByID(c *fiber.Ctx) error {
 	id := c.Params("id")
 	if id == "" {
 		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
@@ -32,16 +30,7 @@ func ProductGetByID(c *fiber.Ctx) error {
 		})
 	}
 
-	workplace := c.Locals("workplace").(*models.Workplace)
-	if workplace == nil {
-		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
-			Status:  false,
-			Body:    nil,
-			Message: "Workplace is required",
-		})
-	}
-
-	laundry, workshop, err := services.ProductGetByID(id, workplace.Identifier)
+	product, err := p.ProductService.ProductGetByID(id)
 	if err != nil {
 		if errResp, ok := err.(*models.ErrorStruc); ok {
 			return c.Status(errResp.StatusCode).JSON(models.Response{
@@ -57,17 +46,9 @@ func ProductGetByID(c *fiber.Ctx) error {
 		})
 	}
 
-	if laundry != nil {
-		return c.Status(200).JSON(models.Response{
-		Status:  true,
-		Body:    laundry,
-		Message: "Producto obtenido con éxito",
-	})
-	}
-
 	return c.Status(200).JSON(models.Response{
 		Status:  true,
-		Body:    workshop,
+		Body:    product,
 		Message: "Parte obtenida con éxito",
 	})
 }
@@ -79,24 +60,14 @@ func ProductGetByID(c *fiber.Ctx) error {
 //	@Accept			json
 //	@Produce		json
 //	@Security		BearerAuth
-//	@Param			X-Workplace-Token	header		string											true	"Workplace Token"
-//	@Success		200					{object}	models.Response{body=[]models.ProductLaundry}	"Products obtained with success"
+//	@Success		200					{object}	models.Response{body=[]models.Product}	"Products obtained with success"
 //	@Failure		400					{object}	models.Response									"Bad Request"
 //	@Failure		401					{object}	models.Response									"Auth is required"
 //	@Failure		403					{object}	models.Response									"Not Authorized"
 //	@Failure		500					{object}	models.Response									"Internal server error"
 //	@Router			/product/get_all [get]
-func ProductGetAll(c *fiber.Ctx) error {
-	workplace := c.Locals("workplace").(*models.Workplace)
-	if workplace == nil {
-		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
-			Status:  false,
-			Body:    nil,
-			Message: "Workplace is required",
-		})
-	}
-
-	laundry, workshop, err := services.ProductGetAll(workplace.Identifier)
+func (p *ProductController) ProductGetAll(c *fiber.Ctx) error {
+	products, err := p.ProductService.ProductGetAll()
 	if err != nil {
 		if errResp, ok := err.(*models.ErrorStruc); ok {
 			return c.Status(errResp.StatusCode).JSON(models.Response{
@@ -112,17 +83,9 @@ func ProductGetAll(c *fiber.Ctx) error {
 		})
 	}
 
-	if laundry != nil {
-		return c.Status(200).JSON(models.Response{
-			Status:  true,
-			Body:    laundry,
-			Message: "Productos obtenidos con éxito",
-		})
-	}
-
 	return c.Status(200).JSON(models.Response{
 		Status:  true,
-		Body:    workshop,
+		Body:    products,
 		Message: "Partes obtenidas con éxito",
 	})
 }
@@ -134,7 +97,6 @@ func ProductGetAll(c *fiber.Ctx) error {
 //	@Accept			json
 //	@Produce		json
 //	@Security		BearerAuth
-//	@Param			X-Workplace-Token	header		string											true	"Workplace Token"
 //	@Param			name				query		string											true	"Name of the Product"
 //	@Success		200					{object}	models.Response{body=[]models.ProductLaundry}	"List of products"
 //	@Failure		400					{object}	models.Response									"Bad Request"
@@ -142,7 +104,7 @@ func ProductGetAll(c *fiber.Ctx) error {
 //	@Failure		403					{object}	models.Response									"Not Authorized"
 //	@Failure		500					{object}	models.Response									"Internal server error"
 //	@Router			/product/get_by_name [get]
-func ProductGetByName(c *fiber.Ctx) error {
+func (p *ProductController) ProductGetByName(c *fiber.Ctx) error {
 	name := c.Query("name")
 	if name == "" || len(name) < 3 {
 		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
@@ -152,16 +114,7 @@ func ProductGetByName(c *fiber.Ctx) error {
 		})
 	}
 
-	workplace := c.Locals("workplace").(*models.Workplace)
-	if workplace == nil {
-		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
-			Status:  false,
-			Body:    nil,
-			Message: "Workplace is required",
-		})
-	}
-
-	laundry, workshop, err := services.ProductGetByName(name, workplace.Identifier)
+	products, err := p.ProductService.ProductGetByName(name)
 	if err != nil {
 		if errResp, ok := err.(*models.ErrorStruc); ok {
 			return c.Status(errResp.StatusCode).JSON(models.Response{
@@ -177,17 +130,9 @@ func ProductGetByName(c *fiber.Ctx) error {
 		})
 	}
 
-	if laundry != nil {
-		return c.Status(200).JSON(models.Response{
-			Status:  true,
-			Body:    laundry,
-			Message: "Productos obtenidos con éxito",
-		})
-	}
-
 	return c.Status(200).JSON(models.Response{
 		Status:  true,
-		Body:    workshop,
+		Body:    products,
 		Message: "Partes obtenidas con éxito",
 	})
 }
@@ -199,7 +144,6 @@ func ProductGetByName(c *fiber.Ctx) error {
 //	@Accept			json
 //	@Produce		json
 //	@Security		BearerAuth
-//	@Param			X-Workplace-Token	header		string											true	"Workplace Token"
 //	@Param			identifier			query		string											true	"Identifier of product"
 //	@Success		200					{object}	models.Response{body=[]models.ProductLaundry}	"Products obtained with success"
 //	@Failure		400					{object}	models.Response									"Bad Request"
@@ -207,9 +151,9 @@ func ProductGetByName(c *fiber.Ctx) error {
 //	@Failure		403					{object}	models.Response									"Not Authorized"
 //	@Failure		500					{object}	models.Response									"Internal server error"
 //	@Router			/product/get_by_identifier [get]
-func ProductGetByIdentifier(c *fiber.Ctx) error {
-	name := c.Query("identifier")
-	if name == "" || len(name) < 3 {
+func (p *ProductController) ProductGetByIdentifier(c *fiber.Ctx) error {
+	identifire := c.Query("identifier")
+	if identifire == "" || len(identifire) < 3 {
 		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
 			Status:  false,
 			Body:    nil,
@@ -217,16 +161,7 @@ func ProductGetByIdentifier(c *fiber.Ctx) error {
 		})
 	}
 
-	workplace := c.Locals("workplace").(*models.Workplace)
-	if workplace == nil {
-		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
-			Status:  false,
-			Body:    nil,
-			Message: "Workplace is required",
-		})
-	}
-
-	laundry, workshop, err := services.ProductGetByIdentifier(name, workplace.Identifier)
+	products, err := p.ProductService.ProductGetByIdentifier(identifire)
 	if err != nil {
 		if errResp, ok := err.(*models.ErrorStruc); ok {
 			return c.Status(errResp.StatusCode).JSON(models.Response{
@@ -242,17 +177,9 @@ func ProductGetByIdentifier(c *fiber.Ctx) error {
 		})
 	}
 
-	if laundry != nil {
-		return c.Status(200).JSON(models.Response{
-			Status:  true,
-			Body:    laundry,
-			Message: "Productos obtenidos con éxito",
-		})
-	}
-
 	return c.Status(200).JSON(models.Response{
 		Status:  true,
-		Body:    workshop,
+		Body:    products,
 		Message: "Partes obtenidas con éxito",
 	})
 }
@@ -264,7 +191,6 @@ func ProductGetByIdentifier(c *fiber.Ctx) error {
 //	@Accept			json
 //	@Produce		json
 //	@Security		BearerAuth
-//	@Param			X-Workplace-Token	header		string				true	"Workplace Token"
 //	@Param			id					path		string				true	"ID of the product"
 //	@Param			method				query		string				true	"Method of stock update (add, subtract, update)"
 //	@Param			stock				body		models.StockUpdate	true	"Stock update details"
@@ -276,7 +202,7 @@ func ProductGetByIdentifier(c *fiber.Ctx) error {
 //	@Failure		422					{object}	models.Response		"Model invalid"
 //	@Failure		500					{object}	models.Response		"Internal server error"
 //	@Router			/product/update_stock/{id} [put]
-func ProductUpdateStock(c *fiber.Ctx) error {
+func (p *ProductController) ProductUpdateStock(c *fiber.Ctx) error {
 	id := c.Params("id")
 	if id == "" {
 		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
@@ -311,16 +237,7 @@ func ProductUpdateStock(c *fiber.Ctx) error {
 		})
 	}
 
-	workplace := c.Locals("workplace").(*models.Workplace)
-	if workplace == nil {
-		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
-			Status:  false,
-			Body:    nil,
-			Message: "Workplace is required",
-		})
-	}
-
-	err := services.ProductUpdateStock(id, &stockUpdate, method, workplace.Identifier)
+	err := p.ProductService.ProductUpdateStock(id, &stockUpdate, method)
 	if err != nil {
 		if errResp, ok := err.(*models.ErrorStruc); ok {
 			return c.Status(errResp.StatusCode).JSON(models.Response{
@@ -350,7 +267,6 @@ func ProductUpdateStock(c *fiber.Ctx) error {
 //	@Accept			json
 //	@Produce		json
 //	@Security		BearerAuth
-//	@Param			X-Workplace-Token	header		string					true	"Workplace Token"
 //	@Param			product				body		models.ProductUpdate	true	"Product update details"
 //	@Success		200					{object}	models.Response			"Product updated successfully"
 //	@Failure		400					{object}	models.Response			"Bad Request"
@@ -360,7 +276,7 @@ func ProductUpdateStock(c *fiber.Ctx) error {
 //	@Failure		422					{object}	models.Response			"Model invalid"
 //	@Failure		500					{object}	models.Response			"Internal server error"
 //	@Router			/product/update [put]
-func ProductUpdate(c *fiber.Ctx) error {
+func (p *ProductController) ProductUpdate(c *fiber.Ctx) error {
 	var productUpdate models.ProductUpdate
 	if err := c.BodyParser(&productUpdate); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
@@ -377,16 +293,7 @@ func ProductUpdate(c *fiber.Ctx) error {
 		})
 	}
 
-	workplace := c.Locals("workplace").(*models.Workplace)
-	if workplace == nil {
-		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
-			Status:  false,
-			Body:    nil,
-			Message: "Workplace is required",
-		})
-	}
-
-	err := services.ProductUpdate(&productUpdate, workplace.Identifier)
+	err := p.ProductService.ProductUpdate(&productUpdate)
 	if err != nil {
 		if errResp, ok := err.(*models.ErrorStruc); ok {
 			return c.Status(errResp.StatusCode).JSON(models.Response{
@@ -416,7 +323,6 @@ func ProductUpdate(c *fiber.Ctx) error {
 //	@Accept			json
 //	@Produce		json
 //	@Security		BearerAuth
-//	@Param			X-Workplace-Token	header		string			true	"Workplace Token"
 //	@Param			id					path		string			true	"ID of the product"
 //	@Success		200					{object}	models.Response	"Product deleted with success"
 //	@Failure		400					{object}	models.Response	"Bad Request"
@@ -425,7 +331,7 @@ func ProductUpdate(c *fiber.Ctx) error {
 //	@Failure		404					{object}	models.Response	"Product not found"
 //	@Failure		500					{object}	models.Response	"Internal server error"
 //	@Router			/product/delete/{id} [delete]
-func ProductDelete(c *fiber.Ctx) error {
+func (p *ProductController) ProductDelete(c *fiber.Ctx) error {
 	id := c.Params("id")
 	if id == "" {
 		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
@@ -435,16 +341,7 @@ func ProductDelete(c *fiber.Ctx) error {
 		})
 	}
 
-	workplace := c.Locals("workplace").(*models.Workplace)
-	if workplace == nil {
-		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
-			Status:  false,
-			Body:    nil,
-			Message: "Workplace is required",
-		})
-	}
-
-	err := services.ProductDelete(id, workplace.Identifier)
+	err := p.ProductService.ProductDelete(id)
 	if err != nil {
 		if errResp, ok := err.(*models.ErrorStruc); ok {
 			return c.Status(errResp.StatusCode).JSON(models.Response{
@@ -474,7 +371,6 @@ func ProductDelete(c *fiber.Ctx) error {
 //	@Accept			json
 //	@Produce		json
 //	@Security		BearerAuth
-//	@Param			X-Workplace-Token	header		string					true	"Workplace Token"
 //	@Param			product				body		models.ProductCreate	true	"Details of the product to create"
 //	@Success		200					{object}	models.Response			"Product created successfully"
 //	@Failure		400					{object}	models.Response			"Bad Request"
@@ -483,7 +379,7 @@ func ProductDelete(c *fiber.Ctx) error {
 //	@Failure		422					{object}	models.Response			"Model invalid"
 //	@Failure		500					{object}	models.Response			"Internal server error"
 //	@Router			/product/create [post]
-func ProductCreate(c *fiber.Ctx) error {
+func (p *ProductController) ProductCreate(c *fiber.Ctx) error {
 	var productCreate models.ProductCreate
 	if err := c.BodyParser(&productCreate); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
@@ -500,16 +396,7 @@ func ProductCreate(c *fiber.Ctx) error {
 		})
 	}
 
-	workplace := c.Locals("workplace").(*models.Workplace)
-	if workplace == nil {
-		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
-			Status:  false,
-			Body:    nil,
-			Message: "Workplace is required",
-		})
-	}
-
-	productCreated, err := services.ProductCreate(&productCreate, workplace.Identifier)
+	productCreated, err := p.ProductService.ProductCreate(&productCreate)
 	if err != nil {
 		if errResp, ok := err.(*models.ErrorStruc); ok {
 			return c.Status(errResp.StatusCode).JSON(models.Response{

@@ -2,7 +2,6 @@ package controllers
 
 import (
 	"github.com/DanielChachagua/GestionCar/pkg/models"
-	"github.com/DanielChachagua/GestionCar/pkg/services"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -13,15 +12,14 @@ import (
 //	@Accept			json
 //	@Produce		json
 //	@Security		BearerAuth
-//	@Param			X-Workplace-Token	header		string	true	"Workplace Token"
 //	@Param			id					path		string	true	"ID of Attendance"
-//	@Success		200					{object}	models.Response{body=models.AttendanceLaundry}
+//	@Success		200					{object}	models.Response{body=models.Attendance}
 //	@Failure		400					{object}	models.Response
 //	@Failure		401					{object}	models.Response
 //	@Failure		404					{object}	models.Response
 //	@Failure		500					{object}	models.Response
 //	@Router			/attendance/{id} [get]
-func GetAttendanceByID(c *fiber.Ctx) error {
+func (a *AttendanceController) GetAttendanceByID(c *fiber.Ctx) error {
 	id := c.Params("id")
 	if id == "" {
 		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
@@ -31,16 +29,7 @@ func GetAttendanceByID(c *fiber.Ctx) error {
 		})
 	}
 
-	workplace := c.Locals("workplace").(*models.Workplace)
-	if workplace == nil {
-		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
-			Status:  false,
-			Body:    nil,
-			Message: "Workplace is required",
-		})
-	}
-
-	laundry, workshop, err := services.GetAttendanceByID(id, workplace.Identifier)
+	attendance, err := a.AttendanceService.GetAttendanceByID(id)
 	if err != nil {
 		if errResp, ok := err.(*models.ErrorStruc); ok {
 			return c.Status(errResp.StatusCode).JSON(models.Response{
@@ -56,17 +45,9 @@ func GetAttendanceByID(c *fiber.Ctx) error {
 		})
 	}
 
-	if laundry != nil {
-		return c.Status(200).JSON(models.Response{
-			Status:  true,
-			Body:    laundry,
-			Message: "Asistencia obtenida con éxito",
-		})
-	}
-
 	return c.Status(200).JSON(models.Response{
 		Status:  true,
-		Body:    workshop,
+		Body:    attendance,
 		Message: "Asistencia obtenida con éxito",
 	})
 }
@@ -78,25 +59,15 @@ func GetAttendanceByID(c *fiber.Ctx) error {
 //	@Accept			json
 //	@Produce		json
 //	@Security		BearerAuth
-//	@Param			X-Workplace-Token	header		string	true	"Workplace Token"
-//	@Success		200					{object}	models.Response
+//	@Success		200					{object}	models.Response{body=[]models.Attendance}
 //	@Failure		400					{object}	models.Response
 //	@Failure		401					{object}	models.Response
 //	@Failure		422					{object}	models.Response
 //	@Failure		404					{object}	models.Response
 //	@Failure		500					{object}	models.Response
 //	@Router			/attendance/get_all [get]
-func GetAllAttendances(c *fiber.Ctx) error {
-	workplace := c.Locals("workplace").(*models.Workplace)
-	if workplace == nil {
-		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
-			Status:  false,
-			Body:    nil,
-			Message: "Workplace is required",
-		})
-	}
-
-	laundries, workshops, err := services.GetAllAttendances(workplace.Identifier)
+func (a *AttendanceController) GetAllAttendances(c *fiber.Ctx) error {
+	attendances, err := a.AttendanceService.GetAllAttendances()
 	if err != nil {
 		if errResp, ok := err.(*models.ErrorStruc); ok {
 			return c.Status(errResp.StatusCode).JSON(models.Response{
@@ -112,18 +83,10 @@ func GetAllAttendances(c *fiber.Ctx) error {
 		})
 	}
 
-	if laundries != nil {
-		return c.Status(200).JSON(models.Response{
-			Status:  true,
-			Body:    laundries,
-			Message: "Asistencia obtenida con éxito",
-		})
-	}
-
 	return c.Status(200).JSON(models.Response{
 		Status:  true,
-		Body:    workshops,
-		Message: "Asistencia obtenida con éxito",
+		Body:    attendances,
+		Message: "Asistencias obtenida con éxito",
 	})
 }
 
@@ -134,16 +97,15 @@ func GetAllAttendances(c *fiber.Ctx) error {
 //	@Accept			json
 //	@Produce		json
 //	@Security		BearerAuth
-//	@Param			X-Workplace-Token	header		string				true	"Workplace Token"
 //	@Param			dateFrom			body		models.DateBetween	true	"Date Between"
-//	@Success		200					{object}	models.Response{body=[]models.AttendanceLaundry}
+//	@Success		200					{object}	models.Response{body=[]models.Attendance}
 //	@Failure		400					{object}	models.Response
 //	@Failure		401					{object}	models.Response
 //	@Failure		403					{object}	models.Response
 //	@Failure		422					{object}	models.Response
 //	@Failure		500					{object}	models.Response
 //	@Router			/attendance/get_by_date [post]
-func GetAllAttendancesByDate(c *fiber.Ctx) error {
+func (a *AttendanceController) GetAllAttendancesByDate(c *fiber.Ctx) error {
 	var dateBeetwen models.DateBetween
 	if err := c.BodyParser(&dateBeetwen); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
@@ -160,16 +122,7 @@ func GetAllAttendancesByDate(c *fiber.Ctx) error {
 		})
 	}
 
-	workplace := c.Locals("workplace").(*models.Workplace)
-	if workplace == nil {
-		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
-			Status:  false,
-			Body:    nil,
-			Message: "Workplace is required",
-		})
-	}
-
-	laundries, workshops, err := services.GetAllAttendancesByDate(dateBeetwen.DateFrom, dateBeetwen.DateTo,workplace.Identifier)
+	attendances, err := a.AttendanceService.GetAllAttendancesByDate(dateBeetwen.DateFrom, dateBeetwen.DateTo)
 	if err != nil {
 		if errResp, ok := err.(*models.ErrorStruc); ok {
 			return c.Status(errResp.StatusCode).JSON(models.Response{
@@ -185,17 +138,9 @@ func GetAllAttendancesByDate(c *fiber.Ctx) error {
 		})
 	}
 
-	if laundries != nil {
-		return c.Status(200).JSON(models.Response{
-			Status:  true,
-			Body:    laundries,
-			Message: "Asistencias obtenidas con éxito",
-		})
-	}
-
 	return c.Status(200).JSON(models.Response{
 		Status:  true,
-		Body:    workshops,
+		Body:    attendances,
 		Message: "Asistencias obtenidas con éxito",
 	})
 }
@@ -207,7 +152,6 @@ func GetAllAttendancesByDate(c *fiber.Ctx) error {
 //	@Accept			json
 //	@Produce		json
 //	@Security		BearerAuth
-//	@Param			X-Workplace-Token	header		string	true	"Workplace Token"
 //	@Param			employee_id			path		string	true	"ID of Employee"
 //	@Success		200					{object}	models.Response
 //	@Failure		400					{object}	models.Response
@@ -216,7 +160,7 @@ func GetAllAttendancesByDate(c *fiber.Ctx) error {
 //	@Failure		404					{object}	models.Response
 //	@Failure		500					{object}	models.Response
 //	@Router			/attendance/get_by_employee/{employee_id} [get]
-func GetAttendanceByEmployeeID(c *fiber.Ctx) error {
+func (a *AttendanceController) GetAttendanceByEmployeeID(c *fiber.Ctx) error {
 	employee_id := c.Params("employee_id")
 	if employee_id == "" {
 		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
@@ -226,16 +170,7 @@ func GetAttendanceByEmployeeID(c *fiber.Ctx) error {
 		})
 	}
 
-	workplace := c.Locals("workplace").(*models.Workplace)
-	if workplace == nil {
-		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
-			Status:  false,
-			Body:    nil,
-			Message: "Workplace is required",
-		})
-	}
-
-	laundry, workshop, err := services.GetAttendanceByEmployeeID(employee_id, workplace.Identifier)
+	attendances, err := a.AttendanceService.GetAttendanceByEmployeeID(employee_id)
 	if err != nil {
 		if errResp, ok := err.(*models.ErrorStruc); ok {
 			return c.Status(errResp.StatusCode).JSON(models.Response{
@@ -251,17 +186,9 @@ func GetAttendanceByEmployeeID(c *fiber.Ctx) error {
 		})
 	}
 
-	if laundry != nil {
-		return c.Status(200).JSON(models.Response{
-			Status:  true,
-			Body:    laundry,
-			Message: "Asistencias obtenidas con éxito",
-		})
-	}
-
 	return c.Status(200).JSON(models.Response{
 		Status:  true,
-		Body:    workshop,
+		Body:    attendances,
 		Message: "Asistencias obtenidas con éxito",
 	})
 }
@@ -273,7 +200,6 @@ func GetAttendanceByEmployeeID(c *fiber.Ctx) error {
 //	@Accept			json
 //	@Produce		json
 //	@Security		BearerAuth
-//	@Param			X-Workplace-Token	header		string					true	"Workplace Token"
 //	@Param			attendanceCreate	body		models.AttendanceCreate	true	"Employee body"
 //	@Success		200					{object}	models.Response
 //	@Failure		400					{object}	models.Response
@@ -283,7 +209,7 @@ func GetAttendanceByEmployeeID(c *fiber.Ctx) error {
 //	@Failure		422					{object}	models.Response
 //	@Failure		500					{object}	models.Response
 //	@Router			/attendance/create [post]
-func CreateAttendance(c *fiber.Ctx) error {
+func (a *AttendanceController) CreateAttendance(c *fiber.Ctx) error {
 	var attendanceCreate models.AttendanceCreate
 	if err := c.BodyParser(&attendanceCreate); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
@@ -300,16 +226,7 @@ func CreateAttendance(c *fiber.Ctx) error {
 		})
 	}
 
-	workplace := c.Locals("workplace").(*models.Workplace)
-	if workplace == nil {
-		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
-			Status:  false,
-			Body:    nil,
-			Message: "Workplace is required",
-		})
-	}
-
-	id, err := services.CreateAttendance(&attendanceCreate, workplace.Identifier)
+	id, err := a.AttendanceService.CreateAttendance(&attendanceCreate)
 	if err != nil {
 		if errResp, ok := err.(*models.ErrorStruc); ok {
 			return c.Status(errResp.StatusCode).JSON(models.Response{
@@ -339,7 +256,6 @@ func CreateAttendance(c *fiber.Ctx) error {
 //	@Accept			json
 //	@Produce		json
 //	@Security		BearerAuth
-//	@Param			X-Workplace-Token	header		string					true	"Workplace Token"
 //	@Param			attendanceUpdate	body		models.AttendanceUpdate	true	"Employee body"
 //	@Success		200					{object}	models.Response
 //	@Failure		400					{object}	models.Response
@@ -349,7 +265,7 @@ func CreateAttendance(c *fiber.Ctx) error {
 //	@Failure		422					{object}	models.Response
 //	@Failure		500					{object}	models.Response
 //	@Router			/attendance/update [put]
-func UpdateAttendance(c *fiber.Ctx) error {
+func (a *AttendanceController) UpdateAttendance(c *fiber.Ctx) error {
 	var attendanceUpdate models.AttendanceUpdate
 	if err := c.BodyParser(&attendanceUpdate); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
@@ -366,16 +282,7 @@ func UpdateAttendance(c *fiber.Ctx) error {
 		})
 	}
 
-	workplace := c.Locals("workplace").(*models.Workplace)
-	if workplace == nil {
-		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
-			Status:  false,
-			Body:    nil,
-			Message: "Workplace is required",
-		})
-	}
-
-	err := services.UpdateAttendance(&attendanceUpdate, workplace.Identifier)
+	err := a.AttendanceService.UpdateAttendance(&attendanceUpdate)
 	if err != nil {
 		if errResp, ok := err.(*models.ErrorStruc); ok {
 			return c.Status(errResp.StatusCode).JSON(models.Response{
@@ -405,7 +312,6 @@ func UpdateAttendance(c *fiber.Ctx) error {
 //	@Accept			json
 //	@Produce		json
 //	@Security		BearerAuth
-//	@Param			X-Workplace-Token	header		string	true	"Workplace Token"
 //	@Param			id					path		string	true	"ID of Attendance"
 //	@Success		200					{object}	models.Response
 //	@Failure		400					{object}	models.Response
@@ -415,7 +321,7 @@ func UpdateAttendance(c *fiber.Ctx) error {
 //	@Failure		422					{object}	models.Response
 //	@Failure		500					{object}	models.Response
 //	@Router			/attendance/delete/{id} [delete]
-func DeleteAttendance(c *fiber.Ctx) error {
+func (a *AttendanceController) DeleteAttendance(c *fiber.Ctx) error {
 	id := c.Params("id")
 
 	if id == "" {
@@ -426,16 +332,7 @@ func DeleteAttendance(c *fiber.Ctx) error {
 		})
 	}
 
-	workplace := c.Locals("workplace").(*models.Workplace)
-	if workplace == nil {
-		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
-			Status:  false,
-			Body:    nil,
-			Message: "Workplace is required",
-		})
-	}
-
-	err := services.DeleteAttendance(id, workplace.Identifier)
+	err := a.AttendanceService.DeleteAttendance(id)
 	if err != nil {
 		if errResp, ok := err.(*models.ErrorStruc); ok {
 			return c.Status(errResp.StatusCode).JSON(models.Response{

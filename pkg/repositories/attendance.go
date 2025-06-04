@@ -5,7 +5,7 @@ import (
 	"github.com/google/uuid"
 )
 
-func (r *Repository) GetAttendanceByID(id string) (*models.Attendance, error) {
+func (r *TenantRepository) GetAttendanceByID(id string) (*models.Attendance, error) {
 	var attendance models.Attendance
 	if err := r.DB.Where("id = ?", id).First(&attendance).Error; err != nil {
 		return nil, err
@@ -13,8 +13,7 @@ func (r *Repository) GetAttendanceByID(id string) (*models.Attendance, error) {
 	return &attendance, nil
 }
 
-func (r *Repository) GetAllAttendances() (*[]models.Attendance, error) {
-
+func (r *TenantRepository) GetAllAttendances() (*[]models.Attendance, error) {
 	var attendances []models.Attendance
 	if err := r.DB.Find(&attendances).Error; err != nil {
 		return nil, err
@@ -23,9 +22,8 @@ func (r *Repository) GetAllAttendances() (*[]models.Attendance, error) {
 
 }
 
-func (r *Repository) CreateAttendance(attendance *models.AttendanceCreate) (string, error) {
+func (r *TenantRepository) CreateAttendance(attendance *models.AttendanceCreate) (string, error) {
 	newId := uuid.NewString()
-
 	if err := r.DB.Create(&models.Attendance{
 		ID:         newId,
 		EmployeeID: attendance.EmployeeID,
@@ -37,11 +35,11 @@ func (r *Repository) CreateAttendance(attendance *models.AttendanceCreate) (stri
 	}).Error; err != nil {
 		return "", err
 	}
-	return newId, nil
 
+	return newId, nil
 }
 
-func (r *Repository) UpdateAttendance(attendance *models.AttendanceUpdate) error {
+func (r *TenantRepository) UpdateAttendance(attendance *models.AttendanceUpdate) error {
 	if err := r.DB.Where("id = ?", attendance.ID).Updates(&models.Attendance{
 		Attendance: attendance.Attendance,
 		Hours:      attendance.Hours,
@@ -55,7 +53,7 @@ func (r *Repository) UpdateAttendance(attendance *models.AttendanceUpdate) error
 
 }
 
-func (r *Repository) DeleteAttendance(id string) error {
+func (r *TenantRepository) DeleteAttendance(id string) error {
 	var attendance models.Attendance
 	if err := r.DB.Where("id = ?", id).Delete(&attendance).Error; err != nil {
 		return err
@@ -63,7 +61,7 @@ func (r *Repository) DeleteAttendance(id string) error {
 	return nil
 }
 
-func (r *Repository) GetAttendancesByDate(date_start string, date_end string) (*[]models.Attendance, error) {
+func (r *TenantRepository) GetAttendancesByDate(date_start string, date_end string) (*[]models.Attendance, error) {
 	var attendances []models.Attendance
 	if err := r.DB.Where("DATE(date) >= ? AND DATE(date) <= ?", date_start, date_end).Find(&attendances).Error; err != nil {
 		return nil, err
@@ -71,7 +69,7 @@ func (r *Repository) GetAttendancesByDate(date_start string, date_end string) (*
 	return &attendances, nil
 }
 
-func (r *Repository) GetAttendanceByEmployeeID(userID string) (*[]models.Attendance, error) {
+func (r *TenantRepository) GetAttendanceByEmployeeID(userID string) (*[]models.Attendance, error) {
 	var attendances []models.Attendance
 	if err := r.DB.Where("employee_id = ?", userID).Find(&attendances).Error; err != nil {
 		return nil, err

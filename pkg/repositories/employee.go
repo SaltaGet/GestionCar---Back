@@ -6,7 +6,7 @@ import (
 	"github.com/google/uuid"
 )
 
-func (r *Repository) GetEmployeeByID(id string) (*models.Employee, error) {
+func (r *TenantRepository) GetEmployeeByID(id string) (*models.Employee, error) {
 	var employee models.Employee
 	if err := r.DB.Where("id = ?", id).First(&employee).Error; err != nil {
 		return nil, err
@@ -14,7 +14,7 @@ func (r *Repository) GetEmployeeByID(id string) (*models.Employee, error) {
 	return &employee, nil
 }
 
-func (r *Repository) GetAllEmployees() (*[]models.Employee, error) {
+func (r *TenantRepository) GetAllEmployees() (*[]models.Employee, error) {
 	var employees []models.Employee
 	if err := r.DB.Find(&employees).Error; err != nil {
 		return nil, err
@@ -22,7 +22,7 @@ func (r *Repository) GetAllEmployees() (*[]models.Employee, error) {
 	return &employees, nil
 }
 
-func (r *Repository) CreateEmployee(employee *models.EmployeeCreate) (string, error) {
+func (r *TenantRepository) CreateEmployee(employee *models.EmployeeCreate) (string, error) {
 	newID := uuid.NewString()
 	if err := r.DB.Create(&models.Employee{
 		ID:      newID,
@@ -36,7 +36,7 @@ func (r *Repository) CreateEmployee(employee *models.EmployeeCreate) (string, er
 	return newID, nil
 }
 
-func (r *Repository) UpdateEmployee(employeeUpdate *models.EmployeeUpdate) error {
+func (r *TenantRepository) UpdateEmployee(employeeUpdate *models.EmployeeUpdate) error {
 	var employee models.Employee
 	if err := r.DB.Where("id = ?", employeeUpdate.ID).First(&employee).Error; err != nil {
 		return err
@@ -51,7 +51,7 @@ func (r *Repository) UpdateEmployee(employeeUpdate *models.EmployeeUpdate) error
 	return nil
 }
 
-func (r *Repository) DeleteEmployee(id string) error {
+func (r *TenantRepository) DeleteEmployee(id string) error {
 	var employee models.Employee
 	if err := r.DB.Where("id = ?", id).Delete(&employee).Error; err != nil {
 		return err
@@ -59,7 +59,7 @@ func (r *Repository) DeleteEmployee(id string) error {
 	return nil
 }
 
-func (r *Repository) GetEmployeeByName(name string) (*[]models.Employee, error) {
+func (r *TenantRepository) GetEmployeeByName(name string) (*[]models.Employee, error) {
 	var employees []models.Employee
 	if err := r.DB.Where("name LIKE ?", "%"+name+"%").Find(&employees).Error; err != nil {
 		return nil, err

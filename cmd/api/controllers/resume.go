@@ -2,21 +2,11 @@ package controllers
 
 import (
 	"github.com/DanielChachagua/GestionCar/pkg/models"
-	"github.com/DanielChachagua/GestionCar/pkg/services"
 	"github.com/gofiber/fiber/v2"
 )
 
-func ExpenseResumeCreate(c *fiber.Ctx) error {
-	workplace := c.Locals("workplace").(*models.Workplace)
-	if workplace == nil {
-		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
-			Status:  false,
-			Body:    nil,
-			Message: "Workplace is required",
-		})
-	}
-
-	resume := &models.ExpenseResumeCreate{}
+func (r *ResumeController) ExpenseResumeCreate(c *fiber.Ctx) error {
+	resume := &models.ResumeExpenseCreate{}
 	if err := c.BodyParser(resume); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
 			Status:  false,
@@ -32,7 +22,7 @@ func ExpenseResumeCreate(c *fiber.Ctx) error {
 		})
 	}
 
-	id, err := services.ExpenseResumeCreate(resume, workplace.Identifier)
+	id, err := r.ResumeService.ExpenseResumeCreate(resume)
 	if err != nil {
 		if errResp, ok := err.(*models.ErrorStruc); ok {
 			return c.Status(errResp.StatusCode).JSON(models.Response{
@@ -55,16 +45,7 @@ func ExpenseResumeCreate(c *fiber.Ctx) error {
 	})
 }
 
-func ExpenseResumeGetByDateBetween(c *fiber.Ctx) error {
-	workplace := c.Locals("workplace").(*models.Workplace)
-	if workplace == nil {
-		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
-			Status:  false,
-			Body:    nil,
-			Message: "Workplace is required",
-		})
-	}
-
+func (r *ResumeController) ExpenseResumeGetByDateBetween(c *fiber.Ctx) error {
 	fromDate := c.Query("fromDate")
 	toDate := c.Query("toDate")
 	if fromDate == "" || toDate == "" {
@@ -75,7 +56,7 @@ func ExpenseResumeGetByDateBetween(c *fiber.Ctx) error {
 		})
 	}
 
-	laundry, workshop, err := services.GetExpenseResumeByDateBetween(fromDate, toDate, workplace.Identifier)
+	resumes, err := r.ResumeService.GetExpenseResumeByDateBetween(fromDate, toDate)
 	if err != nil {
 		if errResp, ok := err.(*models.ErrorStruc); ok {
 			return c.Status(errResp.StatusCode).JSON(models.Response{
@@ -91,31 +72,14 @@ func ExpenseResumeGetByDateBetween(c *fiber.Ctx) error {
 		})
 	}
 
-	if laundry != nil {
-		return c.Status(fiber.StatusOK).JSON(models.Response{
-			Status:  true,
-			Body:    laundry,
-			Message: "Resumen obtenido exitosamente",
-		})
-	}
-
 	return c.Status(fiber.StatusOK).JSON(models.Response{
 		Status:  true,
-			Body:    workshop,
+			Body:    resumes,
 			Message: "Resumen obtenido exitosamente",
 	})
 }
 
-func ExpenseResumeGetByID(c *fiber.Ctx) error {
-	workplace := c.Locals("workplace").(*models.Workplace)
-	if workplace == nil {
-		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
-			Status:  false,
-			Body:    nil,
-			Message: "Workplace is required",
-		})
-	}
-
+func (r *ResumeController) ExpenseResumeGetByID(c *fiber.Ctx) error {
 	id := c.Params("id")
 	if id == "" {
 		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
@@ -125,7 +89,7 @@ func ExpenseResumeGetByID(c *fiber.Ctx) error {
 		})
 	}
 
-	laundry, workshop, err := services.GetExpenseResumeByID(id, workplace.Identifier)
+	resume, err := r.ResumeService.ExpenseResumeGetByID(id)
 	if err != nil {
 		if errResp, ok := err.(*models.ErrorStruc); ok {
 			return c.Status(errResp.StatusCode).JSON(models.Response{
@@ -141,32 +105,15 @@ func ExpenseResumeGetByID(c *fiber.Ctx) error {
 		})
 	}
 
-	if laundry != nil {
-		return c.Status(fiber.StatusOK).JSON(models.Response{
-			Status:  true,
-			Body:    laundry,
-			Message: "Resumen obtenido exitosamente",
-		})
-	}
-
 	return c.Status(fiber.StatusOK).JSON(models.Response{
 		Status:  true,
-			Body:    workshop,
+			Body:    resume,
 			Message: "Resumen obtenido exitosamente",
 	})
 }
 
-func ExpenseResumeUpdate(c *fiber.Ctx) error {
-	workplace := c.Locals("workplace").(*models.Workplace)
-	if workplace == nil {
-		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
-			Status:  false,
-			Body:    nil,
-			Message: "Workplace is required",
-		})
-	}
-
-	resume := &models.ExpenseResumeUpdate{}
+func (r *ResumeController) ExpenseResumeUpdate(c *fiber.Ctx) error {
+	resume := &models.ResumeExpenseUpdate{}
 	if err := c.BodyParser(resume); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
 			Status:  false,
@@ -182,7 +129,7 @@ func ExpenseResumeUpdate(c *fiber.Ctx) error {
 		})
 	}
 
-	err := services.UpdateExpenseResume(resume, workplace.Identifier)
+	err := r.ResumeService.ResumeExpenseUpdate(resume)
 	if err != nil {
 		if errResp, ok := err.(*models.ErrorStruc); ok {
 			return c.Status(errResp.StatusCode).JSON(models.Response{
@@ -208,17 +155,8 @@ func ExpenseResumeUpdate(c *fiber.Ctx) error {
 
 // INCOME
 
-func IncomeResumeCreate(c *fiber.Ctx) error {
-	workplace := c.Locals("workplace").(*models.Workplace)
-	if workplace == nil {
-		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
-			Status:  false,
-			Body:    nil,
-			Message: "Workplace is required",
-		})
-	}
-
-	resume := &models.IncomeResumeCreate{}
+func (r *ResumeController) IncomeResumeCreate(c *fiber.Ctx) error {
+	resume := &models.ResumeIncomeCreate{}
 	if err := c.BodyParser(resume); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
 			Status:  false,
@@ -234,7 +172,7 @@ func IncomeResumeCreate(c *fiber.Ctx) error {
 		})
 	}
 
-	id, err := services.CreateIncomeResume(resume, workplace.Identifier)
+	id, err := r.ResumeService.CreateIncomeResume(resume)
 	if err != nil {
 		if errResp, ok := err.(*models.ErrorStruc); ok {
 			return c.Status(errResp.StatusCode).JSON(models.Response{
@@ -257,16 +195,7 @@ func IncomeResumeCreate(c *fiber.Ctx) error {
 	})
 }
 
-func IncomeResumeGetByDateBetween(c *fiber.Ctx) error {
-	workplace := c.Locals("workplace").(*models.Workplace)
-	if workplace == nil {
-		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
-			Status:  false,
-			Body:    nil,
-			Message: "Workplace is required",
-		})
-	}
-
+func (r *ResumeController) IncomeResumeGetByDateBetween(c *fiber.Ctx) error {
 	fromDate := c.Query("from_date")
 	toDate := c.Query("to_date")
 	if fromDate == "" || toDate == "" {
@@ -277,7 +206,7 @@ func IncomeResumeGetByDateBetween(c *fiber.Ctx) error {
 		})
 	}
 
-	laundry, workshop, err := services.GetIncomeResumeByDateBetween(fromDate, toDate, workplace.Identifier)
+	resume, err := r.ResumeService.IncomeResumeGetByDateBetween(fromDate, toDate)
 	if err != nil {
 		if errResp, ok := err.(*models.ErrorStruc); ok {
 			return c.Status(errResp.StatusCode).JSON(models.Response{
@@ -293,31 +222,14 @@ func IncomeResumeGetByDateBetween(c *fiber.Ctx) error {
 		})
 	}
 
-	if laundry != nil {
-		return c.Status(fiber.StatusOK).JSON(models.Response{
-			Status:  true,
-			Body:    laundry,
-			Message: "Resumen obtenido exitosamente",
-		})
-	}
-
 	return c.Status(fiber.StatusOK).JSON(models.Response{
 		Status:  true,
-			Body:    workshop,
+			Body:    resume,
 			Message: "Resumen obtenido exitosamente",
 	})
 }
 
-func IncomeResumeGetByID(c *fiber.Ctx) error {
-	workplace := c.Locals("workplace").(*models.Workplace)
-	if workplace == nil {
-		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
-			Status:  false,
-			Body:    nil,
-			Message: "Workplace is required",
-		})
-	}
-
+func (r *ResumeController) IncomeResumeGetByID(c *fiber.Ctx) error {
 	id := c.Params("id")
 	if id == "" {
 		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
@@ -327,7 +239,7 @@ func IncomeResumeGetByID(c *fiber.Ctx) error {
 		})
 	}
 
-	laundry, workshop, err := services.GetIncomeResumeByID(id, workplace.Identifier)
+	resume, err := r.ResumeService.IncomeResumeGetByID(id)
 	if err != nil {
 		if errResp, ok := err.(*models.ErrorStruc); ok {
 			return c.Status(errResp.StatusCode).JSON(models.Response{
@@ -343,32 +255,15 @@ func IncomeResumeGetByID(c *fiber.Ctx) error {
 		})
 	}
 
-	if laundry != nil {
-		return c.Status(fiber.StatusOK).JSON(models.Response{
-			Status:  true,
-			Body:    laundry,
-			Message: "Resumen obtenido exitosamente",
-		})
-	}
-
 	return c.Status(fiber.StatusOK).JSON(models.Response{
 		Status:  true,
-			Body:    workshop,
+			Body:    resume,
 			Message: "Resumen obtenido exitosamente",
 	})
 }
 
-func IncomeResumeUpdate(c *fiber.Ctx) error {
-	workplace := c.Locals("workplace").(*models.Workplace)
-	if workplace == nil {
-		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
-			Status:  false,
-			Body:    nil,
-			Message: "Workplace is required",
-		})
-	}
-
-	resume := &models.IncomeResumeUpdate{}
+func (r *ResumeController) IncomeResumeUpdate(c *fiber.Ctx) error {
+	resume := &models.ResumeIncomeUpdate{}
 	if err := c.BodyParser(resume); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
 			Status:  false,
@@ -384,7 +279,7 @@ func IncomeResumeUpdate(c *fiber.Ctx) error {
 		})
 	}
 
-	err := services.UpdateIncomeResume(resume, workplace.Identifier)
+	err := r.ResumeService.UpdateIncomeResume(resume)
 	if err != nil {
 		if errResp, ok := err.(*models.ErrorStruc); ok {
 			return c.Status(errResp.StatusCode).JSON(models.Response{

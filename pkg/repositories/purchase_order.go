@@ -6,7 +6,7 @@ import (
 	"gorm.io/gorm"
 )
 
-func (r *Repository) GetPurchaseOrderByID(id string) (*models.PurchaseOrder, error) {
+func (r *TenantRepository) GetPurchaseOrderByID(id string) (*models.PurchaseOrder, error) {
 	var purchaseOrder models.PurchaseOrder
 	if err := r.DB.Where("id = ?", id).First(&purchaseOrder).Error; err != nil {
 		return nil, err
@@ -15,7 +15,7 @@ func (r *Repository) GetPurchaseOrderByID(id string) (*models.PurchaseOrder, err
 
 }
 
-func (r *Repository) GetAllPurchaseOrders() (*[]models.PurchaseOrder, error) {
+func (r *TenantRepository) GetAllPurchaseOrders() (*[]models.PurchaseOrder, error) {
 	var purchaseOrders []models.PurchaseOrder
 	if err := r.DB.Find(&purchaseOrders).Error; err != nil {
 		return nil, err
@@ -24,7 +24,7 @@ func (r *Repository) GetAllPurchaseOrders() (*[]models.PurchaseOrder, error) {
 
 }
 
-func (r *Repository) CreatePurchaseOrder(purchaseOrder *models.PurchaseOrderCreate) (string, error) {
+func (r *TenantRepository) CreatePurchaseOrder(purchaseOrder *models.PurchaseOrderCreate) (string, error) {
 	newID := uuid.NewString()
 	err := r.DB.Transaction(func(tx *gorm.DB) error {
 		if err := tx.Create(&models.PurchaseOrder{
@@ -87,7 +87,7 @@ func (r *Repository) CreatePurchaseOrder(purchaseOrder *models.PurchaseOrderCrea
 // 	})
 // }
 
-func (r *Repository) UpdatePurchaseOrder(purchaseOrder *models.PurchaseOrderUpdate) error {
+func (r *TenantRepository) UpdatePurchaseOrder(purchaseOrder *models.PurchaseOrderUpdate) error {
 	return r.DB.Transaction(func(tx *gorm.DB) error {
 		if err := tx.Where("id = ?", purchaseOrder.ID).Updates(&models.PurchaseOrder{
 			OrderNumber: purchaseOrder.OrderNumber,
@@ -153,7 +153,7 @@ func (r *Repository) UpdatePurchaseOrder(purchaseOrder *models.PurchaseOrderUpda
 	})
 }
 
-func (r *Repository) DeletePurchaseOrderByID(id string) error {
+func (r *TenantRepository) DeletePurchaseOrderByID(id string) error {
 	return r.DB.Transaction(func(tx *gorm.DB) error {
 		if err := tx.Where("purchase_order_id = ?", id).Delete(&models.PurchaseProduct{}).Error; err != nil {
 			return err

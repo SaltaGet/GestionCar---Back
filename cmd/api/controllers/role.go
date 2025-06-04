@@ -2,7 +2,6 @@ package controllers
 
 import (
 	"github.com/DanielChachagua/GestionCar/pkg/models"
-	"github.com/DanielChachagua/GestionCar/pkg/services"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -19,7 +18,7 @@ import (
 //	@Success		200					{object}	models.Response	"Roles retrieved successfully"
 //	@Failure		400					{object}	models.Response	"Bad request if user or workplace is missing"
 //	@Failure		500					{object}	models.Response	"Internal server error on failure"
-func GetRolesWorkplace( c*fiber.Ctx) error {
+func (r *RoleController) GetRolesWorkplace( c*fiber.Ctx) error {
 	user := c.Locals("user").(*models.User)
 	if user == nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
@@ -28,15 +27,7 @@ func GetRolesWorkplace( c*fiber.Ctx) error {
 		})
 	}
 
-	workplace := c.Locals("workplace").(*models.Workplace)
-	if workplace == nil {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"status":  false,
-			"message": "Workplace is required",
-		})
-	}
-
-	roles, err := services.GetRoleAll(user.Role, workplace.Identifier)
+	roles, err := r.RoleService.GetRoleAll(user.Username)
 	if err != nil {
 		if errResp, ok := err.(*models.ErrorStruc); ok {
 			return c.Status(errResp.StatusCode).JSON(models.Response{

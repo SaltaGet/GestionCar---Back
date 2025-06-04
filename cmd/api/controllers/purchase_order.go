@@ -2,19 +2,16 @@ package controllers
 
 import (
 	"github.com/DanielChachagua/GestionCar/pkg/models"
-	"github.com/DanielChachagua/GestionCar/pkg/services"
 	"github.com/gofiber/fiber/v2"
 )
 
 // PurchaseOrderGetByID godoc
 //	@Summary		Get Purchase Order By ID
-//	@Description	Retrieves a specific purchase order by its ID.
-//              Returns either a laundry or workshop purchase order based on the workplace context.
+//	@Description	Retrieves a specific purchase order by its ID. Returns purchase order based on the tenant context.
 //	@Tags			Purchase Order
 //	@Accept			json
 //	@Produce		json
 //	@Security		BearerAuth
-//	@Param			X-Workplace-Token	header		string												true	"Workplace Token"
 //	@Param			id					path		string												true	"ID of Purchase Order"
 //	@Success		200					{object}	models.Response{body=models.PurchaseOrderLaundry}	"Laundry order obtained successfully"
 //	@Failure		400					{object}	models.Response										"Bad Request"
@@ -23,7 +20,7 @@ import (
 //	@Failure		404					{object}	models.Response										"Purchase Order not found"
 //	@Failure		500					{object}	models.Response										"Internal server error"
 //	@Router			/purchase_order/{id} [get]
-func PurchaseOrderGetByID(c *fiber.Ctx) error {
+func (p *PurchaseOrderController) PurchaseOrderGetByID(c *fiber.Ctx) error {
 	id := c.Params("id")
 	if id == "" {
 		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
@@ -33,16 +30,7 @@ func PurchaseOrderGetByID(c *fiber.Ctx) error {
 		})
 	}
 
-	workplace := c.Locals("workplace").(*models.Workplace)
-	if workplace == nil {
-		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
-			Status:  false,
-			Body:    nil,
-			Message: "Workplace is required",
-		})
-	}
-
-	laundry, workshop, err := services.PurchaseOrderGetByID(id, workplace.Identifier)
+	purchaseOrder, err := p.PurchaseOrderService.PurchaseOrderGetByID(id)
 	if err != nil {
 		if errResp, ok := err.(*models.ErrorStruc); ok {
 			return c.Status(errResp.StatusCode).JSON(models.Response{
@@ -58,17 +46,9 @@ func PurchaseOrderGetByID(c *fiber.Ctx) error {
 		})
 	}
 
-	if laundry != nil {
-		return c.Status(200).JSON(models.Response{
-			Status:  true,
-			Body:    laundry,
-			Message: "Orden de compra obtenida con éxito",
-		})
-	}
-
 	return c.Status(200).JSON(models.Response{
 		Status:  true,
-		Body:    workshop,
+		Body:    purchaseOrder,
 		Message: "Orden de compra obtenida con éxito",
 	})
 }
@@ -80,7 +60,6 @@ func PurchaseOrderGetByID(c *fiber.Ctx) error {
 //	@Accept			json
 //	@Produce		json
 //	@Security		BearerAuth
-//	@Param			X-Workplace-Token	header		string												true	"Workplace Token"
 //	@Success		200					{object}	models.Response{body=[]models.PurchaseOrderLaundry}	"Purchase Orders obtained with success"
 //	@Failure		400					{object}	models.Response										"Bad Request"
 //	@Failure		401					{object}	models.Response										"Auth is required"
@@ -88,17 +67,8 @@ func PurchaseOrderGetByID(c *fiber.Ctx) error {
 //	@Failure		500					{object}	models.Response										"Internal server error"
 //	@Router			/purchase_order/get_all [get]
 //	@Security		BearerAuth
-func PurchaseOrderGetAll(c *fiber.Ctx) error {
-	workplace := c.Locals("workplace").(*models.Workplace)
-	if workplace == nil {
-		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
-			Status:  false,
-			Body:    nil,
-			Message: "Workplace is required",
-		})
-	}
-
-	laundry, workshop, err := services.PurchaseOrderGetAll(workplace.Identifier)
+func (p *PurchaseOrderController) PurchaseOrderGetAll(c *fiber.Ctx) error {
+	purchasesOrder, err := p.PurchaseOrderService.PurchaseOrderGetAll()
 	if err != nil {
 		if errResp, ok := err.(*models.ErrorStruc); ok {
 			return c.Status(errResp.StatusCode).JSON(models.Response{
@@ -114,17 +84,9 @@ func PurchaseOrderGetAll(c *fiber.Ctx) error {
 		})
 	}
 
-	if laundry != nil {
-		return c.Status(200).JSON(models.Response{
-			Status:  true,
-			Body:    laundry,
-			Message: "Orden de compra obtenida con éxito",
-		})
-	}
-
 	return c.Status(200).JSON(models.Response{
 		Status:  true,
-		Body:    workshop,
+		Body:    purchasesOrder,
 		Message: "Orden de compra obtenida con éxito",
 	})
 }
@@ -136,7 +98,6 @@ func PurchaseOrderGetAll(c *fiber.Ctx) error {
 //	@Accept			json
 //	@Produce		json
 //	@Security		BearerAuth
-//	@Param			X-Workplace-Token	header		string							true	"Workplace Token"
 //	@Param			purchaseOrderCreate	body		models.PurchaseOrderCreate		true	"Purchase order creation data"
 //	@Success		200					{object}	models.Response{body=string}	"Purchase order created successfully"
 //	@Failure		400					{object}	models.Response					"Bad Request"
@@ -146,7 +107,7 @@ func PurchaseOrderGetAll(c *fiber.Ctx) error {
 //	@Failure		500					{object}	models.Response					"Internal server error"
 //	@Router			/purchase_order/create     [post]
 //	@Security		BearerAuth
-func PurchaseOrderCreate(c *fiber.Ctx) error {
+func (p *PurchaseOrderController) PurchaseOrderCreate(c *fiber.Ctx) error {
 	var purchaseOrderCreate models.PurchaseOrderCreate
 	if err := c.BodyParser(&purchaseOrderCreate); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
@@ -163,16 +124,7 @@ func PurchaseOrderCreate(c *fiber.Ctx) error {
 		})
 	}
 
-	workplace := c.Locals("workplace").(*models.Workplace)
-	if workplace == nil {
-		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
-			Status:  false,
-			Body:    nil,
-			Message: "Workplace is required",
-		})
-	}
-
-	id, err := services.PurchaseOrderCreate(&purchaseOrderCreate, workplace.Identifier)
+	id, err := p.PurchaseOrderService.PurchaseOrderCreate(&purchaseOrderCreate)
 	if err != nil {
 		if errResp, ok := err.(*models.ErrorStruc); ok {
 			return c.Status(errResp.StatusCode).JSON(models.Response{
@@ -204,7 +156,6 @@ func PurchaseOrderCreate(c *fiber.Ctx) error {
 //	@Accept			json
 //	@Produce		json
 //	@Security		BearerAuth
-//	@Param			X-Workplace-Token	header		string						true	"Workplace Token"
 //	@Param			purchaseOrderUpdate	body		models.PurchaseOrderUpdate	true	"Purchase order update data"
 //	@Success		200					{object}	models.Response				"Purchase order updated successfully"
 //	@Failure		400					{object}	models.Response				"Bad Request"
@@ -213,7 +164,7 @@ func PurchaseOrderCreate(c *fiber.Ctx) error {
 //	@Failure		422					{object}	models.Response				"Model invalid"
 //	@Failure		500					{object}	models.Response				"Internal server error"
 //	@Router			/purchase_order/update [put]
-func PurchaseOrderUpdate(c *fiber.Ctx) error {
+func (p *PurchaseOrderController) PurchaseOrderUpdate(c *fiber.Ctx) error {
 	var purchaseOrderUpdate models.PurchaseOrderUpdate
 	if err := c.BodyParser(&purchaseOrderUpdate); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
@@ -230,16 +181,7 @@ func PurchaseOrderUpdate(c *fiber.Ctx) error {
 		})
 	}
 
-	workplace := c.Locals("workplace").(*models.Workplace)
-	if workplace == nil {
-		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
-			Status:  false,
-			Body:    nil,
-			Message: "Workplace is required",
-		})
-	}
-
-	err := services.PurchaseOrderUpdate(&purchaseOrderUpdate, workplace.Identifier)
+	err := p.PurchaseOrderService.PurchaseOrderUpdate(&purchaseOrderUpdate)
 	if err != nil {
 		if errResp, ok := err.(*models.ErrorStruc); ok {
 			return c.Status(errResp.StatusCode).JSON(models.Response{
@@ -269,7 +211,6 @@ func PurchaseOrderUpdate(c *fiber.Ctx) error {
 //	@Accept			json
 //	@Produce		json
 //	@Security		BearerAuth
-//	@Param			X-Workplace-Token	header		string			true	"Workplace Token"
 //	@Param			id					path		string			true	"ID of Purchase Order"
 //	@Success		200					{object}	models.Response	"Purchase order deleted successfully"
 //	@Failure		400					{object}	models.Response	"Bad Request"
@@ -278,7 +219,7 @@ func PurchaseOrderUpdate(c *fiber.Ctx) error {
 //	@Failure		404					{object}	models.Response	"Purchase order not found"
 //	@Failure		500					{object}	models.Response	"Internal server error"
 //	@Router			/purchase_order/delete/{id} [delete]
-func PurchaseOrderDelete(c *fiber.Ctx) error {
+func (p *PurchaseOrderController) PurchaseOrderDelete(c *fiber.Ctx) error {
 	id := c.Params("id")
 	if id == "" {
 		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
@@ -288,16 +229,7 @@ func PurchaseOrderDelete(c *fiber.Ctx) error {
 		})
 	}
 
-	workplace := c.Locals("workplace").(*models.Workplace)
-	if workplace == nil {
-		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
-			Status:  false,
-			Body:    nil,
-			Message: "Workplace is required",
-		})
-	}
-
-	err := services.PurchaseOrderDelete(id, workplace.Identifier)
+	err := p.PurchaseOrderService.PurchaseOrderDelete(id)
 	if err != nil {
 		if errResp, ok := err.(*models.ErrorStruc); ok {
 			return c.Status(errResp.StatusCode).JSON(models.Response{

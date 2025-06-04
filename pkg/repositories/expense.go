@@ -8,7 +8,7 @@ import (
 	"gorm.io/gorm"
 )
 
-func (r *Repository) GetExpenseByID(id string) (*models.Expense, error) {
+func (r *TenantRepository) GetExpenseByID(id string) (*models.Expense, error) {
 		var expense models.Expense
 		if err := r.DB.Where("id = ?", id).First(&expense).Error; err != nil {
 			return nil, err
@@ -16,7 +16,7 @@ func (r *Repository) GetExpenseByID(id string) (*models.Expense, error) {
 		return &expense, nil
 }
 
-func (r *Repository) GetAllExpenses() (*[]models.Expense, error) {
+func (r *TenantRepository) GetAllExpenses() (*[]models.Expense, error) {
 		var expenses []models.Expense
 		if err := r.DB.Limit(100).Order("created_at desc").Find(&expenses).Error; err != nil {
 			return nil, err
@@ -24,7 +24,7 @@ func (r *Repository) GetAllExpenses() (*[]models.Expense, error) {
 		return &expenses, nil
 }
 
-func (r *Repository) GetExpenseToday() (*[]models.Expense, error) {
+func (r *TenantRepository) GetExpenseToday() (*[]models.Expense, error) {
     today := time.Now().Format("2006-01-02")
         var expenses []models.Expense
         if err := r.DB.Where("DATE(created_at) = ?", today).Order("created_at desc").Find(&expenses).Error; err != nil {
@@ -33,7 +33,7 @@ func (r *Repository) GetExpenseToday() (*[]models.Expense, error) {
         return &expenses, nil
 }
 
-func (r *Repository) CreateExpense(expense *models.ExpenseCreate) (string, error) {
+func (r *TenantRepository) CreateExpense(expense *models.ExpenseCreate) (string, error) {
 	newID := uuid.NewString()
 		if err := r.DB.Create(&models.Expense{
 			ID:             newID,
@@ -47,7 +47,7 @@ func (r *Repository) CreateExpense(expense *models.ExpenseCreate) (string, error
 		return newID, nil
 }
 
-func (r *Repository) UpdateExpense(expense *models.ExpenseUpdate) error {
+func (r *TenantRepository) UpdateExpense(expense *models.ExpenseUpdate) error {
 	return r.DB.Transaction(func(tx *gorm.DB) error {
 			if err := tx.Where("id = ?", expense.ID).
 				Updates(&models.Expense{
@@ -62,7 +62,7 @@ func (r *Repository) UpdateExpense(expense *models.ExpenseUpdate) error {
 	})
 }
 
-func (r *Repository) DeleteExpenseByID(id string) error {
+func (r *TenantRepository) DeleteExpenseByID(id string) error {
 		if err := r.DB.Where("id = ?", id).Delete(&models.Expense{}).Error; err != nil {
 			return err
 		}

@@ -6,7 +6,7 @@ import (
 	"gorm.io/gorm"
 )
 
-func (r *Repository) GetElementByID(id string) (*models.Product, error) {
+func (r *TenantRepository) GetElementByID(id string) (*models.Product, error) {
 	var product models.Product
 	if err := r.DB.Where("id = ?", id).First(&product).Error; err != nil {
 		return nil, err
@@ -15,7 +15,7 @@ func (r *Repository) GetElementByID(id string) (*models.Product, error) {
 
 }
 
-func (r *Repository) GetElementsByIdentifier(identifier string) (*[]models.Product, error) {
+func (r *TenantRepository) GetElementsByIdentifier(identifier string) (*[]models.Product, error) {
 	var product []models.Product
 	if err := r.DB.Where("identifier LIKE ?", "%"+identifier+"%").Find(&product).Error; err != nil {
 		return nil, err
@@ -23,7 +23,7 @@ func (r *Repository) GetElementsByIdentifier(identifier string) (*[]models.Produ
 	return &product, nil
 }
 
-func (r *Repository) GetAllElementsByName(name string) (*[]models.Product, error) {
+func (r *TenantRepository) GetAllElementsByName(name string) (*[]models.Product, error) {
 	var products []models.Product
 	if err := r.DB.Where("name LIKE ?", "%"+name+"%").Find(&products).Error; err != nil {
 		return nil, err
@@ -31,7 +31,7 @@ func (r *Repository) GetAllElementsByName(name string) (*[]models.Product, error
 	return &products, nil
 }
 
-func (r *Repository) GetAllElements() (*[]models.Product, error) {
+func (r *TenantRepository) GetAllElements() (*[]models.Product, error) {
 
 	var products []models.Product
 	if err := r.DB.Find(&products).Error; err != nil {
@@ -41,7 +41,7 @@ func (r *Repository) GetAllElements() (*[]models.Product, error) {
 
 }
 
-func (r *Repository) CreateElement(element *models.ProductCreate) (string, error) {
+func (r *TenantRepository) CreateElement(element *models.ProductCreate) (string, error) {
 	newID := uuid.NewString()
 	if err := r.DB.Create(&models.Product{
 		ID:         newID,
@@ -55,7 +55,7 @@ func (r *Repository) CreateElement(element *models.ProductCreate) (string, error
 
 }
 
-func (r *Repository) UpdateElement(element *models.ProductUpdate) error {
+func (r *TenantRepository) UpdateElement(element *models.ProductUpdate) error {
 	if err := r.DB.Model(&models.Product{}).Where("id = ?", element.ID).Updates(&models.Product{
 		Identifier: element.Identifier,
 		Name:       element.Name,
@@ -66,7 +66,7 @@ func (r *Repository) UpdateElement(element *models.ProductUpdate) error {
 
 }
 
-func (r *Repository) UpdateStock(stock int32, id string) error {
+func (r *TenantRepository) UpdateStock(stock int32, id string) error {
 	if err := r.DB.Model(&models.Product{}).
 		Where("id = ?", id).
 		Update("stock", stock).Error; err != nil {
@@ -76,19 +76,19 @@ func (r *Repository) UpdateStock(stock int32, id string) error {
 
 }
 
-func (r *Repository) AddToStock(id string, cantidad int32) error {
+func (r *TenantRepository) AddToStock(id string, cantidad int32) error {
 	return r.DB.Model(&models.Product{}).
 		Where("id = ?", id).
 		UpdateColumn("stock", gorm.Expr("stock + ?", cantidad)).Error
 }
 
-func (r *Repository) SubtractFromStockToStock(id string, cantidad int32) error {
+func (r *TenantRepository) SubtractFromStockToStock(id string, cantidad int32) error {
 	return r.DB.Model(&models.Product{}).
 		Where("id = ?", id).
 		UpdateColumn("stock", gorm.Expr("stock - ?", cantidad)).Error
 }
 
-func (r *Repository) DeleteElement(id string) error {
+func (r *TenantRepository) DeleteElement(id string) error {
 	if err := r.DB.Where("id = ?", id).Delete(&models.Product{}).Error; err != nil {
 		return err
 	}

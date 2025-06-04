@@ -2,7 +2,6 @@ package controllers
 
 import (
 	"github.com/DanielChachagua/GestionCar/pkg/models"
-	"github.com/DanielChachagua/GestionCar/pkg/services"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -14,16 +13,15 @@ import (
 //	@Accept			json
 //	@Produce		json
 //	@Security		BearerAuth
-//	@Param			X-Workplace-Token	header		string										true	"Workplace Token"
 //	@Param			id					path		string										true	"ID of Expense"
-//	@Success		200					{object}	models.Response{body=models.ExpenseLaundry}	"Expense obtained successfully"
+//	@Success		200					{object}	models.Response{body=models.Expense}	"Expense obtained successfully"
 //	@Failure		400					{object}	models.Response								"Bad Request"
 //	@Failure		401					{object}	models.Response								"Auth is required"
 //	@Failure		403					{object}	models.Response								"Not Authorized"
 //	@Failure		404					{object}	models.Response								"Expense not found"
 //	@Failure		500					{object}	models.Response
 //	@Router			/expense/{id} [get]
-func GetExpenseByID(c *fiber.Ctx) error {
+func (e *ExpenseController) GetExpenseByID(c *fiber.Ctx) error {
 	id := c.Params("id")
 	if id == "" {
 		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
@@ -33,16 +31,7 @@ func GetExpenseByID(c *fiber.Ctx) error {
 		})
 	}
 
-	workplace := c.Locals("workplace").(*models.Workplace)
-	if workplace == nil {
-		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
-			Status:  false,
-			Body:    nil,
-			Message: "Workplace is required",
-		})
-	}
-
-	laundry, workshop, err := services.GetExpenseByID(id, workplace.Identifier)
+	expense, err := e.ExpenseService.GetExpenseByID(id)
 	if err != nil {
 		if errResp, ok := err.(*models.ErrorStruc); ok {
 			return c.Status(errResp.StatusCode).JSON(models.Response{
@@ -58,46 +47,28 @@ func GetExpenseByID(c *fiber.Ctx) error {
 		})
 	}
 
-	if laundry != nil {
-		return c.Status(200).JSON(models.Response{
-			Status:  true,
-			Body:    laundry,
-			Message: "Egreso obtenido con éxito",
-		})
-	}
-
 	return c.Status(200).JSON(models.Response{
 		Status:  true,
-		Body:    workshop,
+		Body:    expense,
 		Message: "Egreso obtenido con éxito",
 	})
 }
 
 // GetAllExpenses godoc
 //	@Summary		Get all expenses
-//	@Description	Fetches all expenses from the specified workplace, either in laundry or workshop.
+//	@Description	Fetches all expenses from the specified tenant.
 //	@Tags			Expense
 //	@Accept			json
 //	@Produce		json
 //	@Security		BearerAuth
-//	@Param			X-Workplace-Token	header		string											true	"Workplace Token"
-//	@Success		200					{object}	models.Response{body=[]models.ExpenseLaundry}	"List of expenses"
+//	@Success		200					{object}	models.Response{body=[]models.Expense}	"List of expenses"
 //	@Failure		400					{object}	models.Response									"Bad Request"
 //	@Failure		401					{object}	models.Response									"Auth is required"
 //	@Failure		403					{object}	models.Response									"Not Authorized"
 //	@Failure		500					{object}	models.Response									"Internal server error"
 //	@Router			/expense/get_all [get]
-func GetAllExpenses(c *fiber.Ctx) error {
-	workplace := c.Locals("workplace").(*models.Workplace)
-	if workplace == nil {
-		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
-			Status:  false,
-			Body:    nil,
-			Message: "Workplace is required",
-		})
-	}
-
-	laundry, workshop, err := services.GetAllExpenses(workplace.Identifier)
+func (e *ExpenseController) GetAllExpenses(c *fiber.Ctx) error {
+	expenses, err := e.ExpenseService.GetAllExpenses()
 	if err != nil {
 		if errResp, ok := err.(*models.ErrorStruc); ok {
 			return c.Status(errResp.StatusCode).JSON(models.Response{
@@ -113,17 +84,9 @@ func GetAllExpenses(c *fiber.Ctx) error {
 		})
 	}
 
-	if laundry != nil {
-		return c.Status(200).JSON(models.Response{
-			Status:  true,
-			Body:    laundry,
-			Message: "Egresos obtenidos con éxito",
-		})
-	}
-
 	return c.Status(200).JSON(models.Response{
 		Status:  true,
-		Body:    workshop,
+		Body:    expenses,
 		Message: "Egresos obtenidos con éxito",
 	})
 }
@@ -135,24 +98,14 @@ func GetAllExpenses(c *fiber.Ctx) error {
 //	@Accept			json
 //	@Produce		json
 //	@Security		BearerAuth
-//	@Param			X-Workplace-Token	header		string											true	"Workplace Token"
 //	@Success		200					{object}	models.Response{body=[]models.ExpenseLaundry}	"List of laundry expenses"
 //	@Failure		400					{object}	models.Response									"Bad Request"
 //	@Failure		401					{object}	models.Response									"Auth is required"
 //	@Failure		403					{object}	models.Response									"Not Authorized"
 //	@Failure		500					{object}	models.Response									"Internal server error"
 //	@Router			/expense/get_today [get]
-func GetExpenseToday(c *fiber.Ctx) error {
-	workplace := c.Locals("workplace").(*models.Workplace)
-	if workplace == nil {
-		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
-			Status:  false,
-			Body:    nil,
-			Message: "Workplace is required",
-		})
-	}
-
-	laundry, workshop, err := services.GetExpenseToday(workplace.Identifier)
+func (e *ExpenseController) GetExpenseToday(c *fiber.Ctx) error {
+	expenses, err := e.ExpenseService.GetExpenseToday()
 	if err != nil {
 		if errResp, ok := err.(*models.ErrorStruc); ok {
 			return c.Status(errResp.StatusCode).JSON(models.Response{
@@ -168,29 +121,20 @@ func GetExpenseToday(c *fiber.Ctx) error {
 		})
 	}
 
-	if laundry != nil {
-		return c.Status(200).JSON(models.Response{
-			Status:  true,
-			Body:    laundry,
-			Message: "Egresos obtenidos con éxito",
-		})
-	}
-
 	return c.Status(200).JSON(models.Response{
 		Status:  true,
-		Body:    workshop,
+		Body:    expenses,
 		Message: "Egresos obtenidos con éxito",
 	})
 }
 
 // CreateExpense godoc
 //	@Summary		Create Expense
-//	@Description	Parses the request body to create a new expense entry for either laundry or workshop.
+//	@Description	Parses the request body to create a new expense entry.
 //	@Tags			Expense
 //	@Accept			json
 //	@Produce		json
 //	@Security		BearerAuth
-//	@Param			X-Workplace-Token	header		string							true	"Workplace Token"
 //	@Param			expenseCreate		body		models.ExpenseCreate			true	"Expense information"
 //	@Success		200					{object}	models.Response{body=string}	"Expense created successfully"
 //	@Failure		400					{object}	models.Response					"Bad Request"
@@ -199,7 +143,7 @@ func GetExpenseToday(c *fiber.Ctx) error {
 //	@Failure		422					{object}	models.Response					"Model Invalid"
 //	@Failure		500					{object}	models.Response					"Internal server error"
 //	@Router			/expense/create [post]
-func CreateExpense(c *fiber.Ctx) error {
+func (e *ExpenseController) CreateExpense(c *fiber.Ctx) error {
 	var expenseCreate models.ExpenseCreate
 	if err := c.BodyParser(&expenseCreate); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
@@ -216,16 +160,7 @@ func CreateExpense(c *fiber.Ctx) error {
 		})
 	}
 
-	workplace := c.Locals("workplace").(*models.Workplace)
-	if workplace == nil {
-		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
-			Status:  false,
-			Body:    nil,
-			Message: "Workplace is required",
-		})
-	}
-
-	id, err := services.CreateExpense(&expenseCreate, workplace.Identifier)
+	id, err := e.ExpenseService.CreateExpense(&expenseCreate)
 	if err != nil {
 		if errResp, ok := err.(*models.ErrorStruc); ok {
 			return c.Status(errResp.StatusCode).JSON(models.Response{
@@ -255,7 +190,6 @@ func CreateExpense(c *fiber.Ctx) error {
 //	@Accept			json
 //	@Produce		json
 //	@Security		BearerAuth
-//	@Param			X-Workplace-Token	header		string					true	"Workplace Token"
 //	@Param			expenseUpdate		body		models.ExpenseUpdate	true	"Expense data to update"
 //	@Success		200					{object}	models.Response			"Expense updated successfully"
 //	@Failure		400					{object}	models.Response			"Bad Request"
@@ -264,7 +198,7 @@ func CreateExpense(c *fiber.Ctx) error {
 //	@Failure		422					{object}	models.Response			"Model Invalid"
 //	@Failure		500					{object}	models.Response			"Internal server error"
 //	@Router			/expense/update [put]
-func UpdateExpense(c *fiber.Ctx) error {
+func (e *ExpenseController) UpdateExpense(c *fiber.Ctx) error {
 	var expenseUpdate models.ExpenseUpdate
 	if err := c.BodyParser(&expenseUpdate); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
@@ -281,16 +215,7 @@ func UpdateExpense(c *fiber.Ctx) error {
 		})
 	}
 
-	workplace := c.Locals("workplace").(*models.Workplace)
-	if workplace == nil {
-		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
-			Status:  false,
-			Body:    nil,
-			Message: "Workplace is required",
-		})
-	}
-
-	err := services.UpdateExpense(&expenseUpdate, workplace.Identifier)
+	err := e.ExpenseService.UpdateExpense(&expenseUpdate)
 	if err != nil {
 		if errResp, ok := err.(*models.ErrorStruc); ok {
 			return c.Status(errResp.StatusCode).JSON(models.Response{
@@ -320,7 +245,6 @@ func UpdateExpense(c *fiber.Ctx) error {
 //	@Accept			json
 //	@Produce		json
 //	@Security		BearerAuth
-//	@Param			X-Workplace-Token	header		string			true	"Workplace Token"
 //	@Param			id					path		string			true	"ID of the expense"
 //	@Success		200					{object}	models.Response	"Expense deleted successfully"
 //	@Failure		400					{object}	models.Response	"Bad Request"
@@ -328,7 +252,7 @@ func UpdateExpense(c *fiber.Ctx) error {
 //	@Failure		403					{object}	models.Response	"Not Authorized"
 //	@Failure		500					{object}	models.Response	"Internal server error"
 //	@Router			/expense/delete/{id} [delete]
-func DeleteExpense(c *fiber.Ctx) error {
+func (e *ExpenseController) DeleteExpense(c *fiber.Ctx) error {
 	id := c.Params("id")
 	if id == "" {
 		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
@@ -338,16 +262,7 @@ func DeleteExpense(c *fiber.Ctx) error {
 		})
 	}
 
-	workplace := c.Locals("workplace").(*models.Workplace)
-	if workplace == nil {
-		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
-			Status:  false,
-			Body:    nil,
-			Message: "Workplace is required",
-		})
-	}
-
-	err := services.DeleteExpense(id, workplace.Identifier)
+	err := e.ExpenseService.DeleteExpense(id)
 	if err != nil {
 		if errResp, ok := err.(*models.ErrorStruc); ok {
 			return c.Status(errResp.StatusCode).JSON(models.Response{
