@@ -98,7 +98,7 @@ func (p *ProductController) ProductGetAll(c *fiber.Ctx) error {
 //	@Produce		json
 //	@Security		BearerAuth
 //	@Param			name				query		string											true	"Name of the Product"
-//	@Success		200					{object}	models.Response{body=[]models.ProductLaundry}	"List of products"
+//	@Success		200					{object}	models.Response{body=[]models.Product}	"List of products"
 //	@Failure		400					{object}	models.Response									"Bad Request"
 //	@Failure		401					{object}	models.Response									"Auth is required"
 //	@Failure		403					{object}	models.Response									"Not Authorized"
@@ -145,7 +145,7 @@ func (p *ProductController) ProductGetByName(c *fiber.Ctx) error {
 //	@Produce		json
 //	@Security		BearerAuth
 //	@Param			identifier			query		string											true	"Identifier of product"
-//	@Success		200					{object}	models.Response{body=[]models.ProductLaundry}	"Products obtained with success"
+//	@Success		200					{object}	models.Response{body=[]models.Product}	"Products obtained with success"
 //	@Failure		400					{object}	models.Response									"Bad Request"
 //	@Failure		401					{object}	models.Response									"Auth is required"
 //	@Failure		403					{object}	models.Response									"Not Authorized"

@@ -11,6 +11,7 @@ type Service struct {
 	Name      string    `gorm:"not null;unique" json:"name"`
 	CreatedAt time.Time `gorm:"autoCreateTime" json:"created_at"`
 	UpdatedAt time.Time `gorm:"autoUpdateTime" json:"updated_at"`
+	Incomes []Income `gorm:"many2many:income_services;" json:"incomes"`
 }
 
 type ServiceCreate struct {

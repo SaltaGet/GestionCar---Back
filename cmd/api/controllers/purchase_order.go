@@ -13,7 +13,7 @@ import (
 //	@Produce		json
 //	@Security		BearerAuth
 //	@Param			id					path		string												true	"ID of Purchase Order"
-//	@Success		200					{object}	models.Response{body=models.PurchaseOrderLaundry}	"Laundry order obtained successfully"
+//	@Success		200					{object}	models.Response{body=models.PurchaseOrder}	"Laundry order obtained successfully"
 //	@Failure		400					{object}	models.Response										"Bad Request"
 //	@Failure		401					{object}	models.Response										"Auth is required"
 //	@Failure		403					{object}	models.Response										"Not Authorized"
@@ -60,7 +60,7 @@ func (p *PurchaseOrderController) PurchaseOrderGetByID(c *fiber.Ctx) error {
 //	@Accept			json
 //	@Produce		json
 //	@Security		BearerAuth
-//	@Success		200					{object}	models.Response{body=[]models.PurchaseOrderLaundry}	"Purchase Orders obtained with success"
+//	@Success		200					{object}	models.Response{body=[]models.PurchaseOrder}	"Purchase Orders obtained with success"
 //	@Failure		400					{object}	models.Response										"Bad Request"
 //	@Failure		401					{object}	models.Response										"Auth is required"
 //	@Failure		403					{object}	models.Response										"Not Authorized"

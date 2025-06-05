@@ -99,7 +99,7 @@ func (e *EmployeeController) GetAllEmployees(c *fiber.Ctx) error {
 // 	@Produce		json
 // 	@Security		BearerAuth
 // 	@Param			name				query		string											true	"Name of the Employee"
-// 	@Success		200					{object}	models.Response{body=[]models.EmployeeLaundry}	"List of laundry employees"
+// 	@Success		200					{object}	models.Response{body=[]models.Employee}	"List of laundry employees"
 // 	@Failure		400					{object}	models.Response									"Bad request"
 // 	@Failure		401					{object}	models.Response									"Auth is required"
 // 	@Failure		403					{object}	models.Response									"Not Authorized"

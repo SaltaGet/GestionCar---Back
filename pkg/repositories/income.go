@@ -1,6 +1,7 @@
 package repositories
 
 import (
+	"errors"
 	"time"
 
 	"github.com/DanielChachagua/GestionCar/pkg/models"
@@ -9,132 +10,107 @@ import (
 )
 
 func (r *TenantRepository) IncomeGetByID(id string) (*models.Income, error) {
-		var income models.Income
-		if err := r.DB.Where("id = ?", id).First(&income).Error; err != nil {
-			return nil, err
-		}
-		return &income, nil
+	var income models.Income
+	if err := r.DB.Where("id = ?", id).First(&income).Error; err != nil {
+		return nil, err
+	}
+	return &income, nil
 }
 
 func (r *TenantRepository) IncomeGetAll() (*[]models.Income, error) {
-		var incomes []models.Income
-		if err := r.DB.Limit(100).Order("created_at desc").Find(&incomes).Error; err != nil {
-			return nil, err
-		}
-		return &incomes, nil
+	var incomes []models.Income
+	if err := r.DB.Limit(100).Order("created_at desc").Find(&incomes).Error; err != nil {
+		return nil, err
+	}
+	return &incomes, nil
 }
 
 func (r *TenantRepository) IncomeGetToday() (*[]models.Income, error) {
 	today := time.Now().Format("2006-01-02")
-		var incomes []models.Income
-		if err := r.DB.Where("DATE(created_at) = ?", today).Order("created_at desc").Find(&incomes).Error; err != nil {
-			return nil, err
-		}
-		return &incomes, nil
+	var incomes []models.Income
+	if err := r.DB.Where("DATE(created_at) = ?", today).Order("created_at desc").Find(&incomes).Error; err != nil {
+		return nil, err
+	}
+	return &incomes, nil
 }
 
 func (r *TenantRepository) IncomeCreate(income *models.IncomeCreate) (string, error) {
 	newID := uuid.NewString()
-	err := r.DB.Transaction(func(tx *gorm.DB) error {
-			if err := r.DB.Create(&models.Income{
-				ID:             newID,
-				Ticket:         income.Ticket,
-				Details:        income.Details,
-				ClientID:       income.ClientID,
-				VehicleID:      income.VehicleID,
-				EmployeeID:     income.EmployeeID,
-				Amount:         income.Amount,
-				MovementTypeID: income.MovementTypeID,
-			}).Error; err != nil {
-				return err
-			}
 
-			for _, item := range income.ServicesID {
-				if err := r.DB.Create(&models.IncomeService{
-					ID:              newID,
-					IncomeLaundryID: newID,
-					ServiceID:       item,
-				}).Error; err != nil {
-					return err
-				}
-			}
-			return nil
+	err := r.DB.Transaction(func(tx *gorm.DB) error {
+		var services []models.Service
+
+		if err := tx.Where("id IN ?", income.ServicesID).Find(&services).Error; err != nil {
+			return err 
+		}
+
+		if err := tx.Create(&models.Income{
+			ID:             newID,
+			Ticket:         income.Ticket,
+			Details:        income.Details,
+			ClientID:       income.ClientID,
+			VehicleID:      income.VehicleID,
+			EmployeeID:     income.EmployeeID,
+			Amount:         income.Amount,
+			MovementTypeID: income.MovementTypeID,
+			Services:       services,
+		}).Error; err != nil {
+			return err
+		}
+
+		return nil 
 	})
+
 	if err != nil {
 		return "", err
 	}
+
 	return newID, nil
 }
 
-func (r *TenantRepository) IncomeUpdate(income *models.IncomeUpdate) error {
+
+func (r *TenantRepository) IncomeUpdate(incomeUpdate *models.IncomeUpdate) error {
 	return r.DB.Transaction(func(tx *gorm.DB) error {
-			if err := tx.Where("id = ?", income.ID).
-				Updates(&models.Income{
-					Ticket:         income.Ticket,
-					Details:        income.Details,
-					ClientID:       income.ClientID,
-					VehicleID:      income.VehicleID,
-					EmployeeID:     income.EmployeeID,
-					Amount:         income.Amount,
-					MovementTypeID: income.MovementTypeID,
-				}).Error; err != nil {
-				return err
-			}
+		var income models.Income
 
-			var existingProducts []models.IncomeService
-			if err := tx.Where("income_laundry_id = ?", income.ID).Find(&existingProducts).Error; err != nil {
-				return err
+		if err := tx.Where("id = ?", incomeUpdate.ID).First(&income).Error; err != nil {
+			if errors.Is(err, gorm.ErrRecordNotFound) {
+				return errors.New("ingreso no encontrado")
 			}
-			existingIDs := map[string]bool{}
-			for _, p := range existingProducts {
-				existingIDs[p.ID] = true
-			}
+			return err
+		}
 
-			receivedIDs := map[string]bool{}
-			for _, prod := range income.ServicesID {
-				receivedIDs[prod] = true
-			}
+		income.Ticket = incomeUpdate.Ticket
+		income.Details = incomeUpdate.Details
+		income.ClientID = incomeUpdate.ClientID
+		income.VehicleID = incomeUpdate.VehicleID
+		income.EmployeeID = incomeUpdate.EmployeeID
+		income.Amount = incomeUpdate.Amount
+		income.MovementTypeID = incomeUpdate.MovementTypeID
+		income.UpdatedAt = time.Now().UTC()
 
-			for _, p := range existingProducts {
-				if !receivedIDs[p.ID] {
-					if err := tx.Delete(&models.IncomeService{}, "id = ?", p.ID).Error; err != nil {
-						return err
-					}
-				}
-			}
+		var services []models.Service
+		if err := tx.Where("id IN ?", incomeUpdate.ServicesID).Find(&services).Error; err != nil {
+			return err
+		}
 
-			for _, prod := range income.ServicesID {
-				if prod == "" || !existingIDs[prod] {
-					newProd := models.IncomeService{
-						ID:              uuid.NewString(),
-						IncomeLaundryID: income.ID,
-						ServiceID:       prod,
-					}
-					if err := tx.Create(&newProd).Error; err != nil {
-						return err
-					}
-				} else {
-					if err := tx.Model(&models.IncomeService{}).
-						Where("id = ?", prod).
-						Updates(map[string]interface{}{
-							"service_id": prod,
-						}).Error; err != nil {
-						return err
-					}
-				}
-			}
-			return nil
+		if err := tx.Model(&income).Association("Services").Replace(services); err != nil {
+			return err
+		}
+
+		if err := tx.Save(&income).Error; err != nil {
+			return err
+		}
+
+		return nil 
 	})
 }
 
 func (r *TenantRepository) IncomeDelete(id string) error {
 	return r.DB.Transaction(func(tx *gorm.DB) error {
-			if err := tx.Where("income_laundry_id = ?", id).Delete(&models.IncomeService{}).Error; err != nil {
-				return err
-			}
-			if err := tx.Where("id = ?", id).Delete(&models.Income{}).Error; err != nil {
-				return err
-			}
+		if err := tx.Where("id = ?", id).Delete(&models.Income{}).Error; err != nil {
+			return err
+		}
 		return nil
 	})
 }

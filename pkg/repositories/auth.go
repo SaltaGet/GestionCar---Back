@@ -84,8 +84,8 @@ func (r *MainRepository) UserGetRolePermissions(connection, userID string) (*mod
 	var permissions []string
 	err = db.Model(&models.Permission{}).
 		Select("permissions.name").
-		Joins("JOIN user_permissions ON user_permissions.permission_id = permissions.id").
-		Where("user_permissions.role_id = ?", role.ID).
+		Joins("JOIN role_permissions ON role_permissions.permission_id = permissions.id").
+		Where("role_permissions.role_id = ?", role.ID).
 		Pluck("permissions.name", &permissions).Error
 	if err != nil {
 		return nil, nil, nil, models.ErrorResponse(500, "Error al obtener los permisos", err)

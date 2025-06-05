@@ -30,9 +30,23 @@ func PrepareDB(uri string, userID string) error {
 
 	// Migrar las tablas necesarias
 	if err := db.AutoMigrate(
+		&models.Attendance{},
+		&models.Client{},
+		&models.Employee{},
+		&models.Expense{},
+		&models.Income{},
 		&models.Member{},
-		&models.Role{},
+		&models.MovementType{},
 		&models.Permission{},
+		&models.Product{},
+		&models.PurchaseOrder{},
+		&models.PurchaseProduct{},
+		&models.ResumeExpense{},
+		&models.ResumeIncome{},
+		&models.Role{},
+		&models.Service{},
+		&models.Supplier{},
+		&models.Vehicle{},
 		// Agrega aquí tus modelos tenant-específicos
 	); err != nil {
 		_ = os.Remove(filePath)

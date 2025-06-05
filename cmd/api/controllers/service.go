@@ -13,7 +13,7 @@ import (
 //	@Produce		json
 //	@Security		BearerAuth
 //	@Param			id					path		string	true	"ID of the income to get"
-//	@Success		200					{object}	models.Response{body=models.ServiceLaundry}
+//	@Success		200					{object}	models.Response{body=models.Service}
 //	@Failure		400					{object}	models.Response	"Bad Request"
 //	@Failure		401					{object}	models.Response	"Auth is required"
 //	@Failure		403					{object}	models.Response	"Not Authorized"
@@ -60,7 +60,7 @@ func (s *ServiceController) ServiceGetByID(c *fiber.Ctx) error {
 //	@Accept			json
 //	@Produce		json
 //	@Security		BearerAuth
-//	@Success		200					{object}	models.Response{body=[]models.ServiceLaundry}
+//	@Success		200					{object}	models.Response{body=[]models.Service}
 //	@Failure		400					{object}	models.Response	"Bad Request"
 //	@Failure		401					{object}	models.Response	"Auth is required"
 //	@Failure		403					{object}	models.Response	"Not Authorized"

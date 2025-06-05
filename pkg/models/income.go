@@ -20,7 +20,8 @@ type Income struct {
 	Client              Client              `gorm:"foreignKey:ClientID" json:"client"`
 	Vehicle             Vehicle             `gorm:"foreignKey:VehicleID" json:"vehicle"`
 	Employee     Employee     `gorm:"foreignKey:EmployeeID" json:"employee"`
-	MovementType MovementType `gorm:"foreignKey:MovementTypeID;references:ID" json:"movement_type`
+	MovementType MovementType `gorm:"foreignKey:MovementTypeID;references:ID" json:"movement_type"`
+	Services      []Service   `gorm:"many2many:income_services;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"services"`
 }
 
 type IncomeCreate struct {

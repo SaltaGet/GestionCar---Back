@@ -93,12 +93,12 @@ func (e *ExpenseController) GetAllExpenses(c *fiber.Ctx) error {
 
 // GetExpenseToday godoc
 //	@Summary		Get expense today
-//	@Description	Fetches all expenses from the specified workplace, either in laundry or workshop, on the current day.
+//	@Description	Fetches all expenses from the specified tenant, on the current day.
 //	@Tags			Expense
 //	@Accept			json
 //	@Produce		json
 //	@Security		BearerAuth
-//	@Success		200					{object}	models.Response{body=[]models.ExpenseLaundry}	"List of laundry expenses"
+//	@Success		200					{object}	models.Response{body=[]models.Expense}	"List of expenses"
 //	@Failure		400					{object}	models.Response									"Bad Request"
 //	@Failure		401					{object}	models.Response									"Auth is required"
 //	@Failure		403					{object}	models.Response									"Not Authorized"

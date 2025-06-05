@@ -13,7 +13,7 @@ import (
 //	@Produce		json
 //	@Security		BearerAuth
 //	@Param			id					path		string											true	"ID of the supplier"
-//	@Success		200					{object}	models.Response{body=models.SupplierLaundry}	"Supplier obtained with success"
+//	@Success		200					{object}	models.Response{body=models.Supplier}	"Supplier obtained with success"
 //	@Failure		400					{object}	models.Response									"Bad Request"
 //	@Failure		401					{object}	models.Response									"Auth is required"
 //	@Failure		403					{object}	models.Response									"Not Authorized"
@@ -60,7 +60,7 @@ func (s *SupplierController) SupplierGetByID(c *fiber.Ctx) error {
 //	@Accept			json
 //	@Produce		json
 //	@Security		BearerAuth
-//	@Success		200					{object}	models.Response{body=[]models.SupplierLaundry}	"Suppliers obtained with success"
+//	@Success		200					{object}	models.Response{body=[]models.Supplier}	"Suppliers obtained with success"
 //	@Failure		400					{object}	models.Response									"Bad Request"
 //	@Failure		401					{object}	models.Response									"Auth is required"
 //	@Failure		403					{object}	models.Response									"Not Authorized"
@@ -98,7 +98,7 @@ func (s *SupplierController) SupplierGetAll(c *fiber.Ctx) error {
 //	@Produce		json
 //	@Security		BearerAuth
 //	@Param			name				query		string											true	"Name of the Supplier"
-//	@Success		200					{object}	models.Response{body=[]models.SupplierLaundry}	"List of suppliers"
+//	@Success		200					{object}	models.Response{body=[]models.Supplier}	"List of suppliers"
 //	@Failure		400					{object}	models.Response									"Bad Request"
 //	@Failure		401					{object}	models.Response									"Auth is required"
 //	@Failure		403					{object}	models.Response									"Not Authorized"

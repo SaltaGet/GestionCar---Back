@@ -16,7 +16,7 @@ import (
 //	@Produce		json
 //	@Security		BearerAuth
 //	@Param			id					path		string												true	"ID of the movement type"
-//	@Success		200					{object}	models.Response{body=models.MovementTypeLaundry}	"Movement type details"
+//	@Success		200					{object}	models.Response{body=models.MovementType}	"Movement type details"
 //	@Failure		400					{object}	models.Response										"Bad Request"
 //	@Failure		401					{object}	models.Response										"Auth is required"
 //	@Failure		403					{object}	models.Response										"Not Authorized"
@@ -65,7 +65,7 @@ func (m *MovementTypeController) GetMovementTypeByID(c *fiber.Ctx) error {
 //	@Produce		json
 //	@Security		BearerAuth
 //	@Param			isIncome			query		bool												true	"Is income movement type"
-//	@Success		200					{object}	models.Response{body=[]models.MovementTypeLaundry}	"List of movement types"
+//	@Success		200					{object}	models.Response{body=[]models.MovementType}	"List of movement types"
 //	@Failure		400					{object}	models.Response										"Bad Request"
 //	@Failure		401					{object}	models.Response										"Auth is required"
 //	@Failure		403					{object}	models.Response										"Not Authorized"
