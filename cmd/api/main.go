@@ -32,7 +32,7 @@ import (
 
 func main() {
 	fmt.Println("Inicio app")
-	err := godotenv.Load("/home/GestionCar/GestionCar---Back/.env")
+	err := godotenv.Load()
 	if err != nil {
 		log.Fatal("Error loading .env file")
 	}
