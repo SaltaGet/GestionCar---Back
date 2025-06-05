@@ -1,0 +1,17 @@
+package ports
+
+import "github.com/DanielChachagua/GestionCar/pkg/models"
+
+type TenantRepository interface {
+	TenantGetByID(userID string, id string) (tenant *models.Tenant, err error) 
+	TenantGetAll(userID string) (tenants *[]models.TenantResponse, err error)
+	TenantUserCreate(tenantUserCreate *models.TenantUserCreate) (id string, err error)
+	TenantUpdate(userID string, tenant *models.TenantUpdate) (err error)
+}
+
+type TenantService interface {
+	TenantGetByID(userID string, tenantID string) (tenant *models.Tenant, err error) 
+	TenantGetAll(userID string) (tenants *[]models.TenantResponse, err error)
+	TenantUserCreate(tenantUserCreate *models.TenantUserCreate) (id string, err error)
+	TenantUpdate(userID string, tenant *models.TenantUpdate) (err error)
+}
