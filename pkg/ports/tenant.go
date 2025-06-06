@@ -5,6 +5,7 @@ import "github.com/DanielChachagua/GestionCar/pkg/models"
 type TenantRepository interface {
 	TenantGetByID(userID string, id string) (tenant *models.Tenant, err error) 
 	TenantGetAll(userID string) (tenants *[]models.TenantResponse, err error)
+	TenantCreateByUserID(tenantCreate *models.TenantCreate, userID string) (id string, err error)
 	TenantUserCreate(tenantUserCreate *models.TenantUserCreate) (id string, err error)
 	TenantUpdate(userID string, tenant *models.TenantUpdate) (err error)
 }
@@ -12,6 +13,7 @@ type TenantRepository interface {
 type TenantService interface {
 	TenantGetByID(userID string, tenantID string) (tenant *models.Tenant, err error) 
 	TenantGetAll(userID string) (tenants *[]models.TenantResponse, err error)
+	TenantCreateByUserID(tenantCreate *models.TenantCreate, userID string) (id string, err error)
 	TenantUserCreate(tenantUserCreate *models.TenantUserCreate) (id string, err error)
 	TenantUpdate(userID string, tenant *models.TenantUpdate) (err error)
 }
