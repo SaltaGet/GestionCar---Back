@@ -62,6 +62,64 @@ func (r *MainRepository) TenantGetAll(userID string) (*[]models.TenantResponse, 
 	return &tenants, nil
 }
 
+func (r *MainRepository) TenantCreateByUserID(tenantCreate *models.TenantCreate, userID string) (string, error) {
+	tx := r.DB.Begin()
+	defer func() {
+		if r := recover(); r != nil {
+			tx.Rollback()
+		}
+	}()
+
+	tenantName := strings.ReplaceAll(tenantCreate.Name, " ", "_")
+	uri := fmt.Sprintf("%s%s_%s.db%s", os.Getenv("URI_PATH"), tenantName, uuid.NewString(), os.Getenv("URI_CONFIG"))
+	connection, err := utils.Encrypt(uri)
+	if err != nil {
+		return "", err
+	}
+
+	tenant := &models.Tenant{
+		ID:         uuid.NewString(),
+		Name:       tenantCreate.Name,
+		Address:    tenantCreate.Address,
+		Phone:      tenantCreate.Phone,
+		Email:      tenantCreate.Email,
+		CuitPdv:    tenantCreate.CuitPdv,
+		Connection: connection,
+	}
+
+	if err := tx.Create(tenant).Error; err != nil {
+		tx.Rollback()
+		return "", models.ErrorResponse(500, "Error creating tenant", err)
+	}
+
+	var user models.User
+	if err := tx.Where("id = ?", userID).First(&user).Error; err != nil {
+		tx.Rollback()
+		return "", err
+	}
+
+	if err := tx.Create(&models.UserTenant{
+		UserID:    user.ID,
+		TenantID:  tenant.ID,
+		IsAdmin:   true,
+	}).Error; err != nil {
+		tx.Rollback()
+		return "", err
+	}
+
+	err = database.PrepareDB(uri, user.ID)
+	if err != nil {
+		tx.Rollback()
+		return "", err
+	}
+
+	if err := tx.Commit().Error; err != nil {
+		return "", err
+	}
+
+	return tenant.ID, nil
+}
+
 func (r *MainRepository) TenantUserCreate(tenantUserCreate *models.TenantUserCreate) (string, error) {
 	tx := r.DB.Begin()
 	defer func() {

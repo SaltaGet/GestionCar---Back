@@ -20,6 +20,14 @@ func (t *TenantService) TenantGetAll(userID string) (*[]models.TenantResponse, e
 	return tenants, nil
 }
 
+func (t *TenantService) TenantCreateByUserID(tenantCreate *models.TenantCreate, userID string) (string, error) {
+	id, err := t.TenantRepository.TenantCreateByUserID(tenantCreate, userID)
+	if err != nil {
+		return "", err
+	}
+	return id, nil
+}
+
 func (t *TenantService) TenantUserCreate(tenantUserCreate *models.TenantUserCreate) (string, error) {
 	id, err := t.TenantRepository.TenantUserCreate(tenantUserCreate)
 	if err != nil {

@@ -383,11 +383,13 @@ definitions:
         type: string
       is_active:
         type: boolean
-      name:
-        type: string
+      role:
+        $ref: '#/definitions/models.Role'
       role_id:
         type: string
       updated_at:
+        type: string
+      user_id:
         type: string
     type: object
   models.MovementType:
@@ -418,6 +420,30 @@ definitions:
         type: boolean
       name:
         type: string
+    type: object
+  models.Permission:
+    properties:
+      group:
+        enum:
+        - income
+        - expense
+        - user
+        - supplier
+        - product
+        - purchase
+        - attendance
+        - client
+        - vehicle
+        - resume
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      roles:
+        items:
+          $ref: '#/definitions/models.Role'
+        type: array
     type: object
   models.Product:
     properties:
@@ -587,6 +613,17 @@ definitions:
         type: string
       status:
         type: boolean
+    type: object
+  models.Role:
+    properties:
+      id:
+        type: string
+      name:
+        type: string
+      permissions:
+        items:
+          $ref: '#/definitions/models.Permission'
+        type: array
     type: object
   models.Service:
     properties:
@@ -3746,6 +3783,51 @@ paths:
       - application/json
       description: Tenant Create required auth token
       parameters:
+      - description: UserID
+        in: query
+        name: user_id
+        required: true
+        type: string
+      - description: TenantCreate
+        in: body
+        name: TenantCreate
+        required: true
+        schema:
+          $ref: '#/definitions/models.TenantCreate'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Tenant creado con éxito
+          schema:
+            $ref: '#/definitions/models.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.Response'
+        "401":
+          description: Auth is required
+          schema:
+            $ref: '#/definitions/models.Response'
+        "403":
+          description: Not Authorized
+          schema:
+            $ref: '#/definitions/models.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.Response'
+      security:
+      - BearerAuth: []
+      summary: Tenant Create
+      tags:
+      - Tenant
+  /tenant/create_tenant_user:
+    post:
+      consumes:
+      - application/json
+      description: Tenant Create required auth token
+      parameters:
       - description: TenantUserCreate
         in: body
         name: TenantUserCreate
@@ -3756,7 +3838,7 @@ paths:
       - application/json
       responses:
         "200":
-          description: Tenant creado con éxito
+          description: Tenant y Usuario creados con éxito
           schema:
             $ref: '#/definitions/models.Response'
         "400":
@@ -3789,7 +3871,7 @@ paths:
       - application/json
       responses:
         "200":
-          description: Workplaces obtenidos con éxito
+          description: Tenants obtenidos con éxito
           schema:
             allOf:
             - $ref: '#/definitions/models.Response'

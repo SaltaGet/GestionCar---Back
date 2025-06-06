@@ -4717,6 +4717,76 @@ const docTemplate = `{
                 "summary": "Tenant Create",
                 "parameters": [
                     {
+                        "type": "string",
+                        "description": "UserID",
+                        "name": "user_id",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "description": "TenantCreate",
+                        "name": "TenantCreate",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.TenantCreate"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Tenant creado con éxito",
+                        "schema": {
+                            "$ref": "#/definitions/models.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/models.Response"
+                        }
+                    },
+                    "401": {
+                        "description": "Auth is required",
+                        "schema": {
+                            "$ref": "#/definitions/models.Response"
+                        }
+                    },
+                    "403": {
+                        "description": "Not Authorized",
+                        "schema": {
+                            "$ref": "#/definitions/models.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/models.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/tenant/create_tenant_user": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Tenant Create required auth token",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Tenant"
+                ],
+                "summary": "Tenant Create",
+                "parameters": [
+                    {
                         "description": "TenantUserCreate",
                         "name": "TenantUserCreate",
                         "in": "body",
@@ -4728,7 +4798,7 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "Tenant creado con éxito",
+                        "description": "Tenant y Usuario creados con éxito",
                         "schema": {
                             "$ref": "#/definitions/models.Response"
                         }
@@ -4780,7 +4850,7 @@ const docTemplate = `{
                 "summary": "Tenant GetAll",
                 "responses": {
                     "200": {
-                        "description": "Workplaces obtenidos con éxito",
+                        "description": "Tenants obtenidos con éxito",
                         "schema": {
                             "allOf": [
                                 {
@@ -5898,13 +5968,16 @@ const docTemplate = `{
                 "is_active": {
                     "type": "boolean"
                 },
-                "name": {
-                    "type": "string"
+                "role": {
+                    "$ref": "#/definitions/models.Role"
                 },
                 "role_id": {
                     "type": "string"
                 },
                 "updated_at": {
+                    "type": "string"
+                },
+                "user_id": {
                     "type": "string"
                 }
             }
@@ -5951,6 +6024,38 @@ const docTemplate = `{
                 },
                 "name": {
                     "type": "string"
+                }
+            }
+        },
+        "models.Permission": {
+            "type": "object",
+            "properties": {
+                "group": {
+                    "type": "string",
+                    "enum": [
+                        "income",
+                        "expense",
+                        "user",
+                        "supplier",
+                        "product",
+                        "purchase",
+                        "attendance",
+                        "client",
+                        "vehicle",
+                        "resume"
+                    ]
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "roles": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.Role"
+                    }
                 }
             }
         },
@@ -6202,6 +6307,23 @@ const docTemplate = `{
                 },
                 "status": {
                     "type": "boolean"
+                }
+            }
+        },
+        "models.Role": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "permissions": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.Permission"
+                    }
                 }
             }
         },
