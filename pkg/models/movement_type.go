@@ -7,7 +7,7 @@ import (
 )
 
 type MovementType struct {
-	ID   string `gorm:"primaryKey" json:"id"`
+	ID   string `gorm:"primaryKey;size:36" json:"id"`
 	Name string `gorm:"not null" json:"name"`
 	IsIncome bool   `gorm:"not null" json:"is_income"`
 	CreatedAt time.Time `gorm:"autoCreateTime" json:"created_at"`	

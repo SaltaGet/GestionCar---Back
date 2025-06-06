@@ -7,10 +7,10 @@ import (
 )
 
 type Expense struct {
-	ID                  string              `gorm:"primaryKey" json:"id"`
+	ID                  string              `gorm:"primaryKey;size:36" json:"id"`
 	Details             string              `json:"details"`
-	SupplierID          string              `json:"supplier_id"`
-	MovementTypeID      string              `gorm:"not null" json:"movement_type_id"`
+	SupplierID          string              `gorm:"not null;size:36" json:"supplier_id"`
+	MovementTypeID      string              `gorm:"not null;size:36" json:"movement_type_id"`
 	Amount              float32             `gorm:"not null" json:"amount"`
 	CreatedAt           time.Time           `gorm:"autoCreateTime" json:"created_at"`
 	UpdatedAt           time.Time           `gorm:"autoUpdateTime" json:"updated_at"`

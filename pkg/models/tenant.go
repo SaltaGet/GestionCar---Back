@@ -8,13 +8,12 @@ import (
 )
 
 type Tenant struct {
-	ID          string       `gorm:"primaryKey" json:"id"`
+	ID          string       `gorm:"primaryKey;size:36" json:"id"`
 	Name        string       `gorm:"not null" json:"name"`
 	Address     string       `gorm:"not null" json:"address"`
 	Phone       string       `gorm:"not null" json:"phone"`
 	Email       string       `gorm:"Index;not null" json:"email"`
-	CuitPdv        string       `gorm:"uniqueIndex;not null" json:"cuit_pdv"`
-	// Identifier  string       `gorm:"Index;not null;unique" json:"identifier"`
+	CuitPdv     string       `gorm:"size:50;uniqueIndex;not null" json:"cuit_pdv"`
 	IsActive    bool         `gorm:"not null;default:true" json:"is_active"`
 	Connection  string       `gorm:"not null" json:"connection"`
 	CreatedAt   time.Time    `gorm:"autoCreateTime" json:"created_at"`
@@ -23,11 +22,11 @@ type Tenant struct {
 }
 
 type TenantCreate struct {
-	Name       string `json:"name" validate:"required"`
-	Address    string `json:"address" validate:"required"`
-	Phone      string `json:"phone" validate:"required"`
-	Email      string `json:"email" validate:"required,email"`
-	CuitPdv       string `json:"cuit" validate:"required"`
+	Name    string `json:"name" validate:"required"`
+	Address string `json:"address" validate:"required"`
+	Phone   string `json:"phone" validate:"required"`
+	Email   string `json:"email" validate:"required,email"`
+	CuitPdv string `json:"cuit" validate:"required"`
 	// Identifier string `json:"identifier" validate:"required"`
 }
 
@@ -46,11 +45,11 @@ func (t *TenantCreate) Validate() error {
 }
 
 type TenantUpdate struct {
-	ID         string `json:"id" validate:"required"`
-	Name       string `json:"name" validate:"required"`
-	Address    string `json:"address" validate:"required"`
-	Phone      string `json:"phone" validate:"required"`
-	Email      string `json:"email" validate:"required,email"`
+	ID      string `json:"id" validate:"required"`
+	Name    string `json:"name" validate:"required"`
+	Address string `json:"address" validate:"required"`
+	Phone   string `json:"phone" validate:"required"`
+	Email   string `json:"email" validate:"required,email"`
 }
 
 func (t *TenantUpdate) Validate() error {
@@ -81,7 +80,7 @@ type TenantResponse struct {
 
 type TenantUserCreate struct {
 	TenantCreate TenantCreate `json:"tenant_create" validate:"required"`
-	UserCreate    UserCreate    `json:"user_create" validate:"required"`
+	UserCreate   UserCreate   `json:"user_create" validate:"required"`
 }
 
 func (t *TenantUserCreate) Validate() error {

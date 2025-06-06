@@ -7,9 +7,9 @@ import (
 )
 
 type PurchaseProduct struct {
-	ID        string  `gorm:"primaryKey" json:"id"`
-	ProductID string  `gorm:"not null" json:"product_id"`
-	PurchaseOrderID string `gorm:"not null" json:"purchase_order_id"`
+	ID        string  `gorm:"primaryKey;size:36" json:"id"`
+	ProductID string  `gorm:"not null;size:36" json:"product_id"`
+	PurchaseOrderID string `gorm:"not null;size:36" json:"purchase_order_id"`
 	ExpiredAt string  `gorm:"not null" json:"expired_at"`
 	UnitPrice  float32 `gorm:"not null" json:"unit_price"`
 	Quantity   int     `gorm:"not null" json:"quantity"`

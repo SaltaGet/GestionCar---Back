@@ -8,8 +8,8 @@ import (
 
 // Asistencia empleados
 type Attendance struct {
-	ID         string          `gorm:"primaryKey" json:"id"`
-	EmployeeID string          `gorm:"not null" json:"employee_id"`
+	ID         string          `gorm:"primaryKey;size:36" json:"id"`
+	EmployeeID string          `gorm:"not null;size:36" json:"employee_id"`
 	Attendance string          `gorm:"not null" json:"role" validate:"oneof=presente tarde parcial ausente"`
 	Hours      int             `gorm:"not null;" json:"hours" validate:"max=24"`
 	Date       string          `gorm:"not null" json:"date"`

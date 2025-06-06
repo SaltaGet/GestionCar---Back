@@ -7,14 +7,14 @@ import (
 )
 
 type Income struct {
-	ID                  string              `gorm:"primaryKey" json:"id"`
+	ID                  string              `gorm:"primaryKey;size:36" json:"id"`
 	Ticket              string              `json:"ticket"`
 	Details             string              `json:"details"`
-	ClientID            string              `gorm:"not null" json:"client_id"`
-	VehicleID           string              `gorm:"not null" json:"vehicle_id"`
-	EmployeeID          string              `json:"employee_id"`
+	ClientID            string              `gorm:"not null;size:36" json:"client_id"`
+	VehicleID           string              `gorm:"not null;size:36" json:"vehicle_id"`
+	EmployeeID          string              `gorm:"not null;size:36" json:"employee_id"`
 	Amount              float32             `gorm:"not null" json:"amount"`
-	MovementTypeID      string              `gorm:"not null" json:"movement_type_id"`
+	MovementTypeID      string              `gorm:"not null;size:36" json:"movement_type_id"`
 	CreatedAt           time.Time           `gorm:"autoCreateTime" json:"created_at"`
 	UpdatedAt           time.Time           `gorm:"autoUpdateTime" json:"updated_at"`
 	Client              Client              `gorm:"foreignKey:ClientID" json:"client"`

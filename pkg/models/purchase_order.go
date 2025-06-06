@@ -7,11 +7,11 @@ import (
 )
 
 type PurchaseOrder struct {
-	ID            string `gorm:"not null;primaryKey" json:"id"`
+	ID            string `gorm:"not null;primaryKey;size:36" json:"id"`
 	OrderNumber   string `gorm:"not null" json:"order_number"`
 	OrderDate     string `gorm:"not null" json:"order_date"`
 	Amount        float32 `gorm:"not null" json:"amount"`
-	SupplierID string  `gorm:"not null" json:"supplier_id"`
+	SupplierID string  `gorm:"not null;size:36" json:"supplier_id"`
 	CreatedAt time.Time `gorm:"autoCreateTime" json:"created_at"`
 	UpdatedAt time.Time `gorm:"autoUpdateTime" json:"updated_at"`
 	Supplier      Supplier `gorm:"foreignKey:SupplierID;references:ID" json:"supplier"`

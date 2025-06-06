@@ -1,7 +1,6 @@
 package database
 
 import (
-	// "fmt"
 	"fmt"
 	"log"
 	"os"
@@ -12,55 +11,46 @@ import (
 	"github.com/DanielChachagua/GestionCar/pkg/models"
 	"github.com/DanielChachagua/GestionCar/pkg/utils"
 	"github.com/google/uuid"
-	"gorm.io/driver/sqlite"
+
+	//SQLITE
+	// "gorm.io/driver/sqlite"
+
+	//MYSQL
+	"database/sql"
+	_ "github.com/go-sql-driver/mysql"
+	"gorm.io/driver/mysql"
+
 	"gorm.io/gorm"
 )
 
-// func Connect(uri string) (*gorm.DB, error) {
-// 	db, err := gorm.Open(sqlite.Open(uri), &gorm.Config{})
+// SQLITE
 
+// var (
+// 	mainDB    *gorm.DB
+// 	tenantDBs = make(map[string]*gorm.DB)
+// 	mu        sync.RWMutex
+// )
+
+// func ConnectDB(uri string) (*gorm.DB, error) {
+// 	db, err := gorm.Open(sqlite.Open(uri), &gorm.Config{})
 // 	if err != nil {
 // 		return nil, err
 // 	}
 
-// 	db.AutoMigrate(
-// 		&models.User{},
-// 		&models.Client{},
-// 		&models.Vehicle{},
-// 		&models.Workplace{},
-// 		&models.Role{},
-// 		&models.AuditLog{},
-// 	)
+// 	sqlDB, err := db.DB()
+// 	if err != nil {
+// 		return nil, err
+// 	}
+
+// 	sqlDB.SetMaxOpenConns(50)
+// 	sqlDB.SetMaxIdleConns(25)
+// 	sqlDB.SetConnMaxLifetime(3 * time.Hour)
+// 	sqlDB.SetConnMaxIdleTime(30 * time.Minute)
 
 // 	db.AutoMigrate(
-// 		&models.AttendanceLaundry{},
-// 		&models.EmployeeLaundry{},
-// 		&models.ExpenseResumeLaundry{},
-// 		&models.ExpenseLaundry{},
-// 		&models.IncomeResumeLaundry{},
-// 		&models.IncomeLaundry{},
-// 		&models.IncomeServiceLaundry{},
-// 		&models.MovementTypeLaundry{},
-// 		&models.ProductLaundry{},
-// 		&models.PurchaseOrderLaundry{},
-// 		&models.PurchaseProductLaundry{},
-// 		&models.ServiceLaundry{},
-// 		&models.SupplierLaundry{},
-// 	)
-// 	db.AutoMigrate(
-// 		&models.AttendanceWorkshop{},
-// 		&models.EmployeeWorkshop{},
-// 		&models.ExpenseResumeWorkshop{},
-// 		&models.ExpenseWorkshop{},
-// 		&models.IncomeResumeWorkshop{},
-// 		&models.IncomeWorkshop{},
-// 		&models.IncomeServiceWorkshop{},
-// 		&models.MovementTypeWorkshop{},
-// 		&models.PartWorkshop{},
-// 		&models.PurchaseOrderWorkshop{},
-// 		&models.PurchasePartWorkshop{},
-// 		&models.ServiceWorkshop{},
-// 		&models.SupplierWorkshop{},
+// 		&models.User{},
+// 		&models.Tenant{},
+// 		&models.UserTenant{},
 // 	)
 
 // 	var email string
@@ -68,6 +58,7 @@ import (
 
 // 	if email != "" {
 // 		log.Println("El admin ya existe")
+// 		mainDB = db
 // 		return db, nil
 // 	}
 // 	newId := uuid.NewString()
@@ -78,34 +69,58 @@ import (
 // 		return nil, err
 // 	}
 
-// 	db.Create(&models.User{ID: newId, FirstName: os.Getenv("FIRSTNAME_ADMIN"), LastName: os.Getenv("LASTNAME_ADMIN"), Username: os.Getenv("ADMIN_USERNAME"), Email: os.Getenv("ADMIN_EMAIL"), Password: pass, Role: os.Getenv("ROLE_ADMIN")})
+// 	db.Create(&models.User{
+// 		ID:        newId,
+// 		FirstName: os.Getenv("FIRSTNAME_ADMIN"),
+// 		LastName:  os.Getenv("LASTNAME_ADMIN"),
+// 		Username:  os.Getenv("ADMIN_USERNAME"),
+// 		Email:     os.Getenv("ADMIN_EMAIL"),
+// 		Password:  pass,
+// 		IsAdmin:   true,
+// 	})
 
-// 	var laundry string
-// 	db.Model(&models.Workplace{}).Select("identifier").Where("identifier = ?", "laundry").Scan(&laundry)
+// 	mainDB = db
 
-// 	var workshop string
-// 	db.Model(&models.Workplace{}).Select("identifier").Where("identifier = ?", "workshop").Scan(&workshop)
-// 	if laundry == "" {
-// 		log.Println("Creando lavanderia")
-// 		db.Create(&models.Workplace{ID: uuid.NewString(), Name: "Lavanderia", Address: "Av. Los Olivos", Phone: "123456789", Email: "laundry@example.com", Identifier: "laundry"})
-// 	}
-// 	if workshop == "" {
-// 		log.Println("Creando taller")
-// 		db.Create(&models.Workplace{ID: uuid.NewString(), Name: "Taller", Address: "Av. Los Olivos", Phone: "123456789", Email: "workshop@example.com", Identifier: "workshop"})
-// 	}
+// 	return db, nil
+// }
 
-// 	var roles []models.Role
-// 	db.Model(&models.Role{}).Select("name").Where("name IN ?", []string{"super_admin", "admin", "admin_laundry", "admin_workshop", "employee_laundry", "employee_workshop"}).Scan(&roles)
-// 	if len(roles) == 0 {
-// 		log.Println("Creando roles")
-// 		db.Create(&models.Role{ID: uuid.NewString(), Name: "super_admin", Hierarchy: 1, Workplace: "all"})
-// 		db.Create(&models.Role{ID: uuid.NewString(), Name: "admin", Hierarchy: 2, Workplace: "all"})
-// 		db.Create(&models.Role{ID: uuid.NewString(), Name: "admin_laundry", Hierarchy: 3, Workplace: "laundry"})
-// 		db.Create(&models.Role{ID: uuid.NewString(), Name: "admin_workshop", Hierarchy: 3, Workplace: "workshop"})
-// 		db.Create(&models.Role{ID: uuid.NewString(), Name: "employee_laundry", Hierarchy: 4, Workplace: "laundry"})
-// 		db.Create(&models.Role{ID: uuid.NewString(), Name: "employee_workshop", Hierarchy: 4, Workplace: "workshop"})
+// func GetMainDB() *gorm.DB {
+// 	return mainDB
+// }
+
+// func GetTenantDB(uri string) (*gorm.DB, error) {
+// 	filePath := filePathFromURI(uri)
+// 	if _, err := os.Stat(filePath); os.IsNotExist(err) {
+// 		return nil, fmt.Errorf("la base de datos del tenant no existe: %s", uri)
 // 	}
 
+// 	mu.RLock()
+// 	db, ok := tenantDBs[uri]
+// 	mu.RUnlock()
+// 	if ok {
+// 		return db, nil
+// 	}
+
+// 	mu.Lock()
+// 	defer mu.Unlock()
+// 	if db, ok := tenantDBs[uri]; ok {
+// 		return db, nil
+// 	}
+
+// 	db, err := gorm.Open(sqlite.Open(uri), &gorm.Config{})
+// 	if err != nil {
+// 		return nil, err
+// 	}
+// 	sqlDB, err := db.DB()
+// 	if err != nil {
+// 		return nil, err
+// 	}
+// 	sqlDB.SetMaxOpenConns(50)
+// 	sqlDB.SetMaxIdleConns(25)
+// 	sqlDB.SetConnMaxLifetime(3 * time.Hour)
+// 	sqlDB.SetConnMaxIdleTime(30 * time.Minute)
+
+// 	tenantDBs[uri] = db
 // 	return db, nil
 // }
 
@@ -123,15 +138,46 @@ import (
 // 	return nil
 // }
 
-// #####################################################################
+// func CloseAllTenantDBs() {
+// 	mu.Lock()
+// 	defer mu.Unlock()
+
+// 	for tenant, db := range tenantDBs {
+// 		sqlDB, err := db.DB()
+// 		if err != nil {
+// 			log.Printf("No se pudo obtener la conexión de bajo nivel para tenant %s: %v", tenant, err)
+// 			continue
+// 		}
+// 		if err := sqlDB.Close(); err != nil {
+// 			log.Printf("Error cerrando conexión tenant %s: %v", tenant, err)
+// 		}
+// 		delete(tenantDBs, tenant)
+// 	}
+// }
+
+// func filePathFromURI(uri string) string {
+//     uri = strings.TrimPrefix(uri, "file:")
+//     if idx := strings.Index(uri, "?"); idx != -1 {
+//         uri = uri[:idx]
+//     }
+//     return uri
+// }
+
+// MYSQL
+
 var (
 	mainDB    *gorm.DB
 	tenantDBs = make(map[string]*gorm.DB)
 	mu        sync.RWMutex
 )
 
-func ConnectDB(uri string) (*gorm.DB, error) {
-	db, err := gorm.Open(sqlite.Open(uri), &gorm.Config{})
+func ConnectDB(dsn string) (*gorm.DB, error) {
+	err := EnsureDatabaseExists(dsn)
+	if err != nil {
+		log.Fatalf("No se pudo crear la base: %v", err)
+	}
+
+	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
 	if err != nil {
 		return nil, err
 	}
@@ -146,11 +192,13 @@ func ConnectDB(uri string) (*gorm.DB, error) {
 	sqlDB.SetConnMaxLifetime(3 * time.Hour)
 	sqlDB.SetConnMaxIdleTime(30 * time.Minute)
 
-	db.AutoMigrate(
-		&models.User{},
+	if err := db.AutoMigrate(
 		&models.Tenant{},
+		&models.User{},
 		&models.UserTenant{},
-	)
+	); err != nil {
+		log.Fatalf("Error en migración: %v", err)
+	}
 
 	var email string
 	db.Model(&models.User{}).Select("email").Where("email = ?", os.Getenv("ADMIN_EMAIL")).Scan(&email)
@@ -163,7 +211,6 @@ func ConnectDB(uri string) (*gorm.DB, error) {
 	newId := uuid.NewString()
 
 	pass, err := utils.HashPassword(os.Getenv("ADMIN_PASSWORD"))
-
 	if err != nil {
 		return nil, err
 	}
@@ -179,7 +226,6 @@ func ConnectDB(uri string) (*gorm.DB, error) {
 	})
 
 	mainDB = db
-
 	return db, nil
 }
 
@@ -187,14 +233,9 @@ func GetMainDB() *gorm.DB {
 	return mainDB
 }
 
-func GetTenantDB(uri string) (*gorm.DB, error) {
-	filePath := filePathFromURI(uri)
-	if _, err := os.Stat(filePath); os.IsNotExist(err) {
-		return nil, fmt.Errorf("la base de datos del tenant no existe: %s", uri)
-	}
-
+func GetTenantDB(dsn string) (*gorm.DB, error) {
 	mu.RLock()
-	db, ok := tenantDBs[uri]
+	db, ok := tenantDBs[dsn]
 	mu.RUnlock()
 	if ok {
 		return db, nil
@@ -202,39 +243,34 @@ func GetTenantDB(uri string) (*gorm.DB, error) {
 
 	mu.Lock()
 	defer mu.Unlock()
-	if db, ok := tenantDBs[uri]; ok {
+	if db, ok := tenantDBs[dsn]; ok {
 		return db, nil
 	}
 
-	db, err := gorm.Open(sqlite.Open(uri), &gorm.Config{})
+	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
 	if err != nil {
 		return nil, err
 	}
+
 	sqlDB, err := db.DB()
 	if err != nil {
 		return nil, err
 	}
+
 	sqlDB.SetMaxOpenConns(50)
 	sqlDB.SetMaxIdleConns(25)
 	sqlDB.SetConnMaxLifetime(3 * time.Hour)
 	sqlDB.SetConnMaxIdleTime(30 * time.Minute)
 
-	tenantDBs[uri] = db
+	tenantDBs[dsn] = db
 	return db, nil
 }
-
-// func getTenantURI(tenantID string) string {
-// 	// Implementa tu lógica para obtener la URI del tenant
-// 	// Por ahora usamos la misma que la principal
-// 	return os.Getenv("URI_DB")
-// }
 
 func CloseDB(db *gorm.DB) error {
 	sqlDB, err := db.DB()
 	if err != nil {
 		log.Fatal("No se pudo obtener la conexión de bajo nivel:", err)
 	}
-
 	if sqlDB != nil {
 		if err := sqlDB.Close(); err != nil {
 			log.Fatal("Error al cerrar la conexión:", err)
@@ -260,11 +296,29 @@ func CloseAllTenantDBs() {
 	}
 }
 
-func filePathFromURI(uri string) string {
-    uri = strings.TrimPrefix(uri, "file:")
-    if idx := strings.Index(uri, "?"); idx != -1 {
-        uri = uri[:idx]
-    }
-    return uri
-}
+func EnsureDatabaseExists(dsn string) error {
+	// Extraer nombre de la base
+	parts := strings.Split(dsn, "/")
+	if len(parts) < 2 {
+		return fmt.Errorf("DSN inválido: %s", dsn)
+	}
+	dbNameAndParams := parts[1]
+	dbName := strings.Split(dbNameAndParams, "?")[0]
 
+	// Quitar el nombre de la base del DSN
+	dsnWithoutDB := strings.Split(dsn, "/")[0] + "/?charset=utf8mb4&parseTime=True&loc=Local"
+
+	// Conectar con MySQL sin base específica
+	db, err := sql.Open("mysql", dsnWithoutDB)
+	if err != nil {
+		return fmt.Errorf("error al conectar sin base: %w", err)
+	}
+	defer db.Close()
+
+	// Crear la base si no existe
+	_, err = db.Exec(fmt.Sprintf("CREATE DATABASE IF NOT EXISTS `%s` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci", dbName))
+	if err != nil {
+		return fmt.Errorf("error al crear base %s: %w", dbName, err)
+	}
+	return nil
+}

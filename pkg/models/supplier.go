@@ -8,7 +8,7 @@ import (
 
 // Proveedor
 type Supplier struct {
-	ID        string `gorm:"primaryKey" json:"id"`
+	ID        string `gorm:"primaryKey;size:36" json:"id"`
 	Name      string `gorm:"not null" json:"name"`
 	Address   string `gorm:"not null" json:"address"`
 	Phone     string `gorm:"not null" json:"phone"`

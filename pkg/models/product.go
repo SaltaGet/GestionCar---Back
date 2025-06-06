@@ -7,7 +7,7 @@ import (
 )
 
 type Product struct {
-	ID         string    `gorm:"primaryKey" json:"id"`
+	ID         string    `gorm:"primaryKey;size:36" json:"id"`
 	Identifier string    `gorm:"not null;unique" json:"identifier"`
 	Name       string    `gorm:"not null" json:"name"`
 	Stock      int32     `gorm:"not null;min:0;default:0" json:"stock"`

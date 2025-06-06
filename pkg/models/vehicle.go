@@ -7,13 +7,13 @@ import (
 )
 
 type Vehicle struct {
-	ID   string `gorm:"primaryKey" json:"id"`
+	ID   string `gorm:"primaryKey;size:36" json:"id"`
 	Brand string `gorm:"not null" json:"brand"`
 	Model string ` json:"model"`
 	Color string `gorm:"not null" json:"color"`
 	Year  string `json:"year"`
 	Domain string `gorm:"not null;unique" json:"domain"`
-	ClientID string `gorm:"not null" json:"client_id"`
+	ClientID string `gorm:"not null;size:36" json:"client_id"`
 	CreatedAt time.Time `gorm:"autoCreateTime" json:"created_at"`
 	UpdatedAt time.Time `gorm:"autoUpdateTime" json:"updated_at"`
 	Client Client `gorm:"foreignKey:ClientID" json:"client"`

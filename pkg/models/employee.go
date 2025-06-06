@@ -7,7 +7,7 @@ import (
 )
 
 type Employee struct {
-	ID   string `gorm:"primaryKey" json:"id"`
+	ID   string `gorm:"primaryKey;size:36" json:"id"`
 	Name string `gorm:"not null" json:"name"`
 	Phone string `gorm:"not null" json:"phone"`
 	Email string `gorm:"not null" json:"email"`
