@@ -34,7 +34,7 @@ func main() {
 	fmt.Println("Inicio app")
 	err := godotenv.Load()
 	if err != nil {
-		log.Fatal("Error loading .env file")
+		log.Fatalf("Error loading .env file: %v", err)
 	}
 
 	db, err := database.ConnectDB(os.Getenv("URI_DB"))
@@ -56,7 +56,7 @@ func main() {
 	}))
 
 	appDependencies := dependencies.NewApplication(db)
-	tenantDependencies := dependencies.TenantDBRepository(nil)
+	tenantDependencies := dependencies.TenantDBRepository(nil, db)
 
 	app.Use(middleware.LoggingMiddleware)
 	app.Use(middleware.InjectApp(appDependencies, tenantDependencies))
