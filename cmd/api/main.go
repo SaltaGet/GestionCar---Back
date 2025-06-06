@@ -11,7 +11,6 @@ import (
 	_ "github.com/DanielChachagua/GestionCar/cmd/api/docs"
 	"github.com/DanielChachagua/GestionCar/cmd/api/jobs"
 	"github.com/DanielChachagua/GestionCar/cmd/api/middleware"
-	// "github.com/DanielChachagua/GestionCar/pkg/repositories"
 	"github.com/DanielChachagua/GestionCar/cmd/api/routes"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
