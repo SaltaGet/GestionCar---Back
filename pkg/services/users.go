@@ -5,6 +5,15 @@ import (
 	"github.com/DanielChachagua/GestionCar/pkg/utils"
 )
 
+func (u *UserService) UserGetByListID(ids []string) (*[]models.UserDTO, error) {
+	users, err := u.UserRepository.UserGetByListID(ids)
+	if err != nil {
+		return nil, models.ErrorResponse(500, "Error al obtener los usuarios", err)
+	}
+
+	return users, nil
+}
+
 func (u *UserService) UserCreate(userCreate *models.UserCreate) (string, error) {
 	existingUser, err := u.UserRepository.UserGetExistByUsernameEmail(userCreate.Username, userCreate.Email)
 	if err != nil {

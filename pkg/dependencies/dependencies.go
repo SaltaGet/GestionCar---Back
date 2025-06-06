@@ -50,13 +50,7 @@ type TenantApplication struct {
 	PermissionController *controllers.PermissionController
 }
 
-func TenantDBRepository(db *gorm.DB) *TenantApplication {
-	// tenantRepo := &repositories.TenantRepository{DB: db,}
-	
-	// memberService := &services.MemberService{MemberRepository: tenantRepo}
-	// roleService := &services.RoleService{RoleRepository: tenantRepo}
-	// permissionService := &services.PermissionService{PermissionRepository: tenantRepo}
-
+func TenantDBRepository(db *gorm.DB, mainDB *gorm.DB) *TenantApplication {
 	tenantRepo := &repositories.TenantRepository{DB: db,}
 	
 	attendanceService := &services.AttendanceService{AttendanceRepository: tenantRepo}
@@ -64,7 +58,7 @@ func TenantDBRepository(db *gorm.DB) *TenantApplication {
 	employeeService := &services.EmployeeService{EmployeeRepository: tenantRepo}
 	expenseService := &services.ExpenseService{ExpenseRepository: tenantRepo}
 	incomeService := &services.IncomeService{IncomeRepository: tenantRepo}
-	memberService := &services.MemberService{MemberRepository: tenantRepo}
+	memberService := &services.MemberService{MemberRepository: tenantRepo, UserRepository: nil}
 	movementService := &services.MovementTypeService{MovementTypeRepository: tenantRepo}
 	permissionService := &services.PermissionService{PermissionRepository: tenantRepo}
 	productService := &services.ProductService{ProductRepository: tenantRepo}
@@ -97,15 +91,16 @@ func TenantDBRepository(db *gorm.DB) *TenantApplication {
 }
 
 
-func (app *TenantApplication) SetDBTenantRepository(db *gorm.DB) {
+func (app *TenantApplication) SetDBTenantRepository(db *gorm.DB, mainDB *gorm.DB) {
 	tenantRepo := &repositories.TenantRepository{DB: db,}
+	mainRepo := &repositories.MainRepository{DB: mainDB}
 	
 	attendanceService := &services.AttendanceService{AttendanceRepository: tenantRepo}
 	clientService := &services.ClientService{ClientRepository: tenantRepo}
 	employeeService := &services.EmployeeService{EmployeeRepository: tenantRepo}
 	expenseService := &services.ExpenseService{ExpenseRepository: tenantRepo}
 	incomeService := &services.IncomeService{IncomeRepository: tenantRepo}
-	memberService := &services.MemberService{MemberRepository: tenantRepo}
+	memberService := &services.MemberService{MemberRepository: tenantRepo, UserRepository: mainRepo}
 	movementService := &services.MovementTypeService{MovementTypeRepository: tenantRepo}
 	permissionService := &services.PermissionService{PermissionRepository: tenantRepo}
 	productService := &services.ProductService{ProductRepository: tenantRepo}

@@ -157,6 +157,7 @@ func ConnectDB(uri string) (*gorm.DB, error) {
 
 	if email != "" {
 		log.Println("El admin ya existe")
+		mainDB = db
 		return db, nil
 	}
 	newId := uuid.NewString()
@@ -180,6 +181,10 @@ func ConnectDB(uri string) (*gorm.DB, error) {
 	mainDB = db
 
 	return db, nil
+}
+
+func GetMainDB() *gorm.DB {
+	return mainDB
 }
 
 func GetTenantDB(uri string) (*gorm.DB, error) {

@@ -32,7 +32,7 @@ func AuthMiddleware() fiber.Handler {
 
 		userId := claims.(jwt.MapClaims)["id"].(string)
 		user, err := deps.AuthController.AuthService.CurrentUser(userId)
-		
+
 		if err != nil {
 			if errResp, ok := err.(*models.ErrorStruc); ok {
 				return c.Status(errResp.StatusCode).JSON(models.Response{
@@ -47,7 +47,7 @@ func AuthMiddleware() fiber.Handler {
 				Message: "Error interno",
 			})
 		}
-		
+
 		tenantID, ok := claims.(jwt.MapClaims)["tenant_id"].(string)
 		if !ok {
 			tenantID = ""
@@ -83,13 +83,14 @@ func AuthMiddleware() fiber.Handler {
 				})
 			}
 
+			mainDB := database.GetMainDB()
+
 			ctx := c.UserContext()
 			depsTenant := ctx.Value(key.TenantDBKey).(*dependencies.TenantApplication)
-			depsTenant.SetDBTenantRepository(db)
+			depsTenant.SetDBTenantRepository(db, mainDB)
 			c.Locals("tenant", tenant)
-
 		}
-		
+
 		c.Locals("user", user)
 
 		return c.Next()

@@ -19,6 +19,21 @@ func (r *MainRepository) UserGetByID(id string) (*models.User, error) {
 	return &user, nil
 }
 
+func (r *MainRepository) UserGetByListID(ids []string) (*[]models.UserDTO, error) {
+	var users []models.UserDTO
+
+	err := r.DB.
+		Model(&models.User{}).
+		Select("id, first_name, last_name, username, email").
+		Where("id IN ?", ids).
+		Scan(&users).Error
+	if err != nil {
+		return nil, err
+	}
+
+	return &users, nil
+}
+
 func (r *MainRepository) UserGetByUsername(username string) (*models.User, error) {
 	var user models.User
 	err := r.DB.Where("username = ?", username).First(&user).Error

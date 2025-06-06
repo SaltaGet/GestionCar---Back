@@ -26,8 +26,6 @@ type UserDTO struct {
 	LastName  string    `json:"last_name"`
 	Username  string    `json:"username"`
 	Email     string    `json:"email"`
-	CreatedAt time.Time `json:"created_at"`
-	UpdatedAt time.Time `json:"updated_at"`
 }
 
 type UserCreate struct {
@@ -50,7 +48,6 @@ type UserUpdate struct {
 	Username  string `json:"username" validate:"required"`
 	Email     string `json:"email" validate:"required,email"`
 	Password  string `json:"password" validate:"required"`
-	Role      string `json:"role" validate:"required,oneof= admin admin_laundry admin_workshop employee_laundry employee_workshop"`
 }
 
 func (u *UserUpdate) Validate() error {
