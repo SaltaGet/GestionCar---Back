@@ -67,3 +67,15 @@ func (r *MainRepository) UserCreate(user *models.UserCreate) (string, error) {
 	}
 	return newID, nil
 }
+
+
+func (m *MainRepository) UserTenantAdd(userID, tenantID string) (err error) {
+	if err := m.DB.Create(&models.UserTenant{
+		UserID: userID,
+		TenantID: tenantID,
+	}).Error; err != nil {
+		return err
+	}
+
+	return nil
+}

@@ -3,11 +3,16 @@ package ports
 import "github.com/DanielChachagua/GestionCar/pkg/models"
 
 type MemberRepository interface {
-	MemeberGetPermissionByUserID(userID string) (member *models.Member, err error)
+	MemberGetByID(id string) (member *models.Member, err error)
+	MemberAdd(memberAdd *models.MemberAdd) (id string, err error)
+	MemberGetPermissionByUserID(userID string) (member *models.Member, err error)
 	MemberGetAll() (members *[]models.Member, err error)
+	MemberDelete(id string) (err error)
 }
 
 type MemberService interface {
-	MemeberGetPermissionByUserID(userID string) (permission *models.Member, err error)
+	MemberGetByID(id string) (member *models.MemberResponse, err error)
+	MemberAdd(memberAdd *models.MemberAdd, tenantID, userID string) (id string, err error)
+	MemberGetPermissionByUserID(userID string) (permission *models.Member, err error)
 	MemberGetAll() (members *[]models.MemberResponse, err error)
 }

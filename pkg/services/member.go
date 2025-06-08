@@ -1,6 +1,7 @@
 package services
 
 import (
+	"fmt"
 	"log"
 	"runtime/debug"
 
@@ -54,11 +55,54 @@ func (m *MemberService) MemberGetAll() (*[]models.MemberResponse, error) {
 }
 
 
-func (m *MemberService) MemeberGetPermissionByUserID(userID string) (*models.Member, error) {
-	member, err := m.MemberRepository.MemeberGetPermissionByUserID(userID)
+func (m *MemberService) MemberGetPermissionByUserID(userID string) (*models.Member, error) {
+	member, err := m.MemberRepository.MemberGetPermissionByUserID(userID)
 	if err != nil {
 		return nil, err
 	}
 
 	return member, nil
+}
+
+func (m *MemberService) MemberAdd(memberAdd *models.MemberAdd, tenantID, userID string) (string, error) { 
+	id, err := m.MemberRepository.MemberAdd(memberAdd) 
+	if err != nil {
+		return "", err
+	}
+
+	if err := m.UserRepository.UserTenantAdd(memberAdd.UserID, tenantID); err != nil {
+		if delErr := m.MemberRepository.MemberDelete(id); delErr != nil {
+        return "", fmt.Errorf("UserTenantAdd failed: %v, rollback also failed: %v", err, delErr)
+    }
+		return "", err
+	}
+
+	return id, nil
+}
+
+func (m *MemberService) MemberGetByID(id string) (*models.MemberResponse, error) {
+	member, err := m.MemberRepository.MemberGetByID(id)
+	if err != nil {
+		return nil, err
+	}
+	
+	user, err := m.UserRepository.UserGetByID(member.UserID)
+	if err != nil {
+		return nil, err
+	}
+
+	return &models.MemberResponse{
+		ID:       member.ID,
+		UserID:   member.UserID,
+		RoleID:   member.RoleID,
+		IsActive: member.IsActive,
+		Role:     member.Role,
+		UserData: models.UserDTO{
+			ID:       user.ID,
+			FirstName: user.FirstName,
+			LastName: user.LastName,
+			Username: user.Username,
+			Email:    user.Email,
+		},
+	}, nil
 }

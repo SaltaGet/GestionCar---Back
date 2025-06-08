@@ -28,7 +28,7 @@ func RolePermissionMiddleware(permissionName string) fiber.Handler {
 			})
 		}
 
-		member, err := depsTenant.MemberController.MemberService.MemeberGetPermissionByUserID(user.ID)
+		member, err := depsTenant.MemberController.MemberService.MemberGetPermissionByUserID(user.ID)
 		if err != nil {
 			if errResp, ok := err.(*models.ErrorStruc); ok {
 				return c.Status(errResp.StatusCode).JSON(models.Response{

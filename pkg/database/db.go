@@ -13,157 +13,17 @@ import (
 	"github.com/google/uuid"
 
 	//SQLITE
-	// "gorm.io/driver/sqlite"
+	"gorm.io/driver/sqlite"
 
 	//MYSQL
-	"database/sql"
-	_ "github.com/go-sql-driver/mysql"
-	"gorm.io/driver/mysql"
+	// "database/sql"
+	// _ "github.com/go-sql-driver/mysql"
+	// "gorm.io/driver/mysql"
 
 	"gorm.io/gorm"
 )
 
 // SQLITE
-
-// var (
-// 	mainDB    *gorm.DB
-// 	tenantDBs = make(map[string]*gorm.DB)
-// 	mu        sync.RWMutex
-// )
-
-// func ConnectDB(uri string) (*gorm.DB, error) {
-// 	db, err := gorm.Open(sqlite.Open(uri), &gorm.Config{})
-// 	if err != nil {
-// 		return nil, err
-// 	}
-
-// 	sqlDB, err := db.DB()
-// 	if err != nil {
-// 		return nil, err
-// 	}
-
-// 	sqlDB.SetMaxOpenConns(50)
-// 	sqlDB.SetMaxIdleConns(25)
-// 	sqlDB.SetConnMaxLifetime(3 * time.Hour)
-// 	sqlDB.SetConnMaxIdleTime(30 * time.Minute)
-
-// 	db.AutoMigrate(
-// 		&models.User{},
-// 		&models.Tenant{},
-// 		&models.UserTenant{},
-// 	)
-
-// 	var email string
-// 	db.Model(&models.User{}).Select("email").Where("email = ?", os.Getenv("ADMIN_EMAIL")).Scan(&email)
-
-// 	if email != "" {
-// 		log.Println("El admin ya existe")
-// 		mainDB = db
-// 		return db, nil
-// 	}
-// 	newId := uuid.NewString()
-
-// 	pass, err := utils.HashPassword(os.Getenv("ADMIN_PASSWORD"))
-
-// 	if err != nil {
-// 		return nil, err
-// 	}
-
-// 	db.Create(&models.User{
-// 		ID:        newId,
-// 		FirstName: os.Getenv("FIRSTNAME_ADMIN"),
-// 		LastName:  os.Getenv("LASTNAME_ADMIN"),
-// 		Username:  os.Getenv("ADMIN_USERNAME"),
-// 		Email:     os.Getenv("ADMIN_EMAIL"),
-// 		Password:  pass,
-// 		IsAdmin:   true,
-// 	})
-
-// 	mainDB = db
-
-// 	return db, nil
-// }
-
-// func GetMainDB() *gorm.DB {
-// 	return mainDB
-// }
-
-// func GetTenantDB(uri string) (*gorm.DB, error) {
-// 	filePath := filePathFromURI(uri)
-// 	if _, err := os.Stat(filePath); os.IsNotExist(err) {
-// 		return nil, fmt.Errorf("la base de datos del tenant no existe: %s", uri)
-// 	}
-
-// 	mu.RLock()
-// 	db, ok := tenantDBs[uri]
-// 	mu.RUnlock()
-// 	if ok {
-// 		return db, nil
-// 	}
-
-// 	mu.Lock()
-// 	defer mu.Unlock()
-// 	if db, ok := tenantDBs[uri]; ok {
-// 		return db, nil
-// 	}
-
-// 	db, err := gorm.Open(sqlite.Open(uri), &gorm.Config{})
-// 	if err != nil {
-// 		return nil, err
-// 	}
-// 	sqlDB, err := db.DB()
-// 	if err != nil {
-// 		return nil, err
-// 	}
-// 	sqlDB.SetMaxOpenConns(50)
-// 	sqlDB.SetMaxIdleConns(25)
-// 	sqlDB.SetConnMaxLifetime(3 * time.Hour)
-// 	sqlDB.SetConnMaxIdleTime(30 * time.Minute)
-
-// 	tenantDBs[uri] = db
-// 	return db, nil
-// }
-
-// func CloseDB(db *gorm.DB) error {
-// 	sqlDB, err := db.DB()
-// 	if err != nil {
-// 		log.Fatal("No se pudo obtener la conexión de bajo nivel:", err)
-// 	}
-
-// 	if sqlDB != nil {
-// 		if err := sqlDB.Close(); err != nil {
-// 			log.Fatal("Error al cerrar la conexión:", err)
-// 		}
-// 	}
-// 	return nil
-// }
-
-// func CloseAllTenantDBs() {
-// 	mu.Lock()
-// 	defer mu.Unlock()
-
-// 	for tenant, db := range tenantDBs {
-// 		sqlDB, err := db.DB()
-// 		if err != nil {
-// 			log.Printf("No se pudo obtener la conexión de bajo nivel para tenant %s: %v", tenant, err)
-// 			continue
-// 		}
-// 		if err := sqlDB.Close(); err != nil {
-// 			log.Printf("Error cerrando conexión tenant %s: %v", tenant, err)
-// 		}
-// 		delete(tenantDBs, tenant)
-// 	}
-// }
-
-// func filePathFromURI(uri string) string {
-//     uri = strings.TrimPrefix(uri, "file:")
-//     if idx := strings.Index(uri, "?"); idx != -1 {
-//         uri = uri[:idx]
-//     }
-//     return uri
-// }
-
-// MYSQL
 
 var (
 	mainDB    *gorm.DB
@@ -171,13 +31,8 @@ var (
 	mu        sync.RWMutex
 )
 
-func ConnectDB(dsn string) (*gorm.DB, error) {
-	err := EnsureDatabaseExists(dsn)
-	if err != nil {
-		log.Fatalf("No se pudo crear la base: %v", err)
-	}
-
-	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
+func ConnectDB(uri string) (*gorm.DB, error) {
+	db, err := gorm.Open(sqlite.Open(uri), &gorm.Config{})
 	if err != nil {
 		return nil, err
 	}
@@ -192,13 +47,11 @@ func ConnectDB(dsn string) (*gorm.DB, error) {
 	sqlDB.SetConnMaxLifetime(3 * time.Hour)
 	sqlDB.SetConnMaxIdleTime(30 * time.Minute)
 
-	if err := db.AutoMigrate(
-		&models.Tenant{},
+	db.AutoMigrate(
 		&models.User{},
+		&models.Tenant{},
 		&models.UserTenant{},
-	); err != nil {
-		log.Fatalf("Error en migración: %v", err)
-	}
+	)
 
 	var email string
 	db.Model(&models.User{}).Select("email").Where("email = ?", os.Getenv("ADMIN_EMAIL")).Scan(&email)
@@ -211,6 +64,7 @@ func ConnectDB(dsn string) (*gorm.DB, error) {
 	newId := uuid.NewString()
 
 	pass, err := utils.HashPassword(os.Getenv("ADMIN_PASSWORD"))
+
 	if err != nil {
 		return nil, err
 	}
@@ -226,6 +80,7 @@ func ConnectDB(dsn string) (*gorm.DB, error) {
 	})
 
 	mainDB = db
+
 	return db, nil
 }
 
@@ -233,9 +88,14 @@ func GetMainDB() *gorm.DB {
 	return mainDB
 }
 
-func GetTenantDB(dsn string) (*gorm.DB, error) {
+func GetTenantDB(uri string) (*gorm.DB, error) {
+	filePath := filePathFromURI(uri)
+	if _, err := os.Stat(filePath); os.IsNotExist(err) {
+		return nil, fmt.Errorf("la base de datos del tenant no existe: %s", uri)
+	}
+
 	mu.RLock()
-	db, ok := tenantDBs[dsn]
+	db, ok := tenantDBs[uri]
 	mu.RUnlock()
 	if ok {
 		return db, nil
@@ -243,26 +103,24 @@ func GetTenantDB(dsn string) (*gorm.DB, error) {
 
 	mu.Lock()
 	defer mu.Unlock()
-	if db, ok := tenantDBs[dsn]; ok {
+	if db, ok := tenantDBs[uri]; ok {
 		return db, nil
 	}
 
-	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
+	db, err := gorm.Open(sqlite.Open(uri), &gorm.Config{})
 	if err != nil {
 		return nil, err
 	}
-
 	sqlDB, err := db.DB()
 	if err != nil {
 		return nil, err
 	}
-
 	sqlDB.SetMaxOpenConns(50)
 	sqlDB.SetMaxIdleConns(25)
 	sqlDB.SetConnMaxLifetime(3 * time.Hour)
 	sqlDB.SetConnMaxIdleTime(30 * time.Minute)
 
-	tenantDBs[dsn] = db
+	tenantDBs[uri] = db
 	return db, nil
 }
 
@@ -271,6 +129,7 @@ func CloseDB(db *gorm.DB) error {
 	if err != nil {
 		log.Fatal("No se pudo obtener la conexión de bajo nivel:", err)
 	}
+
 	if sqlDB != nil {
 		if err := sqlDB.Close(); err != nil {
 			log.Fatal("Error al cerrar la conexión:", err)
@@ -296,29 +155,170 @@ func CloseAllTenantDBs() {
 	}
 }
 
-func EnsureDatabaseExists(dsn string) error {
-	// Extraer nombre de la base
-	parts := strings.Split(dsn, "/")
-	if len(parts) < 2 {
-		return fmt.Errorf("DSN inválido: %s", dsn)
-	}
-	dbNameAndParams := parts[1]
-	dbName := strings.Split(dbNameAndParams, "?")[0]
-
-	// Quitar el nombre de la base del DSN
-	dsnWithoutDB := strings.Split(dsn, "/")[0] + "/?charset=utf8mb4&parseTime=True&loc=Local"
-
-	// Conectar con MySQL sin base específica
-	db, err := sql.Open("mysql", dsnWithoutDB)
-	if err != nil {
-		return fmt.Errorf("error al conectar sin base: %w", err)
-	}
-	defer db.Close()
-
-	// Crear la base si no existe
-	_, err = db.Exec(fmt.Sprintf("CREATE DATABASE IF NOT EXISTS `%s` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci", dbName))
-	if err != nil {
-		return fmt.Errorf("error al crear base %s: %w", dbName, err)
-	}
-	return nil
+func filePathFromURI(uri string) string {
+    uri = strings.TrimPrefix(uri, "file:")
+    if idx := strings.Index(uri, "?"); idx != -1 {
+        uri = uri[:idx]
+    }
+    return uri
 }
+
+// // MYSQL
+
+// var (
+// 	mainDB    *gorm.DB
+// 	tenantDBs = make(map[string]*gorm.DB)
+// 	mu        sync.RWMutex
+// )
+
+// func ConnectDB(dsn string) (*gorm.DB, error) {
+// 	err := EnsureDatabaseExists(dsn)
+// 	if err != nil {
+// 		log.Fatalf("No se pudo crear la base: %v", err)
+// 	}
+
+// 	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
+// 	if err != nil {
+// 		return nil, err
+// 	}
+
+// 	sqlDB, err := db.DB()
+// 	if err != nil {
+// 		return nil, err
+// 	}
+
+// 	sqlDB.SetMaxOpenConns(50)
+// 	sqlDB.SetMaxIdleConns(25)
+// 	sqlDB.SetConnMaxLifetime(3 * time.Hour)
+// 	sqlDB.SetConnMaxIdleTime(30 * time.Minute)
+
+// 	if err := db.AutoMigrate(
+// 		&models.Tenant{},
+// 		&models.User{},
+// 		&models.UserTenant{},
+// 	); err != nil {
+// 		log.Fatalf("Error en migración: %v", err)
+// 	}
+
+// 	var email string
+// 	db.Model(&models.User{}).Select("email").Where("email = ?", os.Getenv("ADMIN_EMAIL")).Scan(&email)
+
+// 	if email != "" {
+// 		log.Println("El admin ya existe")
+// 		mainDB = db
+// 		return db, nil
+// 	}
+// 	newId := uuid.NewString()
+
+// 	pass, err := utils.HashPassword(os.Getenv("ADMIN_PASSWORD"))
+// 	if err != nil {
+// 		return nil, err
+// 	}
+
+// 	db.Create(&models.User{
+// 		ID:        newId,
+// 		FirstName: os.Getenv("FIRSTNAME_ADMIN"),
+// 		LastName:  os.Getenv("LASTNAME_ADMIN"),
+// 		Username:  os.Getenv("ADMIN_USERNAME"),
+// 		Email:     os.Getenv("ADMIN_EMAIL"),
+// 		Password:  pass,
+// 		IsAdmin:   true,
+// 	})
+
+// 	mainDB = db
+// 	return db, nil
+// }
+
+// func GetMainDB() *gorm.DB {
+// 	return mainDB
+// }
+
+// func GetTenantDB(dsn string) (*gorm.DB, error) {
+// 	mu.RLock()
+// 	db, ok := tenantDBs[dsn]
+// 	mu.RUnlock()
+// 	if ok {
+// 		return db, nil
+// 	}
+
+// 	mu.Lock()
+// 	defer mu.Unlock()
+// 	if db, ok := tenantDBs[dsn]; ok {
+// 		return db, nil
+// 	}
+
+// 	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
+// 	if err != nil {
+// 		return nil, err
+// 	}
+
+// 	sqlDB, err := db.DB()
+// 	if err != nil {
+// 		return nil, err
+// 	}
+
+// 	sqlDB.SetMaxOpenConns(50)
+// 	sqlDB.SetMaxIdleConns(25)
+// 	sqlDB.SetConnMaxLifetime(3 * time.Hour)
+// 	sqlDB.SetConnMaxIdleTime(30 * time.Minute)
+
+// 	tenantDBs[dsn] = db
+// 	return db, nil
+// }
+
+// func CloseDB(db *gorm.DB) error {
+// 	sqlDB, err := db.DB()
+// 	if err != nil {
+// 		log.Fatal("No se pudo obtener la conexión de bajo nivel:", err)
+// 	}
+// 	if sqlDB != nil {
+// 		if err := sqlDB.Close(); err != nil {
+// 			log.Fatal("Error al cerrar la conexión:", err)
+// 		}
+// 	}
+// 	return nil
+// }
+
+// func CloseAllTenantDBs() {
+// 	mu.Lock()
+// 	defer mu.Unlock()
+
+// 	for tenant, db := range tenantDBs {
+// 		sqlDB, err := db.DB()
+// 		if err != nil {
+// 			log.Printf("No se pudo obtener la conexión de bajo nivel para tenant %s: %v", tenant, err)
+// 			continue
+// 		}
+// 		if err := sqlDB.Close(); err != nil {
+// 			log.Printf("Error cerrando conexión tenant %s: %v", tenant, err)
+// 		}
+// 		delete(tenantDBs, tenant)
+// 	}
+// }
+
+// func EnsureDatabaseExists(dsn string) error {
+// 	// Extraer nombre de la base
+// 	parts := strings.Split(dsn, "/")
+// 	if len(parts) < 2 {
+// 		return fmt.Errorf("DSN inválido: %s", dsn)
+// 	}
+// 	dbNameAndParams := parts[1]
+// 	dbName := strings.Split(dbNameAndParams, "?")[0]
+
+// 	// Quitar el nombre de la base del DSN
+// 	dsnWithoutDB := strings.Split(dsn, "/")[0] + "/?charset=utf8mb4&parseTime=True&loc=Local"
+
+// 	// Conectar con MySQL sin base específica
+// 	db, err := sql.Open("mysql", dsnWithoutDB)
+// 	if err != nil {
+// 		return fmt.Errorf("error al conectar sin base: %w", err)
+// 	}
+// 	defer db.Close()
+
+// 	// Crear la base si no existe
+// 	_, err = db.Exec(fmt.Sprintf("CREATE DATABASE IF NOT EXISTS `%s` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci", dbName))
+// 	if err != nil {
+// 		return fmt.Errorf("error al crear base %s: %w", dbName, err)
+// 	}
+// 	return nil
+// }

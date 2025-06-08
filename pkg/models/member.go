@@ -21,3 +21,8 @@ type MemberResponse struct {
 	Role     Role    `json:"role"`
 	UserData UserDTO `json:"user_data"`
 }
+
+type MemberAdd struct {
+	UserID string `json:"user_id"`
+	RoleID string `json:"role_id"`
+}

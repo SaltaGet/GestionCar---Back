@@ -9,7 +9,7 @@ import (
 	"github.com/DanielChachagua/GestionCar/pkg/database"
 	"github.com/DanielChachagua/GestionCar/pkg/dependencies"
 	_ "github.com/DanielChachagua/GestionCar/cmd/api/docs"
-	"github.com/DanielChachagua/GestionCar/cmd/api/jobs"
+	// "github.com/DanielChachagua/GestionCar/cmd/api/jobs"
 	"github.com/DanielChachagua/GestionCar/cmd/api/middleware"
 	"github.com/DanielChachagua/GestionCar/cmd/api/routes"
 	"github.com/gofiber/fiber/v2"
@@ -17,7 +17,7 @@ import (
 	"github.com/gofiber/fiber/v2/middleware/limiter"
 	"github.com/gofiber/swagger"
 	"github.com/joho/godotenv"
-	"github.com/robfig/cron/v3"
+	// "github.com/robfig/cron/v3"
 )
 
 //	@title						APP GESTIONCAR
@@ -77,12 +77,31 @@ func main() {
 
 	app.Get("/swagger/*", swagger.HandlerDefault)
 
-	c := cron.New()
+	// c := cron.New()
 
-	c.AddFunc("0 0 1 * *", jobs.Backup)
-	c.AddFunc("0 0 * * 0", jobs.GenerateResume)
+	// c.AddFunc("0 2 * * *", func() {
+	// 	today := time.Now().Format("2006-01-02")
+	// 	day := time.Now().Weekday()
 
-	c.Start()
+	// 	if day == time.Sunday {
+	// 		if err := jobs.FullBackup(today); err != nil {
+	// 			log.Printf("❌ Error en backup completo: %v", err)
+	// 		} else {
+	// 			log.Println("✅ Backup completo exitoso.")
+	// 		}
+	// 	} else {
+	// 		lastFull := jobs.GetLastFullBackupDir()
+	// 		if err := jobs.IncrementalBackup(today, lastFull); err != nil {
+	// 			log.Printf("❌ Error en backup incremental: %v", err)
+	// 		} else {
+	// 			log.Println("✅ Backup incremental exitoso.")
+	// 		}
+	// 	}
+	// })
+	// // c.AddFunc("0 0 1 * *", jobs.Backup)
+	// // c.AddFunc("0 0 * * 0", jobs.GenerateResume)
+
+	// c.Start()
 
 	log.Fatal(app.Listen(":3000"))
 }

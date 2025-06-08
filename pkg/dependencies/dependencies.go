@@ -52,6 +52,7 @@ type TenantApplication struct {
 
 func TenantDBRepository(db *gorm.DB, mainDB *gorm.DB) *TenantApplication {
 	tenantRepo := &repositories.TenantRepository{DB: db,}
+	// repositories := &repositories.Repositories{Main: &repositories.MainRepository{DB: mainDB}, Tenant: tenantRepo}
 	
 	attendanceService := &services.AttendanceService{AttendanceRepository: tenantRepo}
 	clientService := &services.ClientService{ClientRepository: tenantRepo}
@@ -94,6 +95,7 @@ func TenantDBRepository(db *gorm.DB, mainDB *gorm.DB) *TenantApplication {
 func (app *TenantApplication) SetDBTenantRepository(db *gorm.DB, mainDB *gorm.DB) {
 	tenantRepo := &repositories.TenantRepository{DB: db,}
 	mainRepo := &repositories.MainRepository{DB: mainDB}
+	// repositories := &repositories.Repositories{Main: mainRepo, Tenant: tenantRepo}
 	
 	attendanceService := &services.AttendanceService{AttendanceRepository: tenantRepo}
 	clientService := &services.ClientService{ClientRepository: tenantRepo}

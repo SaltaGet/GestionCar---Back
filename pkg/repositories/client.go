@@ -48,7 +48,13 @@ func (r *TenantRepository) ClientCreate(client *models.ClientCreate) (string, er
 }
 
 func (r *TenantRepository) ClientUpdate(client *models.ClientUpdate) error {
-	if err := r.DB.Where("id = ?", client.ID).Updates(&client).Error; err != nil {
+	if err := r.DB.Where("id = ?", client.ID).Updates(&models.Client{
+		FirstName: client.FirstName,
+		LastName:  client.LastName,
+		CUIL:      client.CUIL,
+		DNI:       client.DNI,
+		Email:     client.Email,
+	}).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return models.ErrorResponse(404, "Cliente no encontrado", err)
 		}	

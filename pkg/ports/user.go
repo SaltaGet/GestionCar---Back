@@ -12,6 +12,7 @@ type UserRepository interface {
 	// UserGetByEmail(email string) (user *models.User, err error) 
 	// UserExist(identifier string, email string) (exist bool, err error) 
 	UserCreate(user *models.UserCreate) (id string, err error)
+	UserTenantAdd(userID, tenantID string) (err error)
 }
 
 type UserService interface {
