@@ -13,7 +13,7 @@ func ProductRoutes(app *fiber.App, controllers *controllers.ProductController){
 	att.Get("/get_by_identifier", controllers.ProductGetByIdentifier)
 	att.Post("/create", controllers.ProductCreate)
 	att.Put("/update", controllers.ProductUpdate)
-	att.Put("/update_stock/:id", controllers.ProductUpdateStock)
+	att.Put("/update_stock", controllers.ProductUpdateStock)
 	att.Delete("/delete/:id", controllers.ProductDelete)
 	att.Get("/:id", controllers.ProductGetByID)
 }

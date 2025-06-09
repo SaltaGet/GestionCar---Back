@@ -106,3 +106,10 @@ func (m *MemberService) MemberGetByID(id string) (*models.MemberResponse, error)
 		},
 	}, nil
 }
+
+func (m *MemberService) MemberDelete(memberID string) error {
+	if err := m.MemberRepository.MemberDelete(memberID); err != nil {
+		return err
+	}
+	return nil
+}

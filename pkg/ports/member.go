@@ -15,4 +15,5 @@ type MemberService interface {
 	MemberAdd(memberAdd *models.MemberAdd, tenantID, userID string) (id string, err error)
 	MemberGetPermissionByUserID(userID string) (permission *models.Member, err error)
 	MemberGetAll() (members *[]models.MemberResponse, err error)
+	MemberDelete(id string) (err error)
 }

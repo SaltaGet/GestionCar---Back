@@ -191,8 +191,6 @@ func (p *ProductController) ProductGetByIdentifier(c *fiber.Ctx) error {
 //	@Accept			json
 //	@Produce		json
 //	@Security		BearerAuth
-//	@Param			id					path		string				true	"ID of the product"
-//	@Param			method				query		string				true	"Method of stock update (add, subtract, update)"
 //	@Param			stock				body		models.StockUpdate	true	"Stock update details"
 //	@Success		200					{object}	models.Response		"Product stock updated successfully"
 //	@Failure		400					{object}	models.Response		"Bad Request"
@@ -201,26 +199,8 @@ func (p *ProductController) ProductGetByIdentifier(c *fiber.Ctx) error {
 //	@Failure		404					{object}	models.Response		"Product not found"
 //	@Failure		422					{object}	models.Response		"Model invalid"
 //	@Failure		500					{object}	models.Response		"Internal server error"
-//	@Router			/product/update_stock/{id} [put]
+//	@Router			/product/update_stock [put]
 func (p *ProductController) ProductUpdateStock(c *fiber.Ctx) error {
-	id := c.Params("id")
-	if id == "" {
-		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
-			Status:  false,
-			Body:    nil,
-			Message: "ID is required",
-		})
-	}
-
-	method := c.Query("method")
-	if method == "" {
-		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
-			Status:  false,
-			Body:    nil,
-			Message: "Method is required",
-		})
-	}
-
 	var stockUpdate models.StockUpdate
 	if err := c.BodyParser(&stockUpdate); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
