@@ -66,6 +66,29 @@ func (p *PermissionController) PermissionGetToMe(c *fiber.Ctx) error {
 		})
 	}
 
+	if user.IsAdminTenant {
+		permissions, err := p.PermissionService.PermissionGetAll()
+		if err != nil {
+			if errResp, ok := err.(*models.ErrorStruc); ok {
+				return c.Status(errResp.StatusCode).JSON(models.Response{
+					Status:  false,
+					Body:    nil,
+					Message: errResp.Message,
+				})
+			}
+			return c.Status(fiber.StatusInternalServerError).JSON(models.Response{
+				Status:  false,
+				Body:    nil,
+				Message: "Error interno",
+			})
+		}
+		return c.Status(fiber.StatusForbidden).JSON(models.Response{
+			Status:  false,
+			Body:    permissions,
+			Message: "Tiene todos los permsios",
+		})
+	}
+
 	permissions, err := p.PermissionService.PermissionGetToMe(*user.RoleID)
 	if err != nil {
 		if errResp, ok := err.(*models.ErrorStruc); ok {
