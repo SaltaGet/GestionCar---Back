@@ -37,17 +37,17 @@ type TenantApplication struct {
 	EmployeeController *controllers.EmployeeController
 	ExpenseController *controllers.ExpenseController	
 	IncomeController *controllers.IncomeController
+	MemberController *controllers.MemberController
 	MovementTypeController *controllers.MovementTypeController
+	PermissionController *controllers.PermissionController
 	ProductController *controllers.ProductController
 	PurchaseOrderController *controllers.PurchaseOrderController
 	PurchaseProductController *controllers.PurchaseProductController
+	ResumeController *controllers.ResumeController
+	RoleController *controllers.RoleController
 	ServiceController *controllers.ServiceController
 	SupplierController *controllers.SupplierController
 	VehicleController *controllers.VehicleController
-	ResumeController *controllers.ResumeController
-	MemberController *controllers.MemberController
-	RoleController *controllers.RoleController
-	PermissionController *controllers.PermissionController
 }
 
 func TenantDBRepository(db *gorm.DB) *TenantApplication {

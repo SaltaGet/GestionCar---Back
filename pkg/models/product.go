@@ -11,7 +11,7 @@ type Product struct {
 	ID         string    `gorm:"primaryKey;size:36" json:"id"`
 	Identifier string    `gorm:"not null;unique" json:"identifier"`
 	Name       string    `gorm:"not null" json:"name"`
-	Stock      int32     `gorm:"not null;min:0;default:0" json:"stock"`
+	Stock      float32     `gorm:"not null;min:0;default:0" json:"stock"`
 	CreatedAt  time.Time `gorm:"autoCreateTime" json:"created_at"`
 	UpdatedAt  time.Time `gorm:"autoUpdateTime" json:"updated_at"`
 }
@@ -57,8 +57,8 @@ func (p *ProductUpdate) Validate() error {
 
 type StockUpdate struct {
 	ID    string `json:"id" validate:"required"`
-	Stock int32 `json:"stock" validate:"required"`
-	Method string `json:"method" validate:"required, oneof= add subtract update"`
+	Stock float32 `json:"stock" validate:"required"`
+	Method string `json:"method" validate:"required,oneof=add subtract update"`
 }
 
 func (p *StockUpdate) Validate() error {

@@ -1,11 +1,14 @@
 package controllers
 
 import (
+	"fmt"
+
 	"github.com/DanielChachagua/GestionCar/pkg/models"
 	"github.com/gofiber/fiber/v2"
 )
 
 // ProductGetByID godoc
+//
 //	@Summary		Get Product By ID
 //	@Description	Get a product or part by its ID within a specified workplace.
 //	@Tags			Product
@@ -54,6 +57,7 @@ func (p *ProductController) ProductGetByID(c *fiber.Ctx) error {
 }
 
 // ProductGetAll godoc
+//
 //	@Summary		Get All Products
 //	@Description	Get All Products
 //	@Tags			Product
@@ -91,6 +95,7 @@ func (p *ProductController) ProductGetAll(c *fiber.Ctx) error {
 }
 
 // ProductGetByName godoc
+//
 //	@Summary		Get Product By Name
 //	@Description	Fetches products from either laundry or workshop based on the provided name and workplace.
 //	@Tags			Product
@@ -138,6 +143,7 @@ func (p *ProductController) ProductGetByName(c *fiber.Ctx) error {
 }
 
 // ProductGetByIdentifier godoc
+//
 //	@Summary		Get Products by identifier
 //	@Description	Get Products by identifier
 //	@Tags			Product
@@ -185,6 +191,7 @@ func (p *ProductController) ProductGetByIdentifier(c *fiber.Ctx) error {
 }
 
 // ProductUpdateStock godoc
+//
 //	@Summary		Update Product Stock
 //	@Description	Updates the stock of a product based on the given method (add, subtract, update).
 //	@Tags			Product
@@ -201,6 +208,15 @@ func (p *ProductController) ProductGetByIdentifier(c *fiber.Ctx) error {
 //	@Failure		500		{object}	models.Response		"Internal server error"
 //	@Router			/product/update_stock [put]
 func (p *ProductController) ProductUpdateStock(c *fiber.Ctx) error {
+	defer func() {
+		if r := recover(); r != nil {
+			c.Status(fiber.StatusInternalServerError).JSON(models.Response{
+				Status:  false,
+				Body:    nil,
+				Message: fmt.Sprintf("panic: %v", r),
+			})
+		}
+	}()
 	var stockUpdate models.StockUpdate
 	if err := c.BodyParser(&stockUpdate); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
@@ -241,6 +257,7 @@ func (p *ProductController) ProductUpdateStock(c *fiber.Ctx) error {
 }
 
 // ProductUpdate godoc
+//
 //	@Summary		Update Product
 //	@Description	Updates the given product and returns the updated product.
 //	@Tags			Product
@@ -297,6 +314,7 @@ func (p *ProductController) ProductUpdate(c *fiber.Ctx) error {
 }
 
 // ProductDelete godoc
+//
 //	@Summary		Delete Product
 //	@Description	Deletes the given product with the given id.
 //	@Tags			Product
@@ -345,6 +363,7 @@ func (p *ProductController) ProductDelete(c *fiber.Ctx) error {
 }
 
 // ProductCreate godoc
+//
 //	@Summary		Create Product
 //	@Description	Creates a new product in the specified workplace.
 //	@Tags			Product
@@ -398,4 +417,3 @@ func (p *ProductController) ProductCreate(c *fiber.Ctx) error {
 		Message: "Producto creado con éxito",
 	})
 }
-

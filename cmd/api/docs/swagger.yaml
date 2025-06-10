@@ -485,7 +485,7 @@ definitions:
       name:
         type: string
       stock:
-        type: integer
+        type: number
       updated_at:
         type: string
     type: object
@@ -697,9 +697,13 @@ definitions:
       id:
         type: string
       method:
+        enum:
+        - add
+        - subtract
+        - update
         type: string
       stock:
-        type: integer
+        type: number
     required:
     - id
     - method
@@ -2749,6 +2753,72 @@ paths:
       summary: Update Movement Type
       tags:
       - Movement
+  /permission/get_all:
+    post:
+      consumes:
+      - application/json
+      description: Permissions GetAll required auth token
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Members obtenidos con éxito
+          schema:
+            $ref: '#/definitions/models.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.Response'
+        "401":
+          description: Auth is required
+          schema:
+            $ref: '#/definitions/models.Response'
+        "403":
+          description: Not Authorized
+          schema:
+            $ref: '#/definitions/models.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.Response'
+      security:
+      - BearerAuth: []
+      summary: Permissions GetAll
+      tags:
+      - Member
+  /permission/get_to_me:
+    post:
+      consumes:
+      - application/json
+      description: Permissions GetAllToMe required auth token
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Members obtenidos con éxito
+          schema:
+            $ref: '#/definitions/models.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.Response'
+        "401":
+          description: Auth is required
+          schema:
+            $ref: '#/definitions/models.Response'
+        "403":
+          description: Not Authorized
+          schema:
+            $ref: '#/definitions/models.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.Response'
+      security:
+      - BearerAuth: []
+      summary: Permissions GetAlltoME
+      tags:
+      - Member
   /product/{id}:
     get:
       consumes:

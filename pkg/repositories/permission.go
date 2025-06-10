@@ -2,9 +2,9 @@ package repositories
 
 import "github.com/DanielChachagua/GestionCar/pkg/models"
 
-func (t *TenantRepository) PermissionByRoleID(roleID string) (permissions *[]string, err error) {
+func (t *TenantRepository) PermissionByRoleID(roleID string) (*[]string, error) {
 	var permission []string
-	err = t.DB.Model(&models.Permission{}).
+	err := t.DB.Model(&models.Permission{}).
 		Select("permissions.name").
 		Joins("JOIN role_permissions ON role_permissions.permission_id = permissions.id").
 		Where("role_permissions.role_id = ?", roleID).
@@ -13,4 +13,25 @@ func (t *TenantRepository) PermissionByRoleID(roleID string) (permissions *[]str
 		return nil, err
 	}
 	return &permission, nil
+}
+
+func (t *TenantRepository) PermissionGetAll() (*[]models.Permission, error) {
+	var permission []models.Permission
+	err := t.DB.Find(&permission).Error
+	if err != nil {
+		return nil, err
+	}
+	return &permission, nil
+}
+
+func (t *TenantRepository) PermissionGetToMe(roleID string) (*[]models.Permission, error) {
+	var permissions []models.Permission
+	err := t.DB.
+		Joins("JOIN role_permissions ON role_permissions.permission_id = permissions.id").
+		Where("role_permissions.role_id = ?", roleID).
+		Find(&permissions).Error
+	if err != nil {
+		return nil, err
+	}
+	return &permissions, nil
 }
