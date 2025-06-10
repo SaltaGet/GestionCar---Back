@@ -1,6 +1,7 @@
 package models
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/go-playground/validator/v10"
@@ -22,7 +23,16 @@ type ProductCreate struct {
 
 func (p *ProductCreate) Validate() error {
 	validate := validator.New()
-	return validate.Struct(p)
+	err := validate.Struct(p)
+	if err == nil {
+		return nil
+	}
+
+	validationErr := err.(validator.ValidationErrors)[0]
+	field := validationErr.Field()
+	tag := validationErr.Tag()
+
+	return fmt.Errorf("campo %s es invalido, revisar: (%s)", field, tag)
 }
 
 type ProductUpdate struct {
@@ -33,7 +43,16 @@ type ProductUpdate struct {
 
 func (p *ProductUpdate) Validate() error {
 	validate := validator.New()
-	return validate.Struct(p)
+	err := validate.Struct(p)
+	if err == nil {
+		return nil
+	}
+
+	validationErr := err.(validator.ValidationErrors)[0]
+	field := validationErr.Field()
+	tag := validationErr.Tag()
+
+	return fmt.Errorf("campo %s es invalido, revisar: (%s)", field, tag)
 }
 
 type StockUpdate struct {
@@ -44,5 +63,14 @@ type StockUpdate struct {
 
 func (p *StockUpdate) Validate() error {
 	validate := validator.New()
-	return validate.Struct(p)
+	err := validate.Struct(p)
+	if err == nil {
+		return nil
+	}
+
+	validationErr := err.(validator.ValidationErrors)[0]
+	field := validationErr.Field()
+	tag := validationErr.Tag()
+
+	return fmt.Errorf("campo %s es invalido, revisar: (%s)", field, tag)
 }

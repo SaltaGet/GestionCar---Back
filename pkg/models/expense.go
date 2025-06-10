@@ -1,6 +1,7 @@
 package models
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/go-playground/validator/v10"
@@ -27,7 +28,16 @@ type ExpenseCreate struct {
 
 func (e *ExpenseCreate) Validate() error {
 	validate := validator.New()
-	return validate.Struct(e)
+	err := validate.Struct(e)
+	if err == nil {
+		return nil
+	}
+
+	validationErr := err.(validator.ValidationErrors)[0]
+	field := validationErr.Field()
+	tag := validationErr.Tag()
+
+	return fmt.Errorf("campo %s es invalido, revisar: (%s)", field, tag)
 }
 
 type ExpenseUpdate struct {
@@ -40,5 +50,14 @@ type ExpenseUpdate struct {
 
 func (e *ExpenseUpdate) Validate() error {
 	validate := validator.New()
-	return validate.Struct(e)
+	err := validate.Struct(e)
+	if err == nil {
+		return nil
+	}
+
+	validationErr := err.(validator.ValidationErrors)[0]
+	field := validationErr.Field()
+	tag := validationErr.Tag()
+
+	return fmt.Errorf("campo %s es invalido, revisar: (%s)", field, tag)
 }

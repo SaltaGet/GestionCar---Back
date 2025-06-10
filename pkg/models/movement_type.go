@@ -1,6 +1,7 @@
 package models
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/go-playground/validator/v10"
@@ -21,7 +22,16 @@ type MovementTypeCreate struct {
 
 func (m *MovementTypeCreate) Validate() error {
 	validate := validator.New()
-	return validate.Struct(m)
+	err := validate.Struct(m)
+	if err == nil {
+		return nil
+	}
+
+	validationErr := err.(validator.ValidationErrors)[0]
+	field := validationErr.Field()
+	tag := validationErr.Tag()
+
+	return fmt.Errorf("campo %s es invalido, revisar: (%s)", field, tag)
 }
 
 type MovementTypeUpdate struct {
@@ -32,5 +42,14 @@ type MovementTypeUpdate struct {
 
 func (m *MovementTypeUpdate) Validate() error {
 	validate := validator.New()
-	return validate.Struct(m)
+	err := validate.Struct(m)
+	if err == nil {
+		return nil
+	}
+
+	validationErr := err.(validator.ValidationErrors)[0]
+	field := validationErr.Field()
+	tag := validationErr.Tag()
+
+	return fmt.Errorf("campo %s es invalido, revisar: (%s)", field, tag)
 }

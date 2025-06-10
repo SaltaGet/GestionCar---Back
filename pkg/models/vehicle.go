@@ -1,6 +1,7 @@
 package models
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/go-playground/validator/v10"
@@ -30,7 +31,16 @@ type VehicleCreate struct {
 
 func (v *VehicleCreate) Validate() error {
 	validate := validator.New()
-	return validate.Struct(v)
+	err := validate.Struct(v)
+	if err == nil {
+		return nil
+	}
+
+	validationErr := err.(validator.ValidationErrors)[0]
+	field := validationErr.Field()
+	tag := validationErr.Tag()
+
+	return fmt.Errorf("campo %s es invalido, revisar: (%s)", field, tag)
 }
 
 type VehicleUpdate struct {
@@ -45,7 +55,16 @@ type VehicleUpdate struct {
 
 func (v *VehicleUpdate) Validate() error {
 	validate := validator.New()
-	return validate.Struct(v)
+	err := validate.Struct(v)
+	if err == nil {
+		return nil
+	}
+
+	validationErr := err.(validator.ValidationErrors)[0]
+	field := validationErr.Field()
+	tag := validationErr.Tag()
+
+	return fmt.Errorf("campo %s es invalido, revisar: (%s)", field, tag)
 }
 
 type VehicleDTO struct {

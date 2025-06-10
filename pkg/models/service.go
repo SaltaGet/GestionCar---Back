@@ -1,6 +1,7 @@
 package models
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/go-playground/validator/v10"
@@ -20,7 +21,16 @@ type ServiceCreate struct {
 
 func (s *ServiceCreate) Validate() error {
 	validate := validator.New()
-	return validate.Struct(s)
+	err := validate.Struct(s)
+	if err == nil {
+		return nil
+	}
+
+	validationErr := err.(validator.ValidationErrors)[0]
+	field := validationErr.Field()
+	tag := validationErr.Tag()
+
+	return fmt.Errorf("campo %s es invalido, revisar: (%s)", field, tag)
 }
 
 type ServiceUpdate struct {
@@ -30,5 +40,14 @@ type ServiceUpdate struct {
 
 func (s *ServiceUpdate) Validate() error {
 	validate := validator.New()
-	return validate.Struct(s)
+	err := validate.Struct(s)
+	if err == nil {
+		return nil
+	}
+
+	validationErr := err.(validator.ValidationErrors)[0]
+	field := validationErr.Field()
+	tag := validationErr.Tag()
+
+	return fmt.Errorf("campo %s es invalido, revisar: (%s)", field, tag)
 }

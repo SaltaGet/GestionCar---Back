@@ -1,6 +1,7 @@
 package models
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/go-playground/validator/v10"
@@ -31,7 +32,16 @@ type AttendanceCreate struct {
 
 func (e *AttendanceCreate) Validate() error {
 	validate := validator.New()
-	return validate.Struct(e)
+	err := validate.Struct(e)
+	if err == nil {
+		return nil
+	}
+
+	validationErr := err.(validator.ValidationErrors)[0]
+	field := validationErr.Field()
+	tag := validationErr.Tag()
+
+	return fmt.Errorf("campo %s es invalido, revisar: (%s)", field, tag)
 }
 
 type AttendanceUpdate struct {
@@ -46,7 +56,16 @@ type AttendanceUpdate struct {
 
 func (e *AttendanceUpdate) Validate() error {
 	validate := validator.New()
-	return validate.Struct(e)
+	err := validate.Struct(e)
+	if err == nil {
+		return nil
+	}
+
+	validationErr := err.(validator.ValidationErrors)[0]
+	field := validationErr.Field()
+	tag := validationErr.Tag()
+
+	return fmt.Errorf("campo %s es invalido, revisar: (%s)", field, tag)
 }
 
 type DateBetween struct {
@@ -56,5 +75,14 @@ type DateBetween struct {
 
 func (e *DateBetween) Validate() error {
 	validate := validator.New()
-	return validate.Struct(e)
+	err := validate.Struct(e)
+	if err == nil {
+		return nil
+	}
+
+	validationErr := err.(validator.ValidationErrors)[0]
+	field := validationErr.Field()
+	tag := validationErr.Tag()
+
+	return fmt.Errorf("campo %s es invalido, revisar: (%s)", field, tag)
 }
