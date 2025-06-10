@@ -61,7 +61,7 @@ func (t *TenantRepository) MemberCreate(memeberCreate *models.MemberCreate, user
 	// if err != nil {
 	// 	return "", err
 	// }
-	hashPass, err := utils.HashPassword("12345678")
+	hashPass, err := utils.HashPassword("1234")
 	if err != nil {
 		return "", err
 	}
