@@ -12,13 +12,13 @@ import (
 //	@Accept			json
 //	@Produce		json
 //	@Security		BearerAuth
-//	@Param			id					path		string												true	"ID of Purchase Order"
-//	@Success		200					{object}	models.Response{body=models.PurchaseOrder}	"Laundry order obtained successfully"
-//	@Failure		400					{object}	models.Response										"Bad Request"
-//	@Failure		401					{object}	models.Response										"Auth is required"
-//	@Failure		403					{object}	models.Response										"Not Authorized"
-//	@Failure		404					{object}	models.Response										"Purchase Order not found"
-//	@Failure		500					{object}	models.Response										"Internal server error"
+//	@Param			id	path		string										true	"ID of Purchase Order"
+//	@Success		200	{object}	models.Response{body=models.PurchaseOrder}	"Laundry order obtained successfully"
+//	@Failure		400	{object}	models.Response								"Bad Request"
+//	@Failure		401	{object}	models.Response								"Auth is required"
+//	@Failure		403	{object}	models.Response								"Not Authorized"
+//	@Failure		404	{object}	models.Response								"Purchase Order not found"
+//	@Failure		500	{object}	models.Response								"Internal server error"
 //	@Router			/purchase_order/{id} [get]
 func (p *PurchaseOrderController) PurchaseOrderGetByID(c *fiber.Ctx) error {
 	id := c.Params("id")
@@ -60,11 +60,11 @@ func (p *PurchaseOrderController) PurchaseOrderGetByID(c *fiber.Ctx) error {
 //	@Accept			json
 //	@Produce		json
 //	@Security		BearerAuth
-//	@Success		200					{object}	models.Response{body=[]models.PurchaseOrder}	"Purchase Orders obtained with success"
-//	@Failure		400					{object}	models.Response										"Bad Request"
-//	@Failure		401					{object}	models.Response										"Auth is required"
-//	@Failure		403					{object}	models.Response										"Not Authorized"
-//	@Failure		500					{object}	models.Response										"Internal server error"
+//	@Success		200	{object}	models.Response{body=[]models.PurchaseOrder}	"Purchase Orders obtained with success"
+//	@Failure		400	{object}	models.Response									"Bad Request"
+//	@Failure		401	{object}	models.Response									"Auth is required"
+//	@Failure		403	{object}	models.Response									"Not Authorized"
+//	@Failure		500	{object}	models.Response									"Internal server error"
 //	@Router			/purchase_order/get_all [get]
 //	@Security		BearerAuth
 func (p *PurchaseOrderController) PurchaseOrderGetAll(c *fiber.Ctx) error {
@@ -211,13 +211,13 @@ func (p *PurchaseOrderController) PurchaseOrderUpdate(c *fiber.Ctx) error {
 //	@Accept			json
 //	@Produce		json
 //	@Security		BearerAuth
-//	@Param			id					path		string			true	"ID of Purchase Order"
-//	@Success		200					{object}	models.Response	"Purchase order deleted successfully"
-//	@Failure		400					{object}	models.Response	"Bad Request"
-//	@Failure		401					{object}	models.Response	"Auth is required"
-//	@Failure		403					{object}	models.Response	"Not Authorized"
-//	@Failure		404					{object}	models.Response	"Purchase order not found"
-//	@Failure		500					{object}	models.Response	"Internal server error"
+//	@Param			id	path		string			true	"ID of Purchase Order"
+//	@Success		200	{object}	models.Response	"Purchase order deleted successfully"
+//	@Failure		400	{object}	models.Response	"Bad Request"
+//	@Failure		401	{object}	models.Response	"Auth is required"
+//	@Failure		403	{object}	models.Response	"Not Authorized"
+//	@Failure		404	{object}	models.Response	"Purchase order not found"
+//	@Failure		500	{object}	models.Response	"Internal server error"
 //	@Router			/purchase_order/delete/{id} [delete]
 func (p *PurchaseOrderController) PurchaseOrderDelete(c *fiber.Ctx) error {
 	id := c.Params("id")

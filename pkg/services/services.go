@@ -11,6 +11,7 @@ type AttendanceService struct {
 type AuthService struct {
 	AuthRepository ports.AuthRepository
 	UserRepository ports.UserRepository
+	TenantService ports.TenantService
 }
 
 type ClientService struct {

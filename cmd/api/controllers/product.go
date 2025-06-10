@@ -12,13 +12,13 @@ import (
 //	@Accept			json
 //	@Produce		json
 //	@Security		BearerAuth
-//	@Param			id					path		string										true	"ID of the product"
-//	@Success		200					{object}	models.Response{body=models.Product}	"Product obtained with success"
-//	@Failure		400					{object}	models.Response								"Bad Request"
-//	@Failure		401					{object}	models.Response								"Auth is required"
-//	@Failure		403					{object}	models.Response								"Not Authorized"
-//	@Failure		404					{object}	models.Response								"Expense not found"
-//	@Failure		500					{object}	models.Response								"Internal server error"
+//	@Param			id	path		string									true	"ID of the product"
+//	@Success		200	{object}	models.Response{body=models.Product}	"Product obtained with success"
+//	@Failure		400	{object}	models.Response							"Bad Request"
+//	@Failure		401	{object}	models.Response							"Auth is required"
+//	@Failure		403	{object}	models.Response							"Not Authorized"
+//	@Failure		404	{object}	models.Response							"Expense not found"
+//	@Failure		500	{object}	models.Response							"Internal server error"
 //	@Router			/product/{id} [get]
 func (p *ProductController) ProductGetByID(c *fiber.Ctx) error {
 	id := c.Params("id")
@@ -60,11 +60,11 @@ func (p *ProductController) ProductGetByID(c *fiber.Ctx) error {
 //	@Accept			json
 //	@Produce		json
 //	@Security		BearerAuth
-//	@Success		200					{object}	models.Response{body=[]models.Product}	"Products obtained with success"
-//	@Failure		400					{object}	models.Response									"Bad Request"
-//	@Failure		401					{object}	models.Response									"Auth is required"
-//	@Failure		403					{object}	models.Response									"Not Authorized"
-//	@Failure		500					{object}	models.Response									"Internal server error"
+//	@Success		200	{object}	models.Response{body=[]models.Product}	"Products obtained with success"
+//	@Failure		400	{object}	models.Response							"Bad Request"
+//	@Failure		401	{object}	models.Response							"Auth is required"
+//	@Failure		403	{object}	models.Response							"Not Authorized"
+//	@Failure		500	{object}	models.Response							"Internal server error"
 //	@Router			/product/get_all [get]
 func (p *ProductController) ProductGetAll(c *fiber.Ctx) error {
 	products, err := p.ProductService.ProductGetAll()
@@ -97,12 +97,12 @@ func (p *ProductController) ProductGetAll(c *fiber.Ctx) error {
 //	@Accept			json
 //	@Produce		json
 //	@Security		BearerAuth
-//	@Param			name				query		string											true	"Name of the Product"
-//	@Success		200					{object}	models.Response{body=[]models.Product}	"List of products"
-//	@Failure		400					{object}	models.Response									"Bad Request"
-//	@Failure		401					{object}	models.Response									"Auth is required"
-//	@Failure		403					{object}	models.Response									"Not Authorized"
-//	@Failure		500					{object}	models.Response									"Internal server error"
+//	@Param			name	query		string									true	"Name of the Product"
+//	@Success		200		{object}	models.Response{body=[]models.Product}	"List of products"
+//	@Failure		400		{object}	models.Response							"Bad Request"
+//	@Failure		401		{object}	models.Response							"Auth is required"
+//	@Failure		403		{object}	models.Response							"Not Authorized"
+//	@Failure		500		{object}	models.Response							"Internal server error"
 //	@Router			/product/get_by_name [get]
 func (p *ProductController) ProductGetByName(c *fiber.Ctx) error {
 	name := c.Query("name")
@@ -144,12 +144,12 @@ func (p *ProductController) ProductGetByName(c *fiber.Ctx) error {
 //	@Accept			json
 //	@Produce		json
 //	@Security		BearerAuth
-//	@Param			identifier			query		string											true	"Identifier of product"
-//	@Success		200					{object}	models.Response{body=[]models.Product}	"Products obtained with success"
-//	@Failure		400					{object}	models.Response									"Bad Request"
-//	@Failure		401					{object}	models.Response									"Auth is required"
-//	@Failure		403					{object}	models.Response									"Not Authorized"
-//	@Failure		500					{object}	models.Response									"Internal server error"
+//	@Param			identifier	query		string									true	"Identifier of product"
+//	@Success		200			{object}	models.Response{body=[]models.Product}	"Products obtained with success"
+//	@Failure		400			{object}	models.Response							"Bad Request"
+//	@Failure		401			{object}	models.Response							"Auth is required"
+//	@Failure		403			{object}	models.Response							"Not Authorized"
+//	@Failure		500			{object}	models.Response							"Internal server error"
 //	@Router			/product/get_by_identifier [get]
 func (p *ProductController) ProductGetByIdentifier(c *fiber.Ctx) error {
 	identifire := c.Query("identifier")
@@ -191,14 +191,14 @@ func (p *ProductController) ProductGetByIdentifier(c *fiber.Ctx) error {
 //	@Accept			json
 //	@Produce		json
 //	@Security		BearerAuth
-//	@Param			stock				body		models.StockUpdate	true	"Stock update details"
-//	@Success		200					{object}	models.Response		"Product stock updated successfully"
-//	@Failure		400					{object}	models.Response		"Bad Request"
-//	@Failure		401					{object}	models.Response		"Auth is required"
-//	@Failure		403					{object}	models.Response		"Not Authorized"
-//	@Failure		404					{object}	models.Response		"Product not found"
-//	@Failure		422					{object}	models.Response		"Model invalid"
-//	@Failure		500					{object}	models.Response		"Internal server error"
+//	@Param			stock	body		models.StockUpdate	true	"Stock update details"
+//	@Success		200		{object}	models.Response		"Product stock updated successfully"
+//	@Failure		400		{object}	models.Response		"Bad Request"
+//	@Failure		401		{object}	models.Response		"Auth is required"
+//	@Failure		403		{object}	models.Response		"Not Authorized"
+//	@Failure		404		{object}	models.Response		"Product not found"
+//	@Failure		422		{object}	models.Response		"Model invalid"
+//	@Failure		500		{object}	models.Response		"Internal server error"
 //	@Router			/product/update_stock [put]
 func (p *ProductController) ProductUpdateStock(c *fiber.Ctx) error {
 	var stockUpdate models.StockUpdate
@@ -247,14 +247,14 @@ func (p *ProductController) ProductUpdateStock(c *fiber.Ctx) error {
 //	@Accept			json
 //	@Produce		json
 //	@Security		BearerAuth
-//	@Param			product				body		models.ProductUpdate	true	"Product update details"
-//	@Success		200					{object}	models.Response			"Product updated successfully"
-//	@Failure		400					{object}	models.Response			"Bad Request"
-//	@Failure		401					{object}	models.Response			"Auth is required"
-//	@Failure		403					{object}	models.Response			"Not Authorized"
-//	@Failure		404					{object}	models.Response			"Product not found"
-//	@Failure		422					{object}	models.Response			"Model invalid"
-//	@Failure		500					{object}	models.Response			"Internal server error"
+//	@Param			product	body		models.ProductUpdate	true	"Product update details"
+//	@Success		200		{object}	models.Response			"Product updated successfully"
+//	@Failure		400		{object}	models.Response			"Bad Request"
+//	@Failure		401		{object}	models.Response			"Auth is required"
+//	@Failure		403		{object}	models.Response			"Not Authorized"
+//	@Failure		404		{object}	models.Response			"Product not found"
+//	@Failure		422		{object}	models.Response			"Model invalid"
+//	@Failure		500		{object}	models.Response			"Internal server error"
 //	@Router			/product/update [put]
 func (p *ProductController) ProductUpdate(c *fiber.Ctx) error {
 	var productUpdate models.ProductUpdate
@@ -303,13 +303,13 @@ func (p *ProductController) ProductUpdate(c *fiber.Ctx) error {
 //	@Accept			json
 //	@Produce		json
 //	@Security		BearerAuth
-//	@Param			id					path		string			true	"ID of the product"
-//	@Success		200					{object}	models.Response	"Product deleted with success"
-//	@Failure		400					{object}	models.Response	"Bad Request"
-//	@Failure		401					{object}	models.Response	"Auth is required"
-//	@Failure		403					{object}	models.Response	"Not Authorized"
-//	@Failure		404					{object}	models.Response	"Product not found"
-//	@Failure		500					{object}	models.Response	"Internal server error"
+//	@Param			id	path		string			true	"ID of the product"
+//	@Success		200	{object}	models.Response	"Product deleted with success"
+//	@Failure		400	{object}	models.Response	"Bad Request"
+//	@Failure		401	{object}	models.Response	"Auth is required"
+//	@Failure		403	{object}	models.Response	"Not Authorized"
+//	@Failure		404	{object}	models.Response	"Product not found"
+//	@Failure		500	{object}	models.Response	"Internal server error"
 //	@Router			/product/delete/{id} [delete]
 func (p *ProductController) ProductDelete(c *fiber.Ctx) error {
 	id := c.Params("id")
@@ -351,13 +351,13 @@ func (p *ProductController) ProductDelete(c *fiber.Ctx) error {
 //	@Accept			json
 //	@Produce		json
 //	@Security		BearerAuth
-//	@Param			product				body		models.ProductCreate	true	"Details of the product to create"
-//	@Success		200					{object}	models.Response			"Product created successfully"
-//	@Failure		400					{object}	models.Response			"Bad Request"
-//	@Failure		401					{object}	models.Response			"Auth is required"
-//	@Failure		403					{object}	models.Response			"Not Authorized"
-//	@Failure		422					{object}	models.Response			"Model invalid"
-//	@Failure		500					{object}	models.Response			"Internal server error"
+//	@Param			product	body		models.ProductCreate	true	"Details of the product to create"
+//	@Success		200		{object}	models.Response			"Product created successfully"
+//	@Failure		400		{object}	models.Response			"Bad Request"
+//	@Failure		401		{object}	models.Response			"Auth is required"
+//	@Failure		403		{object}	models.Response			"Not Authorized"
+//	@Failure		422		{object}	models.Response			"Model invalid"
+//	@Failure		500		{object}	models.Response			"Internal server error"
 //	@Router			/product/create [post]
 func (p *ProductController) ProductCreate(c *fiber.Ctx) error {
 	var productCreate models.ProductCreate

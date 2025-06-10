@@ -12,12 +12,12 @@ import (
 //	@Accept			json
 //	@Produce		json
 //	@Security		BearerAuth
-//	@Param			id					path		string	true	"ID of Attendance"
-//	@Success		200					{object}	models.Response{body=models.Attendance}
-//	@Failure		400					{object}	models.Response
-//	@Failure		401					{object}	models.Response
-//	@Failure		404					{object}	models.Response
-//	@Failure		500					{object}	models.Response
+//	@Param			id	path		string	true	"ID of Attendance"
+//	@Success		200	{object}	models.Response{body=models.Attendance}
+//	@Failure		400	{object}	models.Response
+//	@Failure		401	{object}	models.Response
+//	@Failure		404	{object}	models.Response
+//	@Failure		500	{object}	models.Response
 //	@Router			/attendance/{id} [get]
 func (a *AttendanceController) GetAttendanceByID(c *fiber.Ctx) error {
 	id := c.Params("id")
@@ -59,12 +59,12 @@ func (a *AttendanceController) GetAttendanceByID(c *fiber.Ctx) error {
 //	@Accept			json
 //	@Produce		json
 //	@Security		BearerAuth
-//	@Success		200					{object}	models.Response{body=[]models.Attendance}
-//	@Failure		400					{object}	models.Response
-//	@Failure		401					{object}	models.Response
-//	@Failure		422					{object}	models.Response
-//	@Failure		404					{object}	models.Response
-//	@Failure		500					{object}	models.Response
+//	@Success		200	{object}	models.Response{body=[]models.Attendance}
+//	@Failure		400	{object}	models.Response
+//	@Failure		401	{object}	models.Response
+//	@Failure		422	{object}	models.Response
+//	@Failure		404	{object}	models.Response
+//	@Failure		500	{object}	models.Response
 //	@Router			/attendance/get_all [get]
 func (a *AttendanceController) GetAllAttendances(c *fiber.Ctx) error {
 	attendances, err := a.AttendanceService.AttendanceGetAll()
@@ -97,13 +97,13 @@ func (a *AttendanceController) GetAllAttendances(c *fiber.Ctx) error {
 //	@Accept			json
 //	@Produce		json
 //	@Security		BearerAuth
-//	@Param			dateFrom			body		models.DateBetween	true	"Date Between"
-//	@Success		200					{object}	models.Response{body=[]models.Attendance}
-//	@Failure		400					{object}	models.Response
-//	@Failure		401					{object}	models.Response
-//	@Failure		403					{object}	models.Response
-//	@Failure		422					{object}	models.Response
-//	@Failure		500					{object}	models.Response
+//	@Param			dateFrom	body		models.DateBetween	true	"Date Between"
+//	@Success		200			{object}	models.Response{body=[]models.Attendance}
+//	@Failure		400			{object}	models.Response
+//	@Failure		401			{object}	models.Response
+//	@Failure		403			{object}	models.Response
+//	@Failure		422			{object}	models.Response
+//	@Failure		500			{object}	models.Response
 //	@Router			/attendance/get_by_date [post]
 func (a *AttendanceController) GetAllAttendancesByDate(c *fiber.Ctx) error {
 	var dateBeetwen models.DateBetween
@@ -152,13 +152,13 @@ func (a *AttendanceController) GetAllAttendancesByDate(c *fiber.Ctx) error {
 //	@Accept			json
 //	@Produce		json
 //	@Security		BearerAuth
-//	@Param			employee_id			path		string	true	"ID of Employee"
-//	@Success		200					{object}	models.Response
-//	@Failure		400					{object}	models.Response
-//	@Failure		401					{object}	models.Response
-//	@Failure		403					{object}	models.Response
-//	@Failure		404					{object}	models.Response
-//	@Failure		500					{object}	models.Response
+//	@Param			employee_id	path		string	true	"ID of Employee"
+//	@Success		200			{object}	models.Response
+//	@Failure		400			{object}	models.Response
+//	@Failure		401			{object}	models.Response
+//	@Failure		403			{object}	models.Response
+//	@Failure		404			{object}	models.Response
+//	@Failure		500			{object}	models.Response
 //	@Router			/attendance/get_by_employee/{employee_id} [get]
 func (a *AttendanceController) GetAttendanceByEmployeeID(c *fiber.Ctx) error {
 	employee_id := c.Params("employee_id")
@@ -312,14 +312,14 @@ func (a *AttendanceController) UpdateAttendance(c *fiber.Ctx) error {
 //	@Accept			json
 //	@Produce		json
 //	@Security		BearerAuth
-//	@Param			id					path		string	true	"ID of Attendance"
-//	@Success		200					{object}	models.Response
-//	@Failure		400					{object}	models.Response
-//	@Failure		401					{object}	models.Response
-//	@Failure		403					{object}	models.Response
-//	@Failure		404					{object}	models.Response
-//	@Failure		422					{object}	models.Response
-//	@Failure		500					{object}	models.Response
+//	@Param			id	path		string	true	"ID of Attendance"
+//	@Success		200	{object}	models.Response
+//	@Failure		400	{object}	models.Response
+//	@Failure		401	{object}	models.Response
+//	@Failure		403	{object}	models.Response
+//	@Failure		404	{object}	models.Response
+//	@Failure		422	{object}	models.Response
+//	@Failure		500	{object}	models.Response
 //	@Router			/attendance/delete/{id} [delete]
 func (a *AttendanceController) DeleteAttendance(c *fiber.Ctx) error {
 	id := c.Params("id")

@@ -15,13 +15,13 @@ import (
 //	@Accept			json
 //	@Produce		json
 //	@Security		BearerAuth
-//	@Param			id					path		string												true	"ID of the movement type"
-//	@Success		200					{object}	models.Response{body=models.MovementType}	"Movement type details"
-//	@Failure		400					{object}	models.Response										"Bad Request"
-//	@Failure		401					{object}	models.Response										"Auth is required"
-//	@Failure		403					{object}	models.Response										"Not Authorized"
-//	@Failure		404					{object}	models.Response										"Expense not found"
-//	@Failure		500					{object}	models.Response										"Internal server error"
+//	@Param			id	path		string										true	"ID of the movement type"
+//	@Success		200	{object}	models.Response{body=models.MovementType}	"Movement type details"
+//	@Failure		400	{object}	models.Response								"Bad Request"
+//	@Failure		401	{object}	models.Response								"Auth is required"
+//	@Failure		403	{object}	models.Response								"Not Authorized"
+//	@Failure		404	{object}	models.Response								"Expense not found"
+//	@Failure		500	{object}	models.Response								"Internal server error"
 //	@Router			/movement/{id} [get]
 func (m *MovementTypeController) GetMovementTypeByID(c *fiber.Ctx) error {
 	id := c.Params("id")
@@ -64,13 +64,13 @@ func (m *MovementTypeController) GetMovementTypeByID(c *fiber.Ctx) error {
 //	@Accept			json
 //	@Produce		json
 //	@Security		BearerAuth
-//	@Param			isIncome			query		bool												true	"Is income movement type"
-//	@Success		200					{object}	models.Response{body=[]models.MovementType}	"List of movement types"
-//	@Failure		400					{object}	models.Response										"Bad Request"
-//	@Failure		401					{object}	models.Response										"Auth is required"
-//	@Failure		403					{object}	models.Response										"Not Authorized"
-//	@Failure		404					{object}	models.Response										"Expense not found"
-//	@Failure		500					{object}	models.Response										"Internal server error"
+//	@Param			isIncome	query		bool										true	"Is income movement type"
+//	@Success		200			{object}	models.Response{body=[]models.MovementType}	"List of movement types"
+//	@Failure		400			{object}	models.Response								"Bad Request"
+//	@Failure		401			{object}	models.Response								"Auth is required"
+//	@Failure		403			{object}	models.Response								"Not Authorized"
+//	@Failure		404			{object}	models.Response								"Expense not found"
+//	@Failure		500			{object}	models.Response								"Internal server error"
 //	@Router			/movement/get_all [get]
 func (m *MovementTypeController) GetAllMovementTypes(c *fiber.Ctx) error {
 	isIncomeStr := c.Query("isIncome")
@@ -118,14 +118,14 @@ func (m *MovementTypeController) GetAllMovementTypes(c *fiber.Ctx) error {
 //	@Accept			json
 //	@Produce		json
 //	@Security		BearerAuth
-//	@Param			movementType		body		models.MovementTypeCreate		true	"Movement Type Details"
-//	@Success		200					{object}	models.Response{body=string}	"Movement created successfully"
-//	@Failure		400					{object}	models.Response					"Bad Request"
-//	@Failure		401					{object}	models.Response					"Auth is required"
-//	@Failure		403					{object}	models.Response					"Not Authorized"
-//	@Failure		404					{object}	models.Response					"Expense not found"
-//	@Failure		422					{object}	models.Response					"Model invalid"
-//	@Failure		500					{object}	models.Response					"Internal server error"
+//	@Param			movementType	body		models.MovementTypeCreate		true	"Movement Type Details"
+//	@Success		200				{object}	models.Response{body=string}	"Movement created successfully"
+//	@Failure		400				{object}	models.Response					"Bad Request"
+//	@Failure		401				{object}	models.Response					"Auth is required"
+//	@Failure		403				{object}	models.Response					"Not Authorized"
+//	@Failure		404				{object}	models.Response					"Expense not found"
+//	@Failure		422				{object}	models.Response					"Model invalid"
+//	@Failure		500				{object}	models.Response					"Internal server error"
 //	@Router			/movement/create [post]
 func (m *MovementTypeController) MovementTypeCreate(c *fiber.Ctx) error {
 	var movementCreate models.MovementTypeCreate
@@ -175,14 +175,14 @@ func (m *MovementTypeController) MovementTypeCreate(c *fiber.Ctx) error {
 //	@Accept			json
 //	@Produce		json
 //	@Security		BearerAuth
-//	@Param			movementType		body		models.MovementTypeUpdate	true	"Movement Type Details"
-//	@Success		200					{object}	models.Response				"Movement updated successfully"
-//	@Failure		400					{object}	models.Response				"Bad Request"
-//	@Failure		401					{object}	models.Response				"Auth is required"
-//	@Failure		403					{object}	models.Response				"Not Authorized"
-//	@Failure		404					{object}	models.Response				"Expense not found"
-//	@Failure		422					{object}	models.Response				"Model invalid"
-//	@Failure		500					{object}	models.Response				"Internal server error"
+//	@Param			movementType	body		models.MovementTypeUpdate	true	"Movement Type Details"
+//	@Success		200				{object}	models.Response				"Movement updated successfully"
+//	@Failure		400				{object}	models.Response				"Bad Request"
+//	@Failure		401				{object}	models.Response				"Auth is required"
+//	@Failure		403				{object}	models.Response				"Not Authorized"
+//	@Failure		404				{object}	models.Response				"Expense not found"
+//	@Failure		422				{object}	models.Response				"Model invalid"
+//	@Failure		500				{object}	models.Response				"Internal server error"
 //	@Router			/movement/update [put]
 func (m *MovementTypeController) MovementTypeUpdate(c *fiber.Ctx) error {
 	var movementUpdate models.MovementTypeUpdate
@@ -232,13 +232,13 @@ func (m *MovementTypeController) MovementTypeUpdate(c *fiber.Ctx) error {
 //	@Accept			json
 //	@Produce		json
 //	@Security		BearerAuth
-//	@Param			id					path		string			true	"ID of the movement type"
-//	@Success		200					{object}	models.Response	"Movement type deleted successfully"
-//	@Failure		400					{object}	models.Response	"Bad Request"
-//	@Failure		401					{object}	models.Response	"Auth is required"
-//	@Failure		403					{object}	models.Response	"Not Authorized"
-//	@Failure		404					{object}	models.Response	"Expense not found"
-//	@Failure		500					{object}	models.Response	"Internal server error"
+//	@Param			id	path		string			true	"ID of the movement type"
+//	@Success		200	{object}	models.Response	"Movement type deleted successfully"
+//	@Failure		400	{object}	models.Response	"Bad Request"
+//	@Failure		401	{object}	models.Response	"Auth is required"
+//	@Failure		403	{object}	models.Response	"Not Authorized"
+//	@Failure		404	{object}	models.Response	"Expense not found"
+//	@Failure		500	{object}	models.Response	"Internal server error"
 //	@Router			/movement/delete/{id} [delete]
 func (m *MovementTypeController) MovementTypeDelete(c *fiber.Ctx) error {
 	id := c.Params("id")

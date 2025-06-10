@@ -10,8 +10,8 @@ type Client struct {
 	ID        string    `gorm:"primaryKey;size:36" json:"id"`
 	FirstName string    `gorm:"not null;size:30" json:"first_name"`
 	LastName  string    `gorm:"not null;size:30" json:"last_name"`
-	CUIL      string    `gorm:"not null;unique;size:30" json:"cuil"`
-	DNI       string    `gorm:"not null;unique;size:30" json:"dni"`
+	Cuil      string    `gorm:"not null;unique;size:30" json:"cuil"`
+	Dni       string    `gorm:"not null;unique;size:30" json:"dni"`
 	Email     string    `gorm:"not null;unique" json:"email" validate:"email"`
 	CreatedAt time.Time `gorm:"autoCreateTime" json:"created_at"`
 	UpdatedAt time.Time `gorm:"autoUpdateTime" json:"updated_at"`
@@ -21,8 +21,8 @@ type Client struct {
 type ClientCreate struct {
 	FirstName string `json:"first_name" validate:"required"`
 	LastName  string `json:"last_name" validate:"required"`
-	CUIL      string `json:"cuil" validate:"required"`		
-	DNI       string `json:"dni" validate:""`
+	Cuil      string `json:"cuil" validate:"required"`		
+	Dni       string `json:"dni" validate:""`
 	Email     string `json:"email" validate:"required,email"`
 }
 
@@ -35,8 +35,8 @@ type ClientUpdate struct {
 	ID        string `json:"id" validate:"required"`
 	FirstName string `json:"first_name" validate:"required"`
 	LastName  string `json:"last_name" validate:"required"`
-	CUIL      string `json:"cuil" validate:"required"`		
-	DNI       string `json:"dni" validate:""`
+	Cuil      string `json:"cuil" validate:"required"`		
+	Dni       string `json:"dni" validate:""`
 	Email     string `json:"email" validate:"required,email"`
 }
 

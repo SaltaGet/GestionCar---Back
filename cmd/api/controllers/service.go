@@ -12,13 +12,13 @@ import (
 //	@Accept			json
 //	@Produce		json
 //	@Security		BearerAuth
-//	@Param			id					path		string	true	"ID of the income to get"
-//	@Success		200					{object}	models.Response{body=models.Service}
-//	@Failure		400					{object}	models.Response	"Bad Request"
-//	@Failure		401					{object}	models.Response	"Auth is required"
-//	@Failure		403					{object}	models.Response	"Not Authorized"
-//	@Failure		404					{object}	models.Response	"Service not found"
-//	@Failure		500					{object}	models.Response
+//	@Param			id	path		string	true	"ID of the income to get"
+//	@Success		200	{object}	models.Response{body=models.Service}
+//	@Failure		400	{object}	models.Response	"Bad Request"
+//	@Failure		401	{object}	models.Response	"Auth is required"
+//	@Failure		403	{object}	models.Response	"Not Authorized"
+//	@Failure		404	{object}	models.Response	"Service not found"
+//	@Failure		500	{object}	models.Response
 //	@Router			/service/{id} [get]
 func (s *ServiceController) ServiceGetByID(c *fiber.Ctx) error {
 	id := c.Params("id")
@@ -60,11 +60,11 @@ func (s *ServiceController) ServiceGetByID(c *fiber.Ctx) error {
 //	@Accept			json
 //	@Produce		json
 //	@Security		BearerAuth
-//	@Success		200					{object}	models.Response{body=[]models.Service}
-//	@Failure		400					{object}	models.Response	"Bad Request"
-//	@Failure		401					{object}	models.Response	"Auth is required"
-//	@Failure		403					{object}	models.Response	"Not Authorized"
-//	@Failure		500					{object}	models.Response
+//	@Success		200	{object}	models.Response{body=[]models.Service}
+//	@Failure		400	{object}	models.Response	"Bad Request"
+//	@Failure		401	{object}	models.Response	"Auth is required"
+//	@Failure		403	{object}	models.Response	"Not Authorized"
+//	@Failure		500	{object}	models.Response
 //	@Router			/service/get_all [get]
 func (s *ServiceController) ServiceGetAll(c *fiber.Ctx) error {
 	services, err := s.ServiceService.ServiceGetAll()
@@ -97,13 +97,13 @@ func (s *ServiceController) ServiceGetAll(c *fiber.Ctx) error {
 //	@Accept			json
 //	@Produce		json
 //	@Security		BearerAuth
-//	@Param			serviceCreate		body		models.ServiceCreate			true	"Service creation data"
-//	@Success		200					{object}	models.Response{body=string}	"Service created successfully"
-//	@Failure		400					{object}	models.Response					"Bad Request"
-//	@Failure		401					{object}	models.Response					"Auth is required"
-//	@Failure		403					{object}	models.Response					"Not Authorized"
-//	@Failure		422					{object}	models.Response					"Model is invalid"
-//	@Failure		500					{object}	models.Response					"Internal server error"
+//	@Param			serviceCreate	body		models.ServiceCreate			true	"Service creation data"
+//	@Success		200				{object}	models.Response{body=string}	"Service created successfully"
+//	@Failure		400				{object}	models.Response					"Bad Request"
+//	@Failure		401				{object}	models.Response					"Auth is required"
+//	@Failure		403				{object}	models.Response					"Not Authorized"
+//	@Failure		422				{object}	models.Response					"Model is invalid"
+//	@Failure		500				{object}	models.Response					"Internal server error"
 //	@Router			/service/create      [post]
 func (s *ServiceController) ServiceCreate(c *fiber.Ctx) error {
 	var serviceCreate models.ServiceCreate
@@ -152,14 +152,14 @@ func (s *ServiceController) ServiceCreate(c *fiber.Ctx) error {
 //	@Accept			json
 //	@Produce		json
 //	@Security		BearerAuth
-//	@Param			serviceUpdate		body		models.ServiceUpdate	true	"Service data to update"
-//	@Success		200					{object}	models.Response			"Servicio editado con éxito"
-//	@Failure		400					{object}	models.Response			"Bad Request"
-//	@Failure		401					{object}	models.Response			"Auth is required"
-//	@Failure		403					{object}	models.Response			"Not Authorized"
-//	@Failure		404					{object}	models.Response			"Expense not found"
-//	@Failure		422					{object}	models.Response			"Model is invalid"
-//	@Failure		500					{object}	models.Response			"Error interno"
+//	@Param			serviceUpdate	body		models.ServiceUpdate	true	"Service data to update"
+//	@Success		200				{object}	models.Response			"Servicio editado con éxito"
+//	@Failure		400				{object}	models.Response			"Bad Request"
+//	@Failure		401				{object}	models.Response			"Auth is required"
+//	@Failure		403				{object}	models.Response			"Not Authorized"
+//	@Failure		404				{object}	models.Response			"Expense not found"
+//	@Failure		422				{object}	models.Response			"Model is invalid"
+//	@Failure		500				{object}	models.Response			"Error interno"
 //	@Router			/service/update [put]
 //	@Security		BearerAuth
 func (s *ServiceController) ServiceUpdate(c *fiber.Ctx) error {
@@ -209,13 +209,13 @@ func (s *ServiceController) ServiceUpdate(c *fiber.Ctx) error {
 //	@Accept			json
 //	@Produce		json
 //	@Security		BearerAuth
-//	@Param			id					path		string			true	"ID of the service"
-//	@Success		200					{object}	models.Response	"Servicio eliminado con éxito"
-//	@Failure		400					{object}	models.Response	"Bad Request"
-//	@Failure		401					{object}	models.Response	"Auth is required"
-//	@Failure		403					{object}	models.Response	"Not Authorized"
-//	@Failure		404					{object}	models.Response	"Service not found"
-//	@Failure		500					{object}	models.Response	"Error interno"
+//	@Param			id	path		string			true	"ID of the service"
+//	@Success		200	{object}	models.Response	"Servicio eliminado con éxito"
+//	@Failure		400	{object}	models.Response	"Bad Request"
+//	@Failure		401	{object}	models.Response	"Auth is required"
+//	@Failure		403	{object}	models.Response	"Not Authorized"
+//	@Failure		404	{object}	models.Response	"Service not found"
+//	@Failure		500	{object}	models.Response	"Error interno"
 //	@Router			/service/delete/{id} [delete]
 func (s *ServiceController) ServiceDeleteByID(c *fiber.Ctx) error {
 	id := c.Params("id")

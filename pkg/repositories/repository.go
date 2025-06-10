@@ -15,8 +15,3 @@ type MainRepository struct {
 type TenantRepository struct {
 	DB *gorm.DB
 }
-
-type Repositories struct {
-	Main   *MainRepository
-	Tenant *TenantRepository
-}

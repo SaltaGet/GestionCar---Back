@@ -6,20 +6,20 @@ import (
 )
 
 //	 Tenant godoc
-//		@Summary		Tenant GetAll
-//		@Description	Tenant GetAll required auth token
-//		@Tags			Tenant
-//		@Accept			json
-//		@Produce		json
-//		@Security		BearerAuth
-//		@Success		200	{object}	models.Response{body=[]models.TenantResponse}	"Tenants obtenidos con éxito"
-//		@Failure		400	{object}	models.Response									"Bad Request"
-//		@Failure		401	{object}	models.Response									"Auth is required"
-//		@Failure		403	{object}	models.Response									"Not Authorized"
-//		@Failure		500	{object}	models.Response
-//		@Router			/tenant/get_all [get]
+//	@Summary		Tenant GetAll
+//	@Description	Tenant GetAll required auth token
+//	@Tags			Tenant
+//	@Accept			json
+//	@Produce		json
+//	@Security		BearerAuth
+//	@Success		200	{object}	models.Response{body=[]models.TenantResponse}	"Tenants obtenidos con éxito"
+//	@Failure		400	{object}	models.Response									"Bad Request"
+//	@Failure		401	{object}	models.Response									"Auth is required"
+//	@Failure		403	{object}	models.Response									"Not Authorized"
+//	@Failure		500	{object}	models.Response
+//	@Router			/tenant/get_all [get]
 func (t *TenantController) GetTenants(c *fiber.Ctx) error {
-	user := c.Locals("user").(*models.User)
+	user := c.Locals("user").(*models.AuthenticatedUser)
 	tenants, err := t.TenantService.TenantGetAll(user.ID)
 	if err != nil {
 		if errResp, ok := err.(*models.ErrorStruc); ok {
@@ -49,20 +49,20 @@ func (t *TenantController) GetTenants(c *fiber.Ctx) error {
 }
 
 //	 Tenant godoc
-//		@Summary		Tenant Create
-//		@Description	Tenant Create required auth token
-//		@Tags			Tenant
-//		@Accept			json
-//		@Produce		json
-//		@Security		BearerAuth
-//		@Param			user_id	query		string	true	"UserID"
-//		@Param			TenantCreate	body		models.TenantCreate	true	"TenantCreate"
-//		@Success		200				{object}	models.Response		"Tenant creado con éxito"
-//		@Failure		400				{object}	models.Response		"Bad Request"
-//		@Failure		401				{object}	models.Response		"Auth is required"
-//		@Failure		403				{object}	models.Response		"Not Authorized"
-//		@Failure		500				{object}	models.Response
-//		@Router			/tenant/create [post]
+//	@Summary		Tenant Create
+//	@Description	Tenant Create required auth token
+//	@Tags			Tenant
+//	@Accept			json
+//	@Produce		json
+//	@Security		BearerAuth
+//	@Param			user_id			query		string				true	"UserID"
+//	@Param			TenantCreate	body		models.TenantCreate	true	"TenantCreate"
+//	@Success		200				{object}	models.Response		"Tenant creado con éxito"
+//	@Failure		400				{object}	models.Response		"Bad Request"
+//	@Failure		401				{object}	models.Response		"Auth is required"
+//	@Failure		403				{object}	models.Response		"Not Authorized"
+//	@Failure		500				{object}	models.Response
+//	@Router			/tenant/create [post]
 func (t *TenantController) TenantCreateByUserID(c *fiber.Ctx) error {
 	userID := c.Query("user_id")
 	if userID == "" {
@@ -113,19 +113,19 @@ func (t *TenantController) TenantCreateByUserID(c *fiber.Ctx) error {
 }
 
 //	 Tenant godoc
-//		@Summary		Tenant Create
-//		@Description	Tenant Create required auth token
-//		@Tags			Tenant
-//		@Accept			json
-//		@Produce		json
-//		@Security		BearerAuth
-//		@Param			TenantUserCreate	body		models.TenantUserCreate	true	"TenantUserCreate"
-//		@Success		200				{object}	models.Response		"Tenant y Usuario creados con éxito"
-//		@Failure		400				{object}	models.Response		"Bad Request"
-//		@Failure		401				{object}	models.Response		"Auth is required"
-//		@Failure		403				{object}	models.Response		"Not Authorized"
-//		@Failure		500				{object}	models.Response
-//		@Router			/tenant/create_tenant_user [post]
+//	@Summary		Tenant Create
+//	@Description	Tenant Create required auth token
+//	@Tags			Tenant
+//	@Accept			json
+//	@Produce		json
+//	@Security		BearerAuth
+//	@Param			TenantUserCreate	body		models.TenantUserCreate	true	"TenantUserCreate"
+//	@Success		200					{object}	models.Response			"Tenant y Usuario creados con éxito"
+//	@Failure		400					{object}	models.Response			"Bad Request"
+//	@Failure		401					{object}	models.Response			"Auth is required"
+//	@Failure		403					{object}	models.Response			"Not Authorized"
+//	@Failure		500					{object}	models.Response
+//	@Router			/tenant/create_tenant_user [post]
 func (t *TenantController) TenantUserCreate(c *fiber.Ctx) error {
 	var tenantUserCrate models.TenantUserCreate
 	if err := c.BodyParser(&tenantUserCrate); err != nil {

@@ -55,7 +55,7 @@ func main() {
 	}))
 
 	appDependencies := dependencies.NewApplication(db)
-	tenantDependencies := dependencies.TenantDBRepository(nil, db)
+	tenantDependencies := dependencies.TenantDBRepository(nil)
 
 	app.Use(middleware.LoggingMiddleware)
 	app.Use(middleware.InjectApp(appDependencies, tenantDependencies))

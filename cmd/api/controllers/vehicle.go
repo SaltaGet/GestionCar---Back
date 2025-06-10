@@ -13,13 +13,13 @@ import (
 //	@Accept			json
 //	@Produce		json
 //	@Security		BearerAuth
-//	@Param			vehicleCreate		body		models.VehicleCreate	true	"Vehicle information"
-//	@Success		201					{object}	models.Response
-//	@Failure		400					{object}	models.Response	"Bad Request"
-//	@Failure		401					{object}	models.Response	"Auth is required"
-//	@Failure		403					{object}	models.Response	"Not Authorized"
-//	@Failure		422					{object}	models.Response	"Model is invalid"
-//	@Failure		500					{object}	models.Response
+//	@Param			vehicleCreate	body		models.VehicleCreate	true	"Vehicle information"
+//	@Success		201				{object}	models.Response
+//	@Failure		400				{object}	models.Response	"Bad Request"
+//	@Failure		401				{object}	models.Response	"Auth is required"
+//	@Failure		403				{object}	models.Response	"Not Authorized"
+//	@Failure		422				{object}	models.Response	"Model is invalid"
+//	@Failure		500				{object}	models.Response
 //	@Router			/vehicle/create [post]
 func (v *VehicleController) VehicleCreate(c *fiber.Ctx) error{
 	var vehicleCreate models.VehicleCreate
@@ -67,11 +67,11 @@ func (v *VehicleController) VehicleCreate(c *fiber.Ctx) error{
 //	@Tags			Vehicle
 //	@Produce		json
 //	@Security		BearerAuth
-//	@Success		200					{object}	[]models.Vehicle	"List of vehicles retrieved successfully"
-//	@Failure		400					{object}	models.Response		"Bad Request"
-//	@Failure		401					{object}	models.Response		"Auth is required"
-//	@Failure		403					{object}	models.Response		"Not Authorized"
-//	@Failure		500					{object}	models.Response		"Internal server error"
+//	@Success		200	{object}	[]models.Vehicle	"List of vehicles retrieved successfully"
+//	@Failure		400	{object}	models.Response		"Bad Request"
+//	@Failure		401	{object}	models.Response		"Auth is required"
+//	@Failure		403	{object}	models.Response		"Not Authorized"
+//	@Failure		500	{object}	models.Response		"Internal server error"
 //	@Router			/vehicle/get_all [get]
 func (v *VehicleController) VehicleGetAll(c *fiber.Ctx) error {
 	vehicles, err := v.VehicleService.VehicleGetAll()
@@ -104,13 +104,13 @@ func (v *VehicleController) VehicleGetAll(c *fiber.Ctx) error {
 //	@Accept			json
 //	@Produce		json
 //	@Security		BearerAuth
-//	@Param			id					path		string			true	"ID of Vehicle"
-//	@Success		200					{object}	models.Vehicle	"Vehicle retrieved successfully"
-//	@Failure		400					{object}	models.Response	"Bad Request"
-//	@Failure		401					{object}	models.Response	"Auth is required"
-//	@Failure		403					{object}	models.Response	"Not Authorized"
-//	@Failure		404					{object}	models.Response	"Vehicle not found"
-//	@Failure		500					{object}	models.Response
+//	@Param			id	path		string			true	"ID of Vehicle"
+//	@Success		200	{object}	models.Vehicle	"Vehicle retrieved successfully"
+//	@Failure		400	{object}	models.Response	"Bad Request"
+//	@Failure		401	{object}	models.Response	"Auth is required"
+//	@Failure		403	{object}	models.Response	"Not Authorized"
+//	@Failure		404	{object}	models.Response	"Vehicle not found"
+//	@Failure		500	{object}	models.Response
 //	@Router			/vehicle/{id} [get]
 func (v *VehicleController) VehicleGetByID(c *fiber.Ctx) error {
 	id := c.Params("id")
@@ -150,12 +150,12 @@ func (v *VehicleController) VehicleGetByID(c *fiber.Ctx) error {
 //	@Tags			Vehicle
 //	@Produce		json
 //	@Security		BearerAuth
-//	@Param			domain				query		string				true	"Domain string"
-//	@Success		200					{object}	[]models.Vehicle	"List of vehicles retrieved successfully"
-//	@Failure		400					{object}	models.Response		"Bad Request"
-//	@Failure		401					{object}	models.Response		"Auth is required"
-//	@Failure		403					{object}	models.Response		"Not Authorized"
-//	@Failure		500					{object}	models.Response		"Internal server error"
+//	@Param			domain	query		string				true	"Domain string"
+//	@Success		200		{object}	[]models.Vehicle	"List of vehicles retrieved successfully"
+//	@Failure		400		{object}	models.Response		"Bad Request"
+//	@Failure		401		{object}	models.Response		"Auth is required"
+//	@Failure		403		{object}	models.Response		"Not Authorized"
+//	@Failure		500		{object}	models.Response		"Internal server error"
 //	@Router			/vehicle/get_by_domain [get]
 func (v *VehicleController) VehicleGetByDomain(c *fiber.Ctx) error {
 	domain := c.Query("domain")
@@ -196,12 +196,12 @@ func (v *VehicleController) VehicleGetByDomain(c *fiber.Ctx) error {
 //	@Tags			Vehicle
 //	@Produce		json
 //	@Security		BearerAuth
-//	@Param			client_id			path		string				true	"Client ID"
-//	@Success		200					{object}	[]models.Vehicle	"List of vehicles retrieved successfully"
-//	@Failure		400					{object}	models.Response		"Bad Request"
-//	@Failure		401					{object}	models.Response		"Auth is required"
-//	@Failure		403					{object}	models.Response		"Not Authorized"
-//	@Failure		500					{object}	models.Response		"Internal server error"
+//	@Param			client_id	path		string				true	"Client ID"
+//	@Success		200			{object}	[]models.Vehicle	"List of vehicles retrieved successfully"
+//	@Failure		400			{object}	models.Response		"Bad Request"
+//	@Failure		401			{object}	models.Response		"Auth is required"
+//	@Failure		403			{object}	models.Response		"Not Authorized"
+//	@Failure		500			{object}	models.Response		"Internal server error"
 //	@Router			/vehicle/get_by_client/{client_id} [get]
 func (v *VehicleController) VehicleGetByClientID(c *fiber.Ctx) error {
 	clientID := c.Params("client_id")
@@ -243,14 +243,14 @@ func (v *VehicleController) VehicleGetByClientID(c *fiber.Ctx) error {
 //	@Accept			json
 //	@Produce		json
 //	@Security		BearerAuth
-//	@Param			vehicleUpdate		body		models.VehicleUpdate	true	"VehicleUpdate"
-//	@Success		200					{object}	models.Response			"Vehicle updated successfully"
-//	@Failure		400					{object}	models.Response			"Bad Request"
-//	@Failure		401					{object}	models.Response			"Auth is required"
-//	@Failure		403					{object}	models.Response			"Not Authorized"
-//	@Failure		404					{object}	models.Response			"Vehicle not found"
-//	@Failure		422					{object}	models.Response			"Model is invalid"
-//	@Failure		500					{object}	models.Response
+//	@Param			vehicleUpdate	body		models.VehicleUpdate	true	"VehicleUpdate"
+//	@Success		200				{object}	models.Response			"Vehicle updated successfully"
+//	@Failure		400				{object}	models.Response			"Bad Request"
+//	@Failure		401				{object}	models.Response			"Auth is required"
+//	@Failure		403				{object}	models.Response			"Not Authorized"
+//	@Failure		404				{object}	models.Response			"Vehicle not found"
+//	@Failure		422				{object}	models.Response			"Model is invalid"
+//	@Failure		500				{object}	models.Response
 //	@Router			/vehicle/update [put]
 func (v *VehicleController) VehicleUpdate(c *fiber.Ctx) error {
 	var vehicleUpdate models.VehicleUpdate
@@ -300,13 +300,13 @@ func (v *VehicleController) VehicleUpdate(c *fiber.Ctx) error {
 //	@Accept			json
 //	@Produce		json
 //	@Security		BearerAuth
-//	@Param			id					path		string			true	"ID of Vehicle"
-//	@Failure		200					{object}	models.Response	"Vehicle deleted successfully"
-//	@Failure		400					{object}	models.Response	"Bad Request"
-//	@Failure		401					{object}	models.Response	"Auth is required"
-//	@Failure		403					{object}	models.Response	"Not Authorized"
-//	@Failure		404					{object}	models.Response	"Vehicle not found"
-//	@Failure		500					{object}	models.Response
+//	@Param			id	path		string			true	"ID of Vehicle"
+//	@Failure		200	{object}	models.Response	"Vehicle deleted successfully"
+//	@Failure		400	{object}	models.Response	"Bad Request"
+//	@Failure		401	{object}	models.Response	"Auth is required"
+//	@Failure		403	{object}	models.Response	"Not Authorized"
+//	@Failure		404	{object}	models.Response	"Vehicle not found"
+//	@Failure		500	{object}	models.Response
 //	@Router			/vehicle/delete/{id} [delete]
 func (v *VehicleController) VehicleDelete(c *fiber.Ctx) error {
 	id := c.Params("id")

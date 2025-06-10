@@ -12,13 +12,13 @@ import (
 //	@Accept			json
 //	@Produce		json
 //	@Security		BearerAuth
-//	@Param			id					path		string										true	"ID of the income"
-//	@Success		200					{object}	models.Response{body=models.Income}	"Income details fetched successfully"
-//	@Failure		400					{object}	models.Response								"Bad Request"
-//	@Failure		401					{object}	models.Response								"Auth is required"
-//	@Failure		403					{object}	models.Response								"Not Authorized"
-//	@Failure		404					{object}	models.Response								"Expense not found"
-//	@Failure		500					{object}	models.Response								"Internal server error"
+//	@Param			id	path		string								true	"ID of the income"
+//	@Success		200	{object}	models.Response{body=models.Income}	"Income details fetched successfully"
+//	@Failure		400	{object}	models.Response						"Bad Request"
+//	@Failure		401	{object}	models.Response						"Auth is required"
+//	@Failure		403	{object}	models.Response						"Not Authorized"
+//	@Failure		404	{object}	models.Response						"Expense not found"
+//	@Failure		500	{object}	models.Response						"Internal server error"
 //	@Router			/income/{id} [get]
 func (i *IncomeController) GetIncomeByID(c *fiber.Ctx) error {
 	id := c.Params("id")
@@ -60,12 +60,12 @@ func (i *IncomeController) GetIncomeByID(c *fiber.Ctx) error {
 //	@Accept			json
 //	@Produce		json
 //	@Security		BearerAuth
-//	@Success		200					{object}	models.Response{body=[]models.Income}	"List of incomes"
-//	@Failure		400					{object}	models.Response									"Bad Request"
-//	@Failure		401					{object}	models.Response									"Auth is required"
-//	@Failure		403					{object}	models.Response									"Not Authorized"
-//	@Failure		404					{object}	models.Response									"Expense not found"
-//	@Failure		500					{object}	models.Response									"Internal server error"
+//	@Success		200	{object}	models.Response{body=[]models.Income}	"List of incomes"
+//	@Failure		400	{object}	models.Response							"Bad Request"
+//	@Failure		401	{object}	models.Response							"Auth is required"
+//	@Failure		403	{object}	models.Response							"Not Authorized"
+//	@Failure		404	{object}	models.Response							"Expense not found"
+//	@Failure		500	{object}	models.Response							"Internal server error"
 //	@Router			/income/get_all [get]
 func (i *IncomeController) GetAllIncomes(c *fiber.Ctx) error {
 	incomes, err := i.IncomeService.IncomeGetAll()
@@ -98,12 +98,12 @@ func (i *IncomeController) GetAllIncomes(c *fiber.Ctx) error {
 //	@Accept			json
 //	@Produce		json
 //	@Security		BearerAuth
-//	@Success		200					{object}	models.Response{body=[]models.Income}	"List of all incomes"
-//	@Failure		400					{object}	models.Response									"Bad Request"
-//	@Failure		401					{object}	models.Response									"Auth is required"
-//	@Failure		403					{object}	models.Response									"Not Authorized"
-//	@Failure		404					{object}	models.Response									"Expense not found"
-//	@Failure		500					{object}	models.Response									"Internal server error"
+//	@Success		200	{object}	models.Response{body=[]models.Income}	"List of all incomes"
+//	@Failure		400	{object}	models.Response							"Bad Request"
+//	@Failure		401	{object}	models.Response							"Auth is required"
+//	@Failure		403	{object}	models.Response							"Not Authorized"
+//	@Failure		404	{object}	models.Response							"Expense not found"
+//	@Failure		500	{object}	models.Response							"Internal server error"
 //	@Router			/income/get_today [get]
 func (i *IncomeController) GetIncomeToday(c *fiber.Ctx) error {
 	incomes, err := i.IncomeService.IncomeGetToday()
@@ -136,14 +136,14 @@ func (i *IncomeController) GetIncomeToday(c *fiber.Ctx) error {
 //	@Accept			json
 //	@Produce		json
 //	@Security		BearerAuth
-//	@Param			incomeCreate		body		models.IncomeCreate				true	"Income information"
-//	@Success		200					{object}	models.Response{body=string}	"Income created successfully"
-//	@Failure		400					{object}	models.Response					"Bad Request"
-//	@Failure		401					{object}	models.Response					"Auth is required"
-//	@Failure		403					{object}	models.Response					"Not Authorized"
-//	@Failure		404					{object}	models.Response					"Expense not found"
-//	@Failure		422					{object}	models.Response					"Model Invalid"
-//	@Failure		500					{object}	models.Response					"Internal server error"
+//	@Param			incomeCreate	body		models.IncomeCreate				true	"Income information"
+//	@Success		200				{object}	models.Response{body=string}	"Income created successfully"
+//	@Failure		400				{object}	models.Response					"Bad Request"
+//	@Failure		401				{object}	models.Response					"Auth is required"
+//	@Failure		403				{object}	models.Response					"Not Authorized"
+//	@Failure		404				{object}	models.Response					"Expense not found"
+//	@Failure		422				{object}	models.Response					"Model Invalid"
+//	@Failure		500				{object}	models.Response					"Internal server error"
 //	@Router			/income/create [post]
 func (i *IncomeController) CreateIncome(c *fiber.Ctx) error {
 	var incomeCreate models.IncomeCreate
@@ -192,14 +192,14 @@ func (i *IncomeController) CreateIncome(c *fiber.Ctx) error {
 //	@Accept			json
 //	@Produce		json
 //	@Security		BearerAuth
-//	@Param			incomeUpdate		body		models.IncomeUpdate	true	"Income data to update"
-//	@Success		200					{object}	models.Response		"Income updated successfully"
-//	@Failure		400					{object}	models.Response		"Bad Request"
-//	@Failure		401					{object}	models.Response		"Auth is required"
-//	@Failure		403					{object}	models.Response		"Not Authorized"
-//	@Failure		404					{object}	models.Response		"Expense not found"
-//	@Failure		422					{object}	models.Response		"Model Invalid"
-//	@Failure		500					{object}	models.Response		"Internal server error"
+//	@Param			incomeUpdate	body		models.IncomeUpdate	true	"Income data to update"
+//	@Success		200				{object}	models.Response		"Income updated successfully"
+//	@Failure		400				{object}	models.Response		"Bad Request"
+//	@Failure		401				{object}	models.Response		"Auth is required"
+//	@Failure		403				{object}	models.Response		"Not Authorized"
+//	@Failure		404				{object}	models.Response		"Expense not found"
+//	@Failure		422				{object}	models.Response		"Model Invalid"
+//	@Failure		500				{object}	models.Response		"Internal server error"
 //	@Router			/income/update [put]
 func (i *IncomeController) UpdateIncome(c *fiber.Ctx) error {
 	var incomeUpdate models.IncomeUpdate
@@ -248,13 +248,13 @@ func (i *IncomeController) UpdateIncome(c *fiber.Ctx) error {
 //	@Accept			json
 //	@Produce		json
 //	@Security		BearerAuth
-//	@Param			id					path		string			true	"ID of the income"
-//	@Success		200					{object}	models.Response	"Income deleted successfully"
-//	@Failure		400					{object}	models.Response	"Bad Request"
-//	@Failure		401					{object}	models.Response	"Auth is required"
-//	@Failure		403					{object}	models.Response	"Not Authorized"
-//	@Failure		404					{object}	models.Response	"Expense not found"
-//	@Failure		500					{object}	models.Response	"Error interno"
+//	@Param			id	path		string			true	"ID of the income"
+//	@Success		200	{object}	models.Response	"Income deleted successfully"
+//	@Failure		400	{object}	models.Response	"Bad Request"
+//	@Failure		401	{object}	models.Response	"Auth is required"
+//	@Failure		403	{object}	models.Response	"Not Authorized"
+//	@Failure		404	{object}	models.Response	"Expense not found"
+//	@Failure		500	{object}	models.Response	"Error interno"
 //	@Router			/income/delete/{id} [delete]
 func (i *IncomeController) DeleteIncome(c *fiber.Ctx) error {
 	id := c.Params("id")

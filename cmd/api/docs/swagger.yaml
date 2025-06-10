@@ -339,10 +339,8 @@ definitions:
     required:
     - amount
     - client_id
-    - details
     - movement_type_id
     - services_id
-    - ticket
     - vehicle_id
     type: object
   models.IncomeUpdate:
@@ -379,18 +377,49 @@ definitions:
     properties:
       created_at:
         type: string
+      deleted_at:
+        type: string
+      email:
+        type: string
+      first_name:
+        type: string
       id:
         type: string
       is_active:
         type: boolean
+      is_deleted:
+        type: boolean
+      last_name:
+        type: string
+      password:
+        type: string
       role:
         $ref: '#/definitions/models.Role'
       role_id:
         type: string
       updated_at:
         type: string
-      user_id:
+      username:
         type: string
+    type: object
+  models.MemberCreate:
+    properties:
+      email:
+        type: string
+      first_name:
+        type: string
+      last_name:
+        type: string
+      role_id:
+        type: string
+      username:
+        type: string
+    required:
+    - email
+    - first_name
+    - last_name
+    - role_id
+    - username
     type: object
   models.MovementType:
     properties:
@@ -625,6 +654,13 @@ definitions:
           $ref: '#/definitions/models.Permission'
         type: array
     type: object
+  models.RoleCreate:
+    properties:
+      name:
+        type: string
+    required:
+    - name
+    type: object
   models.Service:
     properties:
       created_at:
@@ -719,9 +755,11 @@ definitions:
     properties:
       address:
         type: string
-      cuit:
+      cuit_pdv:
         type: string
       email:
+        type: string
+      identifier:
         type: string
       name:
         type: string
@@ -729,8 +767,9 @@ definitions:
         type: string
     required:
     - address
-    - cuit
+    - cuit_pdv
     - email
+    - identifier
     - name
     - phone
     type: object
@@ -2385,6 +2424,46 @@ paths:
       summary: Update Income
       tags:
       - Income
+  /member/create:
+    post:
+      consumes:
+      - application/json
+      description: Memeber GetAll required auth token
+      parameters:
+      - description: MemberCreate
+        in: body
+        name: member_create
+        required: true
+        schema:
+          $ref: '#/definitions/models.MemberCreate'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Members obtenidos con éxito
+          schema:
+            $ref: '#/definitions/models.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.Response'
+        "401":
+          description: Auth is required
+          schema:
+            $ref: '#/definitions/models.Response'
+        "403":
+          description: Not Authorized
+          schema:
+            $ref: '#/definitions/models.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.Response'
+      security:
+      - BearerAuth: []
+      summary: Memeber GetAll
+      tags:
+      - Member
   /member/get_all:
     get:
       consumes:
@@ -2986,23 +3065,13 @@ paths:
       summary: Update Product
       tags:
       - Product
-  /product/update_stock/{id}:
+  /product/update_stock:
     put:
       consumes:
       - application/json
       description: Updates the stock of a product based on the given method (add,
         subtract, update).
       parameters:
-      - description: ID of the product
-        in: path
-        name: id
-        required: true
-        type: string
-      - description: Method of stock update (add, subtract, update)
-        in: query
-        name: method
-        required: true
-        type: string
       - description: Stock update details
         in: body
         name: stock
@@ -3272,6 +3341,65 @@ paths:
       summary: Update Purchase Order
       tags:
       - Purchase Order
+  /role/create:
+    post:
+      consumes:
+      - application/json
+      description: This function fetches roles based on the user's role and workplace
+        identifier
+      parameters:
+      - description: Role object
+        in: body
+        name: role
+        required: true
+        schema:
+          $ref: '#/definitions/models.RoleCreate'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Roles retrieved successfully
+          schema:
+            $ref: '#/definitions/models.Response'
+        "400":
+          description: Bad request if user or workplace is missing
+          schema:
+            $ref: '#/definitions/models.Response'
+        "500":
+          description: Internal server error on failure
+          schema:
+            $ref: '#/definitions/models.Response'
+      security:
+      - BearerAuth: []
+      summary: Retrieve roles for a user in a specific workplace
+      tags:
+      - Role
+  /role/get_all:
+    get:
+      consumes:
+      - application/json
+      description: This function fetches roles based on the user's role and workplace
+        identifier
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Roles retrieved successfully
+          schema:
+            $ref: '#/definitions/models.Response'
+        "400":
+          description: Bad request if user or workplace is missing
+          schema:
+            $ref: '#/definitions/models.Response'
+        "500":
+          description: Internal server error on failure
+          schema:
+            $ref: '#/definitions/models.Response'
+      security:
+      - BearerAuth: []
+      summary: Retrieve roles for a user in a specific workplace
+      tags:
+      - Role
   /service/{id}:
     get:
       consumes:

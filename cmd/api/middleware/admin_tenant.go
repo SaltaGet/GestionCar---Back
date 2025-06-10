@@ -7,7 +7,7 @@ import (
 
 func AdminTenantMiddleware() fiber.Handler {
 	return func(c *fiber.Ctx) error {
-		tenant, ok := c.Locals("tenant").(*models.Tenant)
+		user, ok := c.Locals("user").(*models.AuthenticatedUser)
 		if !ok {
 			return c.Status(fiber.StatusUnauthorized).JSON(models.Response{
 				Status:  false,
@@ -16,7 +16,7 @@ func AdminTenantMiddleware() fiber.Handler {
 			})
 		}
 		
-		if tenant.UserTenants[0].IsAdmin {
+		if user.IsAdminTenant {
 			return c.Next()
 		}
 

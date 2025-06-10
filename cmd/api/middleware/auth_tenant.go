@@ -7,9 +7,16 @@ import (
 
 func TenantMiddleware() fiber.Handler {
 	return func(c *fiber.Ctx) error {
-		tenantRaw := c.Locals("tenant")
-		tenant, ok := tenantRaw.(*models.Tenant)
-		if !ok || tenant == nil {
+		user, ok := c.Locals("user").(*models.AuthenticatedUser)
+		if !ok {
+			return c.Status(fiber.StatusUnauthorized).JSON(models.Response{
+				Status:  false,
+				Body:    nil,
+				Message: "Teanant No autenticado",
+			})
+		}
+
+		if user.TenantID == nil {
 			return c.Status(401).JSON(models.Response{
 				Status:  false,
 				Body:    nil,

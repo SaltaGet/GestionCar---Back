@@ -10,6 +10,7 @@ import (
 type Tenant struct {
 	ID          string       `gorm:"primaryKey;size:36" json:"id"`
 	Name        string       `gorm:"not null" json:"name"`
+	Identifier string       `gorm:"not null;unique" json:"identifier"`
 	Address     string       `gorm:"not null" json:"address"`
 	Phone       string       `gorm:"not null" json:"phone"`
 	Email       string       `gorm:"Index;not null" json:"email"`
@@ -23,11 +24,11 @@ type Tenant struct {
 
 type TenantCreate struct {
 	Name    string `json:"name" validate:"required"`
+	Identifier string `json:"identifier" validate:"required"`
 	Address string `json:"address" validate:"required"`
 	Phone   string `json:"phone" validate:"required"`
 	Email   string `json:"email" validate:"required,email"`
-	CuitPdv string `json:"cuit" validate:"required"`
-	// Identifier string `json:"identifier" validate:"required"`
+	CuitPdv string `json:"cuit_pdv" validate:"required"`
 }
 
 func (t *TenantCreate) Validate() error {
@@ -41,7 +42,7 @@ func (t *TenantCreate) Validate() error {
 	field := validationErr.Field()
 	tag := validationErr.Tag()
 
-	return fmt.Errorf("field %s is invalid (%s)", field, tag)
+	return fmt.Errorf("campo %s es invalido, revisar: (%s)", field, tag)
 }
 
 type TenantUpdate struct {

@@ -86,7 +86,7 @@ func (a *AuthController) AuthTenant(c *fiber.Ctx) error {
 		})
 	}
 
-	user := c.Locals("user").(*models.User)
+	user := c.Locals("user").(*models.AuthenticatedUser)
 	if user == nil {
 		return c.Status(401).JSON(models.Response{
 			Status: false, 

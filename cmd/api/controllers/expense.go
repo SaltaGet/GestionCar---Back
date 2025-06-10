@@ -13,13 +13,13 @@ import (
 //	@Accept			json
 //	@Produce		json
 //	@Security		BearerAuth
-//	@Param			id					path		string										true	"ID of Expense"
-//	@Success		200					{object}	models.Response{body=models.Expense}	"Expense obtained successfully"
-//	@Failure		400					{object}	models.Response								"Bad Request"
-//	@Failure		401					{object}	models.Response								"Auth is required"
-//	@Failure		403					{object}	models.Response								"Not Authorized"
-//	@Failure		404					{object}	models.Response								"Expense not found"
-//	@Failure		500					{object}	models.Response
+//	@Param			id	path		string									true	"ID of Expense"
+//	@Success		200	{object}	models.Response{body=models.Expense}	"Expense obtained successfully"
+//	@Failure		400	{object}	models.Response							"Bad Request"
+//	@Failure		401	{object}	models.Response							"Auth is required"
+//	@Failure		403	{object}	models.Response							"Not Authorized"
+//	@Failure		404	{object}	models.Response							"Expense not found"
+//	@Failure		500	{object}	models.Response
 //	@Router			/expense/{id} [get]
 func (e *ExpenseController) GetExpenseByID(c *fiber.Ctx) error {
 	id := c.Params("id")
@@ -61,11 +61,11 @@ func (e *ExpenseController) GetExpenseByID(c *fiber.Ctx) error {
 //	@Accept			json
 //	@Produce		json
 //	@Security		BearerAuth
-//	@Success		200					{object}	models.Response{body=[]models.Expense}	"List of expenses"
-//	@Failure		400					{object}	models.Response									"Bad Request"
-//	@Failure		401					{object}	models.Response									"Auth is required"
-//	@Failure		403					{object}	models.Response									"Not Authorized"
-//	@Failure		500					{object}	models.Response									"Internal server error"
+//	@Success		200	{object}	models.Response{body=[]models.Expense}	"List of expenses"
+//	@Failure		400	{object}	models.Response							"Bad Request"
+//	@Failure		401	{object}	models.Response							"Auth is required"
+//	@Failure		403	{object}	models.Response							"Not Authorized"
+//	@Failure		500	{object}	models.Response							"Internal server error"
 //	@Router			/expense/get_all [get]
 func (e *ExpenseController) GetAllExpenses(c *fiber.Ctx) error {
 	expenses, err := e.ExpenseService.ExpenseGetAll()
@@ -98,11 +98,11 @@ func (e *ExpenseController) GetAllExpenses(c *fiber.Ctx) error {
 //	@Accept			json
 //	@Produce		json
 //	@Security		BearerAuth
-//	@Success		200					{object}	models.Response{body=[]models.Expense}	"List of expenses"
-//	@Failure		400					{object}	models.Response									"Bad Request"
-//	@Failure		401					{object}	models.Response									"Auth is required"
-//	@Failure		403					{object}	models.Response									"Not Authorized"
-//	@Failure		500					{object}	models.Response									"Internal server error"
+//	@Success		200	{object}	models.Response{body=[]models.Expense}	"List of expenses"
+//	@Failure		400	{object}	models.Response							"Bad Request"
+//	@Failure		401	{object}	models.Response							"Auth is required"
+//	@Failure		403	{object}	models.Response							"Not Authorized"
+//	@Failure		500	{object}	models.Response							"Internal server error"
 //	@Router			/expense/get_today [get]
 func (e *ExpenseController) GetExpenseToday(c *fiber.Ctx) error {
 	expenses, err := e.ExpenseService.ExpenseGetToday()
@@ -135,13 +135,13 @@ func (e *ExpenseController) GetExpenseToday(c *fiber.Ctx) error {
 //	@Accept			json
 //	@Produce		json
 //	@Security		BearerAuth
-//	@Param			expenseCreate		body		models.ExpenseCreate			true	"Expense information"
-//	@Success		200					{object}	models.Response{body=string}	"Expense created successfully"
-//	@Failure		400					{object}	models.Response					"Bad Request"
-//	@Failure		401					{object}	models.Response					"Auth is required"
-//	@Failure		403					{object}	models.Response					"Not Authorized"
-//	@Failure		422					{object}	models.Response					"Model Invalid"
-//	@Failure		500					{object}	models.Response					"Internal server error"
+//	@Param			expenseCreate	body		models.ExpenseCreate			true	"Expense information"
+//	@Success		200				{object}	models.Response{body=string}	"Expense created successfully"
+//	@Failure		400				{object}	models.Response					"Bad Request"
+//	@Failure		401				{object}	models.Response					"Auth is required"
+//	@Failure		403				{object}	models.Response					"Not Authorized"
+//	@Failure		422				{object}	models.Response					"Model Invalid"
+//	@Failure		500				{object}	models.Response					"Internal server error"
 //	@Router			/expense/create [post]
 func (e *ExpenseController) CreateExpense(c *fiber.Ctx) error {
 	var expenseCreate models.ExpenseCreate
@@ -190,13 +190,13 @@ func (e *ExpenseController) CreateExpense(c *fiber.Ctx) error {
 //	@Accept			json
 //	@Produce		json
 //	@Security		BearerAuth
-//	@Param			expenseUpdate		body		models.ExpenseUpdate	true	"Expense data to update"
-//	@Success		200					{object}	models.Response			"Expense updated successfully"
-//	@Failure		400					{object}	models.Response			"Bad Request"
-//	@Failure		401					{object}	models.Response			"Auth is required"
-//	@Failure		403					{object}	models.Response			"Not Authorized"
-//	@Failure		422					{object}	models.Response			"Model Invalid"
-//	@Failure		500					{object}	models.Response			"Internal server error"
+//	@Param			expenseUpdate	body		models.ExpenseUpdate	true	"Expense data to update"
+//	@Success		200				{object}	models.Response			"Expense updated successfully"
+//	@Failure		400				{object}	models.Response			"Bad Request"
+//	@Failure		401				{object}	models.Response			"Auth is required"
+//	@Failure		403				{object}	models.Response			"Not Authorized"
+//	@Failure		422				{object}	models.Response			"Model Invalid"
+//	@Failure		500				{object}	models.Response			"Internal server error"
 //	@Router			/expense/update [put]
 func (e *ExpenseController) UpdateExpense(c *fiber.Ctx) error {
 	var expenseUpdate models.ExpenseUpdate
@@ -245,12 +245,12 @@ func (e *ExpenseController) UpdateExpense(c *fiber.Ctx) error {
 //	@Accept			json
 //	@Produce		json
 //	@Security		BearerAuth
-//	@Param			id					path		string			true	"ID of the expense"
-//	@Success		200					{object}	models.Response	"Expense deleted successfully"
-//	@Failure		400					{object}	models.Response	"Bad Request"
-//	@Failure		401					{object}	models.Response	"Auth is required"
-//	@Failure		403					{object}	models.Response	"Not Authorized"
-//	@Failure		500					{object}	models.Response	"Internal server error"
+//	@Param			id	path		string			true	"ID of the expense"
+//	@Success		200	{object}	models.Response	"Expense deleted successfully"
+//	@Failure		400	{object}	models.Response	"Bad Request"
+//	@Failure		401	{object}	models.Response	"Auth is required"
+//	@Failure		403	{object}	models.Response	"Not Authorized"
+//	@Failure		500	{object}	models.Response	"Internal server error"
 //	@Router			/expense/delete/{id} [delete]
 func (e *ExpenseController) DeleteExpense(c *fiber.Ctx) error {
 	id := c.Params("id")

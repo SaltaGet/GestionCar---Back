@@ -6,7 +6,7 @@ import (
 	"os"
 
 	"github.com/DanielChachagua/GestionCar/pkg/models"
-	"github.com/google/uuid"
+	// "github.com/google/uuid"
 
 	"gorm.io/driver/sqlite"
 	// "gorm.io/driver/mysql"
@@ -58,24 +58,24 @@ func PrepareDB(uri string, userID string) error {
 		return fmt.Errorf("error al migrar tablas: %w", err)
 	}
 
-	var count int64
-	db.Model(&models.Role{}).Count(&count)
-	var role models.Role
-	if count == 0 {
-		role = models.Role{ID: uuid.NewString(), Name: "admin"}
-		db.Create(&role)
-	} else {
-		db.Where("name = ?", "admin").First(&role)
-	}
+	// var count int64
+	// db.Model(&models.Role{}).Count(&count)
+	// var role models.Role
+	// if count == 0 {
+	// 	role = models.Role{ID: uuid.NewString(), Name: "admin"}
+	// 	db.Create(&role)
+	// } else {
+	// 	db.Where("name = ?", "admin").First(&role)
+	// }
 
-	db.Model(&models.Member{}).Count(&count)
-	if count == 0 {
-		db.Create(&models.Member{
-			ID: uuid.NewString(),
-			UserID: userID,
-			RoleID: role.ID,
-		})
-	}
+	// db.Model(&models.Member{}).Count(&count)
+	// if count == 0 {
+	// 	db.Create(&models.Member{
+	// 		ID: uuid.NewString(),
+	// 		UserID: userID,
+	// 		RoleID: role.ID,
+	// 	})
+	// }
 
 	return nil
 }

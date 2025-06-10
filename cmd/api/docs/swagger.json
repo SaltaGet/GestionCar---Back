@@ -2445,6 +2445,69 @@
                 }
             }
         },
+        "/member/create": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Memeber GetAll required auth token",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Member"
+                ],
+                "summary": "Memeber GetAll",
+                "parameters": [
+                    {
+                        "description": "MemberCreate",
+                        "name": "member_create",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.MemberCreate"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Members obtenidos con éxito",
+                        "schema": {
+                            "$ref": "#/definitions/models.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/models.Response"
+                        }
+                    },
+                    "401": {
+                        "description": "Auth is required",
+                        "schema": {
+                            "$ref": "#/definitions/models.Response"
+                        }
+                    },
+                    "403": {
+                        "description": "Not Authorized",
+                        "schema": {
+                            "$ref": "#/definitions/models.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/models.Response"
+                        }
+                    }
+                }
+            }
+        },
         "/member/get_all": {
             "get": {
                 "security": [
@@ -3332,7 +3395,7 @@
                 }
             }
         },
-        "/product/update_stock/{id}": {
+        "/product/update_stock": {
             "put": {
                 "security": [
                     {
@@ -3351,20 +3414,6 @@
                 ],
                 "summary": "Update Product Stock",
                 "parameters": [
-                    {
-                        "type": "string",
-                        "description": "ID of the product",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "Method of stock update (add, subtract, update)",
-                        "name": "method",
-                        "in": "query",
-                        "required": true
-                    },
                     {
                         "description": "Stock update details",
                         "name": "stock",
@@ -3862,6 +3911,97 @@
                     },
                     "500": {
                         "description": "Internal server error",
+                        "schema": {
+                            "$ref": "#/definitions/models.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/role/create": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "This function fetches roles based on the user's role and workplace identifier",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Role"
+                ],
+                "summary": "Retrieve roles for a user in a specific workplace",
+                "parameters": [
+                    {
+                        "description": "Role object",
+                        "name": "role",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.RoleCreate"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Roles retrieved successfully",
+                        "schema": {
+                            "$ref": "#/definitions/models.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request if user or workplace is missing",
+                        "schema": {
+                            "$ref": "#/definitions/models.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error on failure",
+                        "schema": {
+                            "$ref": "#/definitions/models.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/role/get_all": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "This function fetches roles based on the user's role and workplace identifier",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Role"
+                ],
+                "summary": "Retrieve roles for a user in a specific workplace",
+                "responses": {
+                    "200": {
+                        "description": "Roles retrieved successfully",
+                        "schema": {
+                            "$ref": "#/definitions/models.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request if user or workplace is missing",
+                        "schema": {
+                            "$ref": "#/definitions/models.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error on failure",
                         "schema": {
                             "$ref": "#/definitions/models.Response"
                         }
@@ -5869,10 +6009,8 @@
             "required": [
                 "amount",
                 "client_id",
-                "details",
                 "movement_type_id",
                 "services_id",
-                "ticket",
                 "vehicle_id"
             ],
             "properties": {
@@ -5954,11 +6092,29 @@
                 "created_at": {
                     "type": "string"
                 },
+                "deleted_at": {
+                    "type": "string"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "first_name": {
+                    "type": "string"
+                },
                 "id": {
                     "type": "string"
                 },
                 "is_active": {
                     "type": "boolean"
+                },
+                "is_deleted": {
+                    "type": "boolean"
+                },
+                "last_name": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string"
                 },
                 "role": {
                     "$ref": "#/definitions/models.Role"
@@ -5969,7 +6125,34 @@
                 "updated_at": {
                     "type": "string"
                 },
-                "user_id": {
+                "username": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.MemberCreate": {
+            "type": "object",
+            "required": [
+                "email",
+                "first_name",
+                "last_name",
+                "role_id",
+                "username"
+            ],
+            "properties": {
+                "email": {
+                    "type": "string"
+                },
+                "first_name": {
+                    "type": "string"
+                },
+                "last_name": {
+                    "type": "string"
+                },
+                "role_id": {
+                    "type": "string"
+                },
+                "username": {
                     "type": "string"
                 }
             }
@@ -6319,6 +6502,17 @@
                 }
             }
         },
+        "models.RoleCreate": {
+            "type": "object",
+            "required": [
+                "name"
+            ],
+            "properties": {
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
         "models.Service": {
             "type": "object",
             "properties": {
@@ -6460,8 +6654,9 @@
             "type": "object",
             "required": [
                 "address",
-                "cuit",
+                "cuit_pdv",
                 "email",
+                "identifier",
                 "name",
                 "phone"
             ],
@@ -6469,10 +6664,13 @@
                 "address": {
                     "type": "string"
                 },
-                "cuit": {
+                "cuit_pdv": {
                     "type": "string"
                 },
                 "email": {
+                    "type": "string"
+                },
+                "identifier": {
                     "type": "string"
                 },
                 "name": {

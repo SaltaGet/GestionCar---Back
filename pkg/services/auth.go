@@ -1,21 +1,39 @@
 package services
 
 import (
-	// "errors"
-
 	"github.com/DanielChachagua/GestionCar/pkg/models"
 	"github.com/DanielChachagua/GestionCar/pkg/utils"
-	// "gorm.io/gorm"
 )
 
-
 func (a *AuthService) AuthLogin(username, password string) (string, error) {
-	user, err := a.AuthRepository.AuthLogin(username, password)
-	if err != nil {
-		return "", err
+	var authResult models.AuthResult
+	userName, identifier := utils.ParseUsername(username)
+	if identifier != "" {
+		tenant, err := a.TenantService.TenantGetByIdentifier(identifier)
+		if err != nil {
+			return "", err
+		}
+
+		connection, err := utils.Decrypt(tenant.Connection)
+		if err != nil {
+			return "", err
+		}
+
+		authResultPtr, err := a.AuthRepository.AuthLogin(username, password, connection)
+		if err != nil {
+			return "", err
+		}
+		authResult = *authResultPtr
+		authResult.Tenant = tenant
+	} else {
+			authResultPtr, err := a.AuthRepository.AuthLogin(userName, password, "")
+		if err != nil {
+			return "", err
+		}
+		authResult = *authResultPtr
 	}
 
-	token, err := utils.GenerateToken(user, nil, "", nil, nil)
+	token, err := utils.GenerateToken(&authResult)
 	if err != nil {
 		return "", models.ErrorResponse(500, "Error al generar token", err)
 	}
@@ -23,23 +41,22 @@ func (a *AuthService) AuthLogin(username, password string) (string, error) {
 	return token, nil
 }
 
-func (a *AuthService) AuthGetTenant(user *models.User, tenantID string) (string, error) {
+func (a *AuthService) AuthGetTenant(user *models.AuthenticatedUser, tenantID string) (string, error) {
 	tenant, err := a.AuthRepository.AuthGetTenant(user.ID, tenantID)
 	if err != nil {
 		return "", err
 	}
 
-	connection, err := utils.Decrypt(tenant.Connection)
-	if err != nil {
-		return "", err
-	}
-
-	member, role, permissions, err := a.AuthRepository.UserGetRolePermissions(connection,user.ID)
-	if err != nil {
-		return "", err
-	}
-
-	token, err := utils.GenerateToken(user, tenant, member.ID, role, permissions)
+	token, err := utils.GenerateToken(&models.AuthResult{
+		ID:         user.ID,
+		FirstName:  user.FirstName,
+		LastName:   user.LastName,
+		Username:   user.Username,
+		IsAdmin:    user.IsAdminTenant,
+		Tenant:     tenant,
+		Role:       nil,
+		Permissions: nil,
+	})
 	if err != nil {
 		return "", models.ErrorResponse(500, "Error al generar token", err)
 	}

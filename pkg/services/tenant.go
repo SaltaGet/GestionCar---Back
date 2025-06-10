@@ -4,8 +4,16 @@ import (
 	"github.com/DanielChachagua/GestionCar/pkg/models"
 )
 
-func (t *TenantService) TenantGetByID(userID, id string) (*models.Tenant, error) {
-	tenant, err := t.TenantRepository.TenantGetByID(userID, id)
+func (t *TenantService) TenantGetByID(id string) (*models.Tenant, error) {
+	tenant, err := t.TenantRepository.TenantGetByID(id)
+	if err != nil {
+		return nil, err
+	}
+	return tenant, nil
+}
+
+func (t *TenantService) TenantGetByIdentifier(identifier string) (*models.Tenant, error) {
+	tenant, err := t.TenantRepository.TenantGetByIdentifier(identifier)
 	if err != nil {
 		return nil, err
 	}

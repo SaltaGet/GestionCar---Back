@@ -22,7 +22,7 @@ func (m *MemberService) MemberGetAll() (*[]models.MemberResponse, error) {
 
 	ids := make([]string, 0, len(*members))
 	for _, member := range *members {
-		ids = append(ids, member.UserID)
+		ids = append(ids, member.ID)
 	}
 
 	users, err := m.UserRepository.UserGetByListID(ids)
@@ -37,13 +37,12 @@ func (m *MemberService) MemberGetAll() (*[]models.MemberResponse, error) {
 
 	membersResponse := make([]models.MemberResponse, 0, len(*members))
 	for _, member := range *members {
-		user, exists := userMap[member.UserID]
+		user, exists := userMap[member.ID]
 		if !exists {
 			continue 
 		}
 		membersResponse = append(membersResponse, models.MemberResponse{
 			ID:       member.ID,
-			UserID:   member.UserID,
 			RoleID:   member.RoleID,
 			IsActive: member.IsActive,
 			Role:     member.Role,
@@ -80,31 +79,21 @@ func (m *MemberService) MemberAdd(memberAdd *models.MemberAdd, tenantID, userID 
 	return id, nil
 }
 
-func (m *MemberService) MemberGetByID(id string) (*models.MemberResponse, error) {
+func (m *MemberService) MemberGetByID(id string) (*models.Member, error) {
 	member, err := m.MemberRepository.MemberGetByID(id)
 	if err != nil {
 		return nil, err
 	}
 	
-	user, err := m.UserRepository.UserGetByID(member.UserID)
-	if err != nil {
-		return nil, err
-	}
+	return member, nil
+}
 
-	return &models.MemberResponse{
-		ID:       member.ID,
-		UserID:   member.UserID,
-		RoleID:   member.RoleID,
-		IsActive: member.IsActive,
-		Role:     member.Role,
-		UserData: models.UserDTO{
-			ID:       user.ID,
-			FirstName: user.FirstName,
-			LastName: user.LastName,
-			Username: user.Username,
-			Email:    user.Email,
-		},
-	}, nil
+func (m *MemberService) MemberCreate(memberCreate *models.MemberCreate, user *models.AuthenticatedUser) (string, error) {
+	id, err := m.MemberRepository.MemberCreate(memberCreate, user)
+	if err != nil {
+		return "", err
+	}
+	return id, nil
 }
 
 func (m *MemberService) MemberDelete(memberID string) error {

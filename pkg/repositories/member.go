@@ -2,8 +2,10 @@ package repositories
 
 import (
 	"errors"
+	"fmt"
 
 	"github.com/DanielChachagua/GestionCar/pkg/models"
+	"github.com/DanielChachagua/GestionCar/pkg/utils"
 	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
@@ -30,7 +32,7 @@ func (t *TenantRepository) MemberGetPermissionByUserID(userID string) (*models.M
 
 func (t *TenantRepository) MemberGetByID(id string) (*models.Member, error) {
 	var member models.Member
-	if err := t.DB.Preload("Role").Where("id = ?", id).First(&member).Error; err != nil {
+	if err := t.DB.Preload("Role").Preload("Role.Permissions").Where("id = ?", id).First(&member).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, models.ErrorResponse(404, "Miembro no encontrado", err)
 		}
@@ -43,7 +45,7 @@ func (t *TenantRepository) MemberAdd(memberAdd *models.MemberAdd) (id string, er
 	newID := uuid.NewString()
 	if err := t.DB.Create(&models.Member{
 		ID: newID,
-		UserID: memberAdd.UserID,
+		// UserID: memberAdd.UserID,
 		RoleID: memberAdd.RoleID,
 	}).Error; err != nil {
 		return "", err
@@ -52,6 +54,31 @@ func (t *TenantRepository) MemberAdd(memberAdd *models.MemberAdd) (id string, er
 	return newID, nil
 }
 
+func (t *TenantRepository) MemberCreate(memeberCreate *models.MemberCreate, user *models.AuthenticatedUser) (id string, err error) {
+	newID := uuid.NewString()
+
+	// pass, err := utils.GenerateRandomString(10)
+	// if err != nil {
+	// 	return "", err
+	// }
+	hashPass, err := utils.HashPassword("12345678")
+	if err != nil {
+		return "", err
+	}
+
+	if err := t.DB.Create(&models.Member{
+		ID:        newID,
+		FirstName: memeberCreate.FirstName,
+		LastName:  memeberCreate.LastName,
+		Username:  fmt.Sprintf("%s@%s", memeberCreate.Username, *user.Identifier),
+		Email:     memeberCreate.Email,
+		RoleID:    memeberCreate.RoleID,
+		Password:  hashPass,
+	}).Error; err != nil {
+		return "", err
+	}
+	return newID, nil
+}
 
 func (t *TenantRepository) MemberDelete(id string) error {
 	if err := t.DB.Delete(&models.Member{}, "id = ?", id).Error; err != nil {

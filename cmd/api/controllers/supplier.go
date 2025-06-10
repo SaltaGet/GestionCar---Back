@@ -12,13 +12,13 @@ import (
 //	@Accept			json
 //	@Produce		json
 //	@Security		BearerAuth
-//	@Param			id					path		string											true	"ID of the supplier"
-//	@Success		200					{object}	models.Response{body=models.Supplier}	"Supplier obtained with success"
-//	@Failure		400					{object}	models.Response									"Bad Request"
-//	@Failure		401					{object}	models.Response									"Auth is required"
-//	@Failure		403					{object}	models.Response									"Not Authorized"
-//	@Failure		404					{object}	models.Response									"Supplier not found"
-//	@Failure		500					{object}	models.Response									"Internal server error"
+//	@Param			id	path		string									true	"ID of the supplier"
+//	@Success		200	{object}	models.Response{body=models.Supplier}	"Supplier obtained with success"
+//	@Failure		400	{object}	models.Response							"Bad Request"
+//	@Failure		401	{object}	models.Response							"Auth is required"
+//	@Failure		403	{object}	models.Response							"Not Authorized"
+//	@Failure		404	{object}	models.Response							"Supplier not found"
+//	@Failure		500	{object}	models.Response							"Internal server error"
 //	@Router			/supplier/{id} [get]
 func (s *SupplierController) SupplierGetByID(c *fiber.Ctx) error {
 	id := c.Params("id")
@@ -60,11 +60,11 @@ func (s *SupplierController) SupplierGetByID(c *fiber.Ctx) error {
 //	@Accept			json
 //	@Produce		json
 //	@Security		BearerAuth
-//	@Success		200					{object}	models.Response{body=[]models.Supplier}	"Suppliers obtained with success"
-//	@Failure		400					{object}	models.Response									"Bad Request"
-//	@Failure		401					{object}	models.Response									"Auth is required"
-//	@Failure		403					{object}	models.Response									"Not Authorized"
-//	@Failure		500					{object}	models.Response									"Internal server error"
+//	@Success		200	{object}	models.Response{body=[]models.Supplier}	"Suppliers obtained with success"
+//	@Failure		400	{object}	models.Response							"Bad Request"
+//	@Failure		401	{object}	models.Response							"Auth is required"
+//	@Failure		403	{object}	models.Response							"Not Authorized"
+//	@Failure		500	{object}	models.Response							"Internal server error"
 //	@Router			/supplier/get_all [get]
 func (s *SupplierController) SupplierGetAll(c *fiber.Ctx) error {
 	suppliers, err := s.SupplierService.SupplierGetAll()
@@ -97,12 +97,12 @@ func (s *SupplierController) SupplierGetAll(c *fiber.Ctx) error {
 //	@Accept			json
 //	@Produce		json
 //	@Security		BearerAuth
-//	@Param			name				query		string											true	"Name of the Supplier"
-//	@Success		200					{object}	models.Response{body=[]models.Supplier}	"List of suppliers"
-//	@Failure		400					{object}	models.Response									"Bad Request"
-//	@Failure		401					{object}	models.Response									"Auth is required"
-//	@Failure		403					{object}	models.Response									"Not Authorized"
-//	@Failure		500					{object}	models.Response									"Internal server error"
+//	@Param			name	query		string									true	"Name of the Supplier"
+//	@Success		200		{object}	models.Response{body=[]models.Supplier}	"List of suppliers"
+//	@Failure		400		{object}	models.Response							"Bad Request"
+//	@Failure		401		{object}	models.Response							"Auth is required"
+//	@Failure		403		{object}	models.Response							"Not Authorized"
+//	@Failure		500		{object}	models.Response							"Internal server error"
 //	@Router			/supplier/get_by_name [get]
 //	@Security		BearerAuth
 func (s *SupplierController) SupplierGetByName(c *fiber.Ctx) error {
@@ -145,13 +145,13 @@ func (s *SupplierController) SupplierGetByName(c *fiber.Ctx) error {
 //	@Accept			json
 //	@Produce		json
 //	@Security		BearerAuth
-//	@Param			supplier			body		models.SupplierCreate			true	"Details of the supplier to create"
-//	@Success		200					{object}	models.Response{body=string}	"Supplier created successfully"
-//	@Failure		400					{object}	models.Response					"Bad Request"
-//	@Failure		401					{object}	models.Response					"Auth is required"
-//	@Failure		403					{object}	models.Response					"Not Authorized"
-//	@Failure		422					{object}	models.Response					"Model is invalid"
-//	@Failure		500					{object}	models.Response					"Internal server error"
+//	@Param			supplier	body		models.SupplierCreate			true	"Details of the supplier to create"
+//	@Success		200			{object}	models.Response{body=string}	"Supplier created successfully"
+//	@Failure		400			{object}	models.Response					"Bad Request"
+//	@Failure		401			{object}	models.Response					"Auth is required"
+//	@Failure		403			{object}	models.Response					"Not Authorized"
+//	@Failure		422			{object}	models.Response					"Model is invalid"
+//	@Failure		500			{object}	models.Response					"Internal server error"
 //	@Router			/supplier/create [post]
 func (s *SupplierController) SupplierCreate(c *fiber.Ctx) error {
 	var supplierCreate models.SupplierCreate
@@ -200,14 +200,14 @@ func (s *SupplierController) SupplierCreate(c *fiber.Ctx) error {
 //	@Accept			json
 //	@Produce		json
 //	@Security		BearerAuth
-//	@Param			body				body		models.SupplierUpdate	true	"Supplier information"
-//	@Success		200					{object}	models.Response			"Supplier updated with success"
-//	@Failure		400					{object}	models.Response			"Bad Request"
-//	@Failure		401					{object}	models.Response			"Auth is required"
-//	@Failure		403					{object}	models.Response			"Not Authorized"
-//	@Failure		404					{object}	models.Response			"Supplier not found"
-//	@Failure		422					{object}	models.Response			"Model is invalid"
-//	@Failure		500					{object}	models.Response			"Internal server error"
+//	@Param			body	body		models.SupplierUpdate	true	"Supplier information"
+//	@Success		200		{object}	models.Response			"Supplier updated with success"
+//	@Failure		400		{object}	models.Response			"Bad Request"
+//	@Failure		401		{object}	models.Response			"Auth is required"
+//	@Failure		403		{object}	models.Response			"Not Authorized"
+//	@Failure		404		{object}	models.Response			"Supplier not found"
+//	@Failure		422		{object}	models.Response			"Model is invalid"
+//	@Failure		500		{object}	models.Response			"Internal server error"
 //	@Router			/supplier/update [put]
 func (s *SupplierController) SupplierUpdate(c *fiber.Ctx) error {
 	var supplierUpdate models.SupplierUpdate
@@ -256,13 +256,13 @@ func (s *SupplierController) SupplierUpdate(c *fiber.Ctx) error {
 //	@Accept			json
 //	@Produce		json
 //	@Security		BearerAuth
-//	@Param			id					path		string			true	"ID of the supplier"
-//	@Success		200					{object}	models.Response	"Supplier deleted with success"
-//	@Failure		400					{object}	models.Response	"Bad Request"
-//	@Failure		401					{object}	models.Response	"Auth is required"
-//	@Failure		403					{object}	models.Response	"Not Authorized"
-//	@Failure		404					{object}	models.Response	"Supplier not found"
-//	@Failure		500					{object}	models.Response	"Internal server error"
+//	@Param			id	path		string			true	"ID of the supplier"
+//	@Success		200	{object}	models.Response	"Supplier deleted with success"
+//	@Failure		400	{object}	models.Response	"Bad Request"
+//	@Failure		401	{object}	models.Response	"Auth is required"
+//	@Failure		403	{object}	models.Response	"Not Authorized"
+//	@Failure		404	{object}	models.Response	"Supplier not found"
+//	@Failure		500	{object}	models.Response	"Internal server error"
 //	@Router			/supplier/delete/{id} [delete]
 func (s *SupplierController) SupplierDeleteByID(c *fiber.Ctx) error {
 	id := c.Params("id")

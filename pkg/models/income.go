@@ -12,7 +12,7 @@ type Income struct {
 	Details             string              `json:"details"`
 	ClientID            string              `gorm:"not null;size:36" json:"client_id"`
 	VehicleID           string              `gorm:"not null;size:36" json:"vehicle_id"`
-	EmployeeID          string              `gorm:"not null;size:36" json:"employee_id"`
+	EmployeeID          string              `gorm:"null;size:36" json:"employee_id"`
 	Amount              float32             `gorm:"not null" json:"amount"`
 	MovementTypeID      string              `gorm:"not null;size:36" json:"movement_type_id"`
 	CreatedAt           time.Time           `gorm:"autoCreateTime" json:"created_at"`
@@ -25,9 +25,9 @@ type Income struct {
 }
 
 type IncomeCreate struct {
-	Ticket         string   `json:"ticket" validate:"required"`
+	Ticket         string   `json:"ticket"`
 	ServicesID     []string `json:"services_id" validate:"required,gt=0"`
-	Details        string   `json:"details" validate:"required"`
+	Details        string   `json:"details"`
 	ClientID       string   `json:"client_id" validate:"required"`
 	VehicleID      string   `json:"vehicle_id" validate:"required"`
 	EmployeeID     string   `json:"employee_id"`

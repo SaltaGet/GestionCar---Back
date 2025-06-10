@@ -13,30 +13,66 @@ import (
 	"gorm.io/gorm"
 )
 
-func (r *MainRepository) TenantGetByID(userID, tenantID string) (*models.Tenant, error) {
+// func (r *MainRepository) TenantGetByID(tenantID string) (*models.Tenant, error) {
+// 	var tenant models.Tenant
+// 	err := r.DB.
+// 		Where("id = ?", tenantID).
+// 		First(&tenant).Error
+// 	if err != nil {
+// 		if errors.Is(err, gorm.ErrRecordNotFound) {
+// 			return nil, models.ErrorResponse(404, "Tenant not found", err)
+// 		}
+// 		return nil, models.ErrorResponse(500, "Error retrieving tenant", err)
+// 	}
+
+// 	if !tenant.IsActive {
+// 		return nil, models.ErrorResponse(403, "Tenant is inactive", nil)
+// 	}
+
+// 	return &tenant, nil
+// }
+func (r *MainRepository) TenantGetByID(tenantID string) (*models.Tenant, error) {
+    // Capturar panic
+    defer func() {
+        if rec := recover(); rec != nil {
+            // Aquí podés loguear el panic o convertirlo en error para devolverlo
+            fmt.Println("Panic capturado en TenantGetByID:", rec)
+        }
+    }()
+
+    var tenant models.Tenant
+    err := r.DB.
+        Where("id = ?", tenantID).
+        First(&tenant).Error
+    if err != nil {
+        if errors.Is(err, gorm.ErrRecordNotFound) {
+            return nil, models.ErrorResponse(404, "Tenant not found", err)
+        }
+        return nil, models.ErrorResponse(500, "Error retrieving tenant", err)
+    }
+
+    if !tenant.IsActive {
+        return nil, models.ErrorResponse(403, "Tenant is inactive", nil)
+    }
+
+    return &tenant, nil
+}
+
+
+func (r *MainRepository) TenantGetByIdentifier(identifier string) (*models.Tenant, error) {
 	var tenant models.Tenant
 	err := r.DB.
-		Preload("UserTenants", "user_id = ? AND tenant_id = ?", userID, tenantID).
-		Where("id = ?", tenantID).
+		Where("identifier = ?", identifier).
 		First(&tenant).Error
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, models.ErrorResponse(404, "Tenant not found", err)
+			return nil, models.ErrorResponse(401, "Credenciales incorrectas", err)
 		}
-		return nil, models.ErrorResponse(500, "Error retrieving tenant", err)
+		return nil, models.ErrorResponse(500, "Error al obtener los tenants", err)
 	}
 
 	if !tenant.IsActive {
 		return nil, models.ErrorResponse(403, "Tenant is inactive", nil)
-	}
-
-	if len(tenant.UserTenants) == 0 {
-		return nil, models.ErrorResponse(403, "You do not have permission to access this tenant", nil)
-	}
-
-	if !tenant.UserTenants[0].IsActive {
-		return nil, models.ErrorResponse(403, "You do not have permission to access this tenant", nil)
-
 	}
 
 	return &tenant, nil
@@ -85,6 +121,7 @@ func (r *MainRepository) TenantCreateByUserID(tenantCreate *models.TenantCreate,
 		Email:      tenantCreate.Email,
 		CuitPdv:    tenantCreate.CuitPdv,
 		Connection: connection,
+		Identifier: tenantCreate.Identifier,
 	}
 
 	if err := tx.Create(tenant).Error; err != nil {
@@ -143,6 +180,7 @@ func (r *MainRepository) TenantUserCreate(tenantUserCreate *models.TenantUserCre
 		Email:      tenantUserCreate.TenantCreate.Email,
 		CuitPdv:    tenantUserCreate.TenantCreate.CuitPdv,
 		Connection: connection,
+		Identifier: tenantUserCreate.TenantCreate.Identifier,
 	}
 
 	if err := tx.Create(tenant).Error; err != nil {
