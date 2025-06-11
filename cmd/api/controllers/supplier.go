@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"github.com/DanielChachagua/GestionCar/cmd/api/logging"
 	"github.com/DanielChachagua/GestionCar/pkg/models"
 	"github.com/gofiber/fiber/v2"
 )
@@ -33,12 +34,14 @@ func (s *SupplierController) SupplierGetByID(c *fiber.Ctx) error {
 	supplier, err := s.SupplierService.SupplierGetByID(id)
 	if err != nil {
 		if errResp, ok := err.(*models.ErrorStruc); ok {
+			logging.ERROR("Error: %s", errResp.Err.Error())
 			return c.Status(errResp.StatusCode).JSON(models.Response{
 				Status:  false,
 				Body:    nil,
 				Message: errResp.Message,
 			})
 		}
+		logging.ERROR("Error: %s", err.Error())
 		return c.Status(fiber.StatusInternalServerError).JSON(models.Response{
 			Status:  false,
 			Body:    nil,
@@ -67,15 +70,18 @@ func (s *SupplierController) SupplierGetByID(c *fiber.Ctx) error {
 //	@Failure		500	{object}	models.Response							"Internal server error"
 //	@Router			/supplier/get_all [get]
 func (s *SupplierController) SupplierGetAll(c *fiber.Ctx) error {
+	logging.INFO("Obtener todos los proveedores")
 	suppliers, err := s.SupplierService.SupplierGetAll()
 	if err != nil {
 		if errResp, ok := err.(*models.ErrorStruc); ok {
+			logging.ERROR("Error: %s", errResp.Err.Error())
 			return c.Status(errResp.StatusCode).JSON(models.Response{
 				Status:  false,
 				Body:    nil,
 				Message: errResp.Message,
 			})
 		}
+		logging.ERROR("Error: %s", err.Error())
 		return c.Status(fiber.StatusInternalServerError).JSON(models.Response{
 			Status:  false,
 			Body:    nil,
@@ -83,6 +89,7 @@ func (s *SupplierController) SupplierGetAll(c *fiber.Ctx) error {
 		})
 	}
 
+	logging.INFO("Proveedores obtenidos con éxito")
 	return c.Status(200).JSON(models.Response{
 		Status:  true,
 		Body:    suppliers,
@@ -106,8 +113,10 @@ func (s *SupplierController) SupplierGetAll(c *fiber.Ctx) error {
 //	@Router			/supplier/get_by_name [get]
 //	@Security		BearerAuth
 func (s *SupplierController) SupplierGetByName(c *fiber.Ctx) error {
+	logging.INFO("Obtener proveedores por nombre")
 	name := c.Query("name")
 	if name == "" || len(name) < 3 {
+		logging.ERROR("Error: El valor no debe de ser vacio o menor a 3 caracteres")
 		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
 			Status:  false,
 			Body:    nil,
@@ -118,12 +127,14 @@ func (s *SupplierController) SupplierGetByName(c *fiber.Ctx) error {
 	supplies, err := s.SupplierService.SupplierGetByName(name)
 	if err != nil {
 		if errResp, ok := err.(*models.ErrorStruc); ok {
+			logging.ERROR("Error: %s", errResp.Err.Error())
 			return c.Status(errResp.StatusCode).JSON(models.Response{
 				Status:  false,
 				Body:    nil,
 				Message: errResp.Message,
 			})
 		}
+		logging.ERROR("Error: %s", err.Error())
 		return c.Status(fiber.StatusInternalServerError).JSON(models.Response{
 			Status:  false,
 			Body:    nil,
@@ -131,6 +142,7 @@ func (s *SupplierController) SupplierGetByName(c *fiber.Ctx) error {
 		})
 	}
 
+	logging.INFO("Proveedores obtenidos con éxito")
 	return c.Status(200).JSON(models.Response{
 		Status:  true,
 		Body:    supplies,
@@ -154,8 +166,10 @@ func (s *SupplierController) SupplierGetByName(c *fiber.Ctx) error {
 //	@Failure		500			{object}	models.Response					"Internal server error"
 //	@Router			/supplier/create [post]
 func (s *SupplierController) SupplierCreate(c *fiber.Ctx) error {
+	logging.INFO("Crear proveedor")
 	var supplierCreate models.SupplierCreate
 	if err := c.BodyParser(&supplierCreate); err != nil {
+		logging.ERROR("Error: %s", err.Error())
 		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
 			Status:  false,
 			Body:    nil,
@@ -163,6 +177,7 @@ func (s *SupplierController) SupplierCreate(c *fiber.Ctx) error {
 		})
 	}
 	if err := supplierCreate.Validate(); err != nil {
+		logging.ERROR("Error: %s", err.Error())
 		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
 			Status:  false,
 			Body:    nil,
@@ -173,12 +188,14 @@ func (s *SupplierController) SupplierCreate(c *fiber.Ctx) error {
 	id, err := s.SupplierService.SupplierCreate(&supplierCreate)
 	if err != nil {
 		if errResp, ok := err.(*models.ErrorStruc); ok {
+			logging.ERROR("Error: %s", errResp.Err.Error())
 			return c.Status(errResp.StatusCode).JSON(models.Response{
 				Status:  false,
 				Body:    nil,
 				Message: errResp.Message,
 			})
 		}
+		logging.ERROR("Error: %s", err.Error())
 		return c.Status(fiber.StatusInternalServerError).JSON(models.Response{
 			Status:  false,
 			Body:    nil,
@@ -186,6 +203,7 @@ func (s *SupplierController) SupplierCreate(c *fiber.Ctx) error {
 		})
 	}
 
+	logging.INFO("Proveedor creado con éxito")
 	return c.Status(200).JSON(models.Response{
 		Status:  true,
 		Body:    id,
@@ -210,8 +228,10 @@ func (s *SupplierController) SupplierCreate(c *fiber.Ctx) error {
 //	@Failure		500		{object}	models.Response			"Internal server error"
 //	@Router			/supplier/update [put]
 func (s *SupplierController) SupplierUpdate(c *fiber.Ctx) error {
+	logging.INFO("Actualizar proveedor")
 	var supplierUpdate models.SupplierUpdate
 	if err := c.BodyParser(&supplierUpdate); err != nil {
+		logging.ERROR("Error: %s", err.Error())
 		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
 			Status:  false,
 			Body:    nil,
@@ -219,6 +239,7 @@ func (s *SupplierController) SupplierUpdate(c *fiber.Ctx) error {
 		})
 	}
 	if err := supplierUpdate.Validate(); err != nil {
+		logging.ERROR("Error: %s", err.Error())
 		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
 			Status:  false,
 			Body:    nil,
@@ -229,12 +250,14 @@ func (s *SupplierController) SupplierUpdate(c *fiber.Ctx) error {
 	err := s.SupplierService.SupplierUpdate(&supplierUpdate)
 	if err != nil {
 		if errResp, ok := err.(*models.ErrorStruc); ok {
+			logging.ERROR("Error: %s", errResp.Err.Error())
 			return c.Status(errResp.StatusCode).JSON(models.Response{
 				Status:  false,
 				Body:    nil,
 				Message: errResp.Message,
 			})
 		}
+		logging.ERROR("Error: %s", err.Error())
 		return c.Status(fiber.StatusInternalServerError).JSON(models.Response{
 			Status:  false,
 			Body:    nil,
@@ -242,6 +265,7 @@ func (s *SupplierController) SupplierUpdate(c *fiber.Ctx) error {
 		})
 	}
 
+	logging.INFO("Proveedor editado con éxito")
 	return c.Status(200).JSON(models.Response{
 		Status:  true,
 		Body:    nil,
@@ -265,8 +289,10 @@ func (s *SupplierController) SupplierUpdate(c *fiber.Ctx) error {
 //	@Failure		500	{object}	models.Response	"Internal server error"
 //	@Router			/supplier/delete/{id} [delete]
 func (s *SupplierController) SupplierDeleteByID(c *fiber.Ctx) error {
+	logging.INFO("Eliminar proveedor")
 	id := c.Params("id")
 	if id == "" {
+		logging.ERROR("Error: ID is required")
 		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
 			Status:  false,
 			Body:    nil,
@@ -277,12 +303,14 @@ func (s *SupplierController) SupplierDeleteByID(c *fiber.Ctx) error {
 	err := s.SupplierService.SupplierDelete(id)
 	if err != nil {
 		if errResp, ok := err.(*models.ErrorStruc); ok {
+			logging.ERROR("Error: %s", errResp.Err.Error())
 			return c.Status(errResp.StatusCode).JSON(models.Response{
 				Status:  false,
 				Body:    nil,
 				Message: errResp.Message,
 			})
 		}
+		logging.ERROR("Error: %s", err.Error())
 		return c.Status(fiber.StatusInternalServerError).JSON(models.Response{
 			Status:  false,
 			Body:    nil,
@@ -290,6 +318,7 @@ func (s *SupplierController) SupplierDeleteByID(c *fiber.Ctx) error {
 		})
 	}
 
+	logging.INFO("Proveedor eliminado con éxito")
 	return c.Status(200).JSON(models.Response{
 		Status:  true,
 		Body:    nil,

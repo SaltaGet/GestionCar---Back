@@ -18,7 +18,7 @@ type RoleCreate struct {
 
 func (r *RoleCreate) Validate() error {
 	validate := validator.New()
-	err := validate.Struct(r); 
+	err := validate.Struct(r)
 	if err == nil {
 		return nil
 	}
@@ -26,6 +26,7 @@ func (r *RoleCreate) Validate() error {
 	validationErr := err.(validator.ValidationErrors)[0]
 	field := validationErr.Field()
 	tag := validationErr.Tag()
+	param := validationErr.Param()
 
-	return fmt.Errorf("campo %s es invalido, revisar: (%s)", field, tag)
+	return fmt.Errorf("campo %s es invalido, revisar: (%s) (%s)", field, tag, param)
 }

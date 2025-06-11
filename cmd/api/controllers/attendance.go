@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"github.com/DanielChachagua/GestionCar/cmd/api/logging"
 	"github.com/DanielChachagua/GestionCar/pkg/models"
 	"github.com/gofiber/fiber/v2"
 )
@@ -20,6 +21,7 @@ import (
 //	@Failure		500	{object}	models.Response
 //	@Router			/attendance/{id} [get]
 func (a *AttendanceController) GetAttendanceByID(c *fiber.Ctx) error {
+	logging.INFO("Obtener asistencia por ID")
 	id := c.Params("id")
 	if id == "" {
 		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
@@ -45,6 +47,7 @@ func (a *AttendanceController) GetAttendanceByID(c *fiber.Ctx) error {
 		})
 	}
 
+	logging.INFO("Asistencia obtenida con éxito")
 	return c.Status(200).JSON(models.Response{
 		Status:  true,
 		Body:    attendance,
@@ -67,6 +70,7 @@ func (a *AttendanceController) GetAttendanceByID(c *fiber.Ctx) error {
 //	@Failure		500	{object}	models.Response
 //	@Router			/attendance/get_all [get]
 func (a *AttendanceController) GetAllAttendances(c *fiber.Ctx) error {
+	logging.INFO("Obteniendo asistencias")
 	attendances, err := a.AttendanceService.AttendanceGetAll()
 	if err != nil {
 		if errResp, ok := err.(*models.ErrorStruc); ok {
@@ -83,6 +87,7 @@ func (a *AttendanceController) GetAllAttendances(c *fiber.Ctx) error {
 		})
 	}
 
+	logging.INFO("Asistencias obtenidas con éxito")
 	return c.Status(200).JSON(models.Response{
 		Status:  true,
 		Body:    attendances,
@@ -106,8 +111,10 @@ func (a *AttendanceController) GetAllAttendances(c *fiber.Ctx) error {
 //	@Failure		500			{object}	models.Response
 //	@Router			/attendance/get_by_date [post]
 func (a *AttendanceController) GetAllAttendancesByDate(c *fiber.Ctx) error {
+	logging.INFO("Obteniendo asistencias por rango de fechas")
 	var dateBeetwen models.DateBetween
 	if err := c.BodyParser(&dateBeetwen); err != nil {
+		logging.ERROR("Error: %s", err.Error())
 		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
 			Status:  false,
 			Body:    nil,
@@ -115,6 +122,7 @@ func (a *AttendanceController) GetAllAttendancesByDate(c *fiber.Ctx) error {
 		})
 	}
 	if err := dateBeetwen.Validate(); err != nil {
+		logging.ERROR("Error: %s", err.Error())
 		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
 			Status:  false,
 			Body:    nil,
@@ -125,12 +133,14 @@ func (a *AttendanceController) GetAllAttendancesByDate(c *fiber.Ctx) error {
 	attendances, err := a.AttendanceService.AttendanceGetByDate(dateBeetwen.DateFrom, dateBeetwen.DateTo)
 	if err != nil {
 		if errResp, ok := err.(*models.ErrorStruc); ok {
+			logging.ERROR("Error: %s", errResp.Err.Error())
 			return c.Status(errResp.StatusCode).JSON(models.Response{
 				Status:  false,
 				Body:    nil,
 				Message: errResp.Message,
 			})
 		}
+		logging.ERROR("Error: %s", err.Error())
 		return c.Status(fiber.StatusInternalServerError).JSON(models.Response{
 			Status:  false,
 			Body:    nil,
@@ -138,6 +148,7 @@ func (a *AttendanceController) GetAllAttendancesByDate(c *fiber.Ctx) error {
 		})
 	}
 
+	logging.INFO("Asistencias obtenidas con éxito")
 	return c.Status(200).JSON(models.Response{
 		Status:  true,
 		Body:    attendances,
@@ -161,8 +172,10 @@ func (a *AttendanceController) GetAllAttendancesByDate(c *fiber.Ctx) error {
 //	@Failure		500			{object}	models.Response
 //	@Router			/attendance/get_by_employee/{employee_id} [get]
 func (a *AttendanceController) GetAttendanceByEmployeeID(c *fiber.Ctx) error {
+	logging.INFO("Obtener asistencias por ID de empleado")
 	employee_id := c.Params("employee_id")
 	if employee_id == "" {
+		logging.ERROR("Error: ID is required")
 		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
 			Status:  false,
 			Body:    nil,
@@ -173,12 +186,14 @@ func (a *AttendanceController) GetAttendanceByEmployeeID(c *fiber.Ctx) error {
 	attendances, err := a.AttendanceService.AttendanceGetByEmployeeID(employee_id)
 	if err != nil {
 		if errResp, ok := err.(*models.ErrorStruc); ok {
+			logging.ERROR("Error: %s", errResp.Err.Error())
 			return c.Status(errResp.StatusCode).JSON(models.Response{
 				Status:  false,
 				Body:    nil,
 				Message: errResp.Message,
 			})
 		}
+		logging.ERROR("Error: %s", err.Error())
 		return c.Status(fiber.StatusInternalServerError).JSON(models.Response{
 			Status:  false,
 			Body:    nil,
@@ -186,6 +201,7 @@ func (a *AttendanceController) GetAttendanceByEmployeeID(c *fiber.Ctx) error {
 		})
 	}
 
+	logging.INFO("Asistencias obtenidas con éxito")
 	return c.Status(200).JSON(models.Response{
 		Status:  true,
 		Body:    attendances,
@@ -210,8 +226,10 @@ func (a *AttendanceController) GetAttendanceByEmployeeID(c *fiber.Ctx) error {
 //	@Failure		500					{object}	models.Response
 //	@Router			/attendance/create [post]
 func (a *AttendanceController) CreateAttendance(c *fiber.Ctx) error {
+	logging.INFO("Creando asistencia")
 	var attendanceCreate models.AttendanceCreate
 	if err := c.BodyParser(&attendanceCreate); err != nil {
+		logging.ERROR("Error: %s", err.Error())
 		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
 			Status:  false,
 			Body:    nil,
@@ -219,6 +237,7 @@ func (a *AttendanceController) CreateAttendance(c *fiber.Ctx) error {
 		})
 	}
 	if err := attendanceCreate.Validate(); err != nil {
+		logging.ERROR("Error: %s", err.Error())
 		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
 			Status:  false,
 			Body:    nil,
@@ -229,12 +248,14 @@ func (a *AttendanceController) CreateAttendance(c *fiber.Ctx) error {
 	id, err := a.AttendanceService.AttendanceCreate(&attendanceCreate)
 	if err != nil {
 		if errResp, ok := err.(*models.ErrorStruc); ok {
+			logging.ERROR("Error: %s", errResp.Err.Error())
 			return c.Status(errResp.StatusCode).JSON(models.Response{
 				Status:  false,
 				Body:    nil,
 				Message: errResp.Message,
 			})
 		}
+		logging.ERROR("Error: %s", err.Error())
 		return c.Status(fiber.StatusInternalServerError).JSON(models.Response{
 			Status:  false,
 			Body:    nil,
@@ -242,6 +263,7 @@ func (a *AttendanceController) CreateAttendance(c *fiber.Ctx) error {
 		})
 	}
 
+	logging.INFO("Asistencia creada con éxito")
 	return c.Status(200).JSON(models.Response{
 		Status:  true,
 		Body:    id,
@@ -266,8 +288,10 @@ func (a *AttendanceController) CreateAttendance(c *fiber.Ctx) error {
 //	@Failure		500					{object}	models.Response
 //	@Router			/attendance/update [put]
 func (a *AttendanceController) UpdateAttendance(c *fiber.Ctx) error {
+	logging.INFO("Actualizando asistencia")
 	var attendanceUpdate models.AttendanceUpdate
 	if err := c.BodyParser(&attendanceUpdate); err != nil {
+		logging.ERROR("Error: %s", err.Error())
 		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
 			Status:  false,
 			Body:    nil,
@@ -275,6 +299,7 @@ func (a *AttendanceController) UpdateAttendance(c *fiber.Ctx) error {
 		})
 	}
 	if err := attendanceUpdate.Validate(); err != nil {
+		logging.ERROR("Error: %s", err.Error())
 		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
 			Status:  false,
 			Body:    nil,
@@ -285,12 +310,14 @@ func (a *AttendanceController) UpdateAttendance(c *fiber.Ctx) error {
 	err := a.AttendanceService.AttendanceUpdate(&attendanceUpdate)
 	if err != nil {
 		if errResp, ok := err.(*models.ErrorStruc); ok {
+			logging.ERROR("Error: %s", errResp.Err.Error())
 			return c.Status(errResp.StatusCode).JSON(models.Response{
 				Status:  false,
 				Body:    nil,
 				Message: errResp.Message,
 			})
 		}
+		logging.ERROR("Error: %s", err.Error())
 		return c.Status(fiber.StatusInternalServerError).JSON(models.Response{
 			Status:  false,
 			Body:    nil,
@@ -298,6 +325,7 @@ func (a *AttendanceController) UpdateAttendance(c *fiber.Ctx) error {
 		})
 	}
 
+	logging.INFO("Asistencia editada con éxito")
 	return c.Status(200).JSON(models.Response{
 		Status:  true,
 		Body:    nil,
@@ -322,9 +350,10 @@ func (a *AttendanceController) UpdateAttendance(c *fiber.Ctx) error {
 //	@Failure		500	{object}	models.Response
 //	@Router			/attendance/delete/{id} [delete]
 func (a *AttendanceController) DeleteAttendance(c *fiber.Ctx) error {
+	logging.INFO("Eliminando asistencia")
 	id := c.Params("id")
-
 	if id == "" {
+		logging.ERROR("Error: ID is required")
 		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
 			Status:  false,
 			Body:    nil,
@@ -335,12 +364,14 @@ func (a *AttendanceController) DeleteAttendance(c *fiber.Ctx) error {
 	err := a.AttendanceService.AttendanceDelete(id)
 	if err != nil {
 		if errResp, ok := err.(*models.ErrorStruc); ok {
+			logging.ERROR("Error: %s", errResp.Err.Error())
 			return c.Status(errResp.StatusCode).JSON(models.Response{
 				Status:  false,
 				Body:    nil,
 				Message: errResp.Message,
 			})
 		}
+		logging.ERROR("Error: %s", err.Error())
 		return c.Status(fiber.StatusInternalServerError).JSON(models.Response{
 			Status:  false,
 			Body:    nil,
@@ -348,6 +379,7 @@ func (a *AttendanceController) DeleteAttendance(c *fiber.Ctx) error {
 		})
 	}
 
+	logging.INFO("Asistencia eliminada con éxito")
 	return c.Status(200).JSON(models.Response{
 		Status:  true,
 		Body:    nil,

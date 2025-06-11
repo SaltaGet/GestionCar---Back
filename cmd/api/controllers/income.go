@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"github.com/DanielChachagua/GestionCar/cmd/api/logging"
 	"github.com/DanielChachagua/GestionCar/pkg/models"
 	"github.com/gofiber/fiber/v2"
 )
@@ -21,8 +22,10 @@ import (
 //	@Failure		500	{object}	models.Response						"Internal server error"
 //	@Router			/income/{id} [get]
 func (i *IncomeController) GetIncomeByID(c *fiber.Ctx) error {
+	logging.INFO("Obtener un ingreso por ID")
 	id := c.Params("id")
 	if id == "" {
+		logging.ERROR("Error: ID is required")
 		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
 			Status:  false,
 			Body:    nil,
@@ -33,12 +36,14 @@ func (i *IncomeController) GetIncomeByID(c *fiber.Ctx) error {
 	income, err := i.IncomeService.IncomeGetByID(id)
 	if err != nil {
 		if errResp, ok := err.(*models.ErrorStruc); ok {
+			logging.ERROR("Error: %s", errResp.Err.Error())
 			return c.Status(errResp.StatusCode).JSON(models.Response{
 				Status:  false,
 				Body:    nil,
 				Message: errResp.Message,
 			})
 		}
+		logging.ERROR("Error: %s", err.Error())
 		return c.Status(fiber.StatusInternalServerError).JSON(models.Response{
 			Status:  false,
 			Body:    nil,
@@ -46,6 +51,7 @@ func (i *IncomeController) GetIncomeByID(c *fiber.Ctx) error {
 		})
 	}
 
+	logging.INFO("Ingreso obtenido con éxito")
 	return c.Status(200).JSON(models.Response{
 		Status:  true,
 		Body:    income,
@@ -68,6 +74,7 @@ func (i *IncomeController) GetIncomeByID(c *fiber.Ctx) error {
 //	@Failure		500	{object}	models.Response							"Internal server error"
 //	@Router			/income/get_all [get]
 func (i *IncomeController) GetAllIncomes(c *fiber.Ctx) error {
+	logging.INFO("Obtener todos los ingresos")
 	incomes, err := i.IncomeService.IncomeGetAll()
 	if err != nil {
 		if errResp, ok := err.(*models.ErrorStruc); ok {
@@ -84,6 +91,7 @@ func (i *IncomeController) GetAllIncomes(c *fiber.Ctx) error {
 		})
 	}
 
+	logging.INFO("Ingresos obtenidos con éxito")
 	return c.Status(200).JSON(models.Response{
 		Status:  true,
 		Body:    incomes,
@@ -106,15 +114,18 @@ func (i *IncomeController) GetAllIncomes(c *fiber.Ctx) error {
 //	@Failure		500	{object}	models.Response							"Internal server error"
 //	@Router			/income/get_today [get]
 func (i *IncomeController) GetIncomeToday(c *fiber.Ctx) error {
+	logging.INFO("Obtener todos los ingresos de hoy")
 	incomes, err := i.IncomeService.IncomeGetToday()
 	if err != nil {
 		if errResp, ok := err.(*models.ErrorStruc); ok {
+			logging.ERROR("Error: %s", errResp.Err.Error())
 			return c.Status(errResp.StatusCode).JSON(models.Response{
 				Status:  false,
 				Body:    nil,
 				Message: errResp.Message,
 			})
 		}
+		logging.ERROR("Error: %s", err.Error())
 		return c.Status(fiber.StatusInternalServerError).JSON(models.Response{
 			Status:  false,
 			Body:    nil,
@@ -122,6 +133,7 @@ func (i *IncomeController) GetIncomeToday(c *fiber.Ctx) error {
 		})
 	}
 
+	logging.INFO("Ingresos obtenidos con éxito")
 	return c.Status(200).JSON(models.Response{
 		Status:  true,
 		Body:    incomes,
@@ -146,8 +158,10 @@ func (i *IncomeController) GetIncomeToday(c *fiber.Ctx) error {
 //	@Failure		500				{object}	models.Response					"Internal server error"
 //	@Router			/income/create [post]
 func (i *IncomeController) CreateIncome(c *fiber.Ctx) error {
+	logging.INFO("Crear ingreso")
 	var incomeCreate models.IncomeCreate
 	if err := c.BodyParser(&incomeCreate); err != nil {
+		logging.ERROR("Error: %s", err.Error())
 		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
 			Status:  false,
 			Body:    nil,
@@ -155,6 +169,7 @@ func (i *IncomeController) CreateIncome(c *fiber.Ctx) error {
 		})
 	}
 	if err := incomeCreate.Validate(); err != nil {
+		logging.ERROR("Error: %s", err.Error())
 		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
 			Status:  false,
 			Body:    nil,
@@ -165,12 +180,14 @@ func (i *IncomeController) CreateIncome(c *fiber.Ctx) error {
 	id, err := i.IncomeService.IncomeCreate(&incomeCreate)
 	if err != nil {
 		if errResp, ok := err.(*models.ErrorStruc); ok {
+			logging.ERROR("Error: %s", errResp.Err.Error())
 			return c.Status(errResp.StatusCode).JSON(models.Response{
 				Status:  false,
 				Body:    nil,
 				Message: errResp.Message,
 			})
 		}
+		logging.ERROR("Error: %s", err.Error())
 		return c.Status(fiber.StatusInternalServerError).JSON(models.Response{
 			Status:  false,
 			Body:    nil,
@@ -178,6 +195,7 @@ func (i *IncomeController) CreateIncome(c *fiber.Ctx) error {
 		})
 	}
 
+	logging.INFO("Ingreso creado con éxito")
 	return c.Status(200).JSON(models.Response{
 		Status:  true,
 		Body:    id,
@@ -202,8 +220,10 @@ func (i *IncomeController) CreateIncome(c *fiber.Ctx) error {
 //	@Failure		500				{object}	models.Response		"Internal server error"
 //	@Router			/income/update [put]
 func (i *IncomeController) UpdateIncome(c *fiber.Ctx) error {
+	logging.INFO("Actualizar ingreso")
 	var incomeUpdate models.IncomeUpdate
 	if err := c.BodyParser(&incomeUpdate); err != nil {
+		logging.ERROR("Error: %s", err.Error())
 		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
 			Status:  false,
 			Body:    nil,
@@ -211,6 +231,7 @@ func (i *IncomeController) UpdateIncome(c *fiber.Ctx) error {
 		})
 	}
 	if err := incomeUpdate.Validate(); err != nil {
+		logging.ERROR("Error: %s", err.Error())
 		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
 			Status:  false,
 			Body:    nil,
@@ -221,12 +242,14 @@ func (i *IncomeController) UpdateIncome(c *fiber.Ctx) error {
 	err := i.IncomeService.IncomeUpdate(&incomeUpdate)
 	if err != nil {
 		if errResp, ok := err.(*models.ErrorStruc); ok {
+			logging.ERROR("Error: %s", errResp.Err.Error())
 			return c.Status(errResp.StatusCode).JSON(models.Response{
 				Status:  false,
 				Body:    nil,
 				Message: errResp.Message,
 			})
 		}
+		logging.ERROR("Error: %s", err.Error())
 		return c.Status(fiber.StatusInternalServerError).JSON(models.Response{
 			Status:  false,
 			Body:    nil,
@@ -234,6 +257,7 @@ func (i *IncomeController) UpdateIncome(c *fiber.Ctx) error {
 		})
 	}
 
+	logging.INFO("Ingreso editado con éxito")
 	return c.Status(200).JSON(models.Response{
 		Status:  true,
 		Body:    nil,
@@ -257,8 +281,10 @@ func (i *IncomeController) UpdateIncome(c *fiber.Ctx) error {
 //	@Failure		500	{object}	models.Response	"Error interno"
 //	@Router			/income/delete/{id} [delete]
 func (i *IncomeController) DeleteIncome(c *fiber.Ctx) error {
+	logging.INFO("Eliminar ingreso")
 	id := c.Params("id")
 	if id == "" {
+		logging.ERROR("Error: ID is required")
 		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
 			Status:  false,
 			Body:    nil,
@@ -269,12 +295,14 @@ func (i *IncomeController) DeleteIncome(c *fiber.Ctx) error {
 	err := i.IncomeService.IncomeDelete(id)
 	if err != nil {
 		if errResp, ok := err.(*models.ErrorStruc); ok {
+			logging.ERROR("Error: %s", errResp.Err.Error())
 			return c.Status(errResp.StatusCode).JSON(models.Response{
 				Status:  false,
 				Body:    nil,
 				Message: errResp.Message,
 			})
 		}
+		logging.ERROR("Error: %s", err.Error())
 		return c.Status(fiber.StatusInternalServerError).JSON(models.Response{
 			Status:  false,
 			Body:    nil,
@@ -282,6 +310,7 @@ func (i *IncomeController) DeleteIncome(c *fiber.Ctx) error {
 		})
 	}
 
+	logging.INFO("Ingreso eliminado con éxito")
 	return c.Status(200).JSON(models.Response{
 		Status:  true,
 		Body:    nil,

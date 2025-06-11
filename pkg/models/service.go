@@ -12,7 +12,7 @@ type Service struct {
 	Name      string    `gorm:"not null;unique" json:"name"`
 	CreatedAt time.Time `gorm:"autoCreateTime" json:"created_at"`
 	UpdatedAt time.Time `gorm:"autoUpdateTime" json:"updated_at"`
-	Incomes []Income `gorm:"many2many:income_services;" json:"incomes"`
+	Incomes   []Income  `gorm:"many2many:income_services;" json:"incomes"`
 }
 
 type ServiceCreate struct {
@@ -29,8 +29,9 @@ func (s *ServiceCreate) Validate() error {
 	validationErr := err.(validator.ValidationErrors)[0]
 	field := validationErr.Field()
 	tag := validationErr.Tag()
+	param := validationErr.Param()
 
-	return fmt.Errorf("campo %s es invalido, revisar: (%s)", field, tag)
+	return fmt.Errorf("campo %s es invalido, revisar: (%s) (%s)", field, tag, param)
 }
 
 type ServiceUpdate struct {
@@ -48,6 +49,7 @@ func (s *ServiceUpdate) Validate() error {
 	validationErr := err.(validator.ValidationErrors)[0]
 	field := validationErr.Field()
 	tag := validationErr.Tag()
+	param := validationErr.Param()
 
-	return fmt.Errorf("campo %s es invalido, revisar: (%s)", field, tag)
+	return fmt.Errorf("campo %s es invalido, revisar: (%s) (%s)", field, tag, param)
 }

@@ -8,24 +8,24 @@ import (
 )
 
 type PurchaseProduct struct {
-	ID        string  `gorm:"primaryKey;size:36" json:"id"`
-	ProductID string  `gorm:"not null;size:36" json:"product_id"`
-	PurchaseOrderID string `gorm:"not null;size:36" json:"purchase_order_id"`
-	ExpiredAt string  `gorm:"not null" json:"expired_at"`
-	UnitPrice  float32 `gorm:"not null" json:"unit_price"`
-	Quantity   int     `gorm:"not null" json:"quantity"`
-	TotalPrice float32 `gorm:"not null" json:"total_price"`
-	CreatedAt time.Time  `gorm:"autoCreateTime" json:"created_at"`
-	UpdatedAt time.Time  `gorm:"autoUpdateTime" json:"updated_at"`
-	Product   Product `gorm:"foreignKey:ProductID;references:ID" json:"product"`
-	PurchaseOrder PurchaseOrder `gorm:"foreignKey:PurchaseOrderID;references:ID" json:"purchase_order"`
+	ID              string        `gorm:"primaryKey;size:36" json:"id"`
+	ProductID       string        `gorm:"not null;size:36" json:"product_id"`
+	PurchaseOrderID string        `gorm:"not null;size:36" json:"purchase_order_id"`
+	ExpiredAt       string        `gorm:"not null" json:"expired_at"`
+	UnitPrice       float32       `gorm:"not null" json:"unit_price"`
+	Quantity        int           `gorm:"not null" json:"quantity"`
+	TotalPrice      float32       `gorm:"not null" json:"total_price"`
+	CreatedAt       time.Time     `gorm:"autoCreateTime" json:"created_at"`
+	UpdatedAt       time.Time     `gorm:"autoUpdateTime" json:"updated_at"`
+	Product         Product       `gorm:"foreignKey:ProductID;references:ID" json:"product"`
+	PurchaseOrder   PurchaseOrder `gorm:"foreignKey:PurchaseOrderID;references:ID" json:"purchase_order"`
 }
 
 type PurchaseProductCreate struct {
 	ProductID string  `json:"product_id" validate:"required"`
 	ExpiredAt string  `json:"expired_at"`
-	UnitPrice  float32 `json:"unit_price" validate:"required"`
-	Quantity   int     `json:"quantity" validate:"required"`
+	UnitPrice float32 `json:"unit_price" validate:"required"`
+	Quantity  int     `json:"quantity" validate:"required"`
 }
 
 func (p *PurchaseProductCreate) Validate() error {
@@ -38,16 +38,17 @@ func (p *PurchaseProductCreate) Validate() error {
 	validationErr := err.(validator.ValidationErrors)[0]
 	field := validationErr.Field()
 	tag := validationErr.Tag()
+	param := validationErr.Param()
 
-	return fmt.Errorf("campo %s es invalido, revisar: (%s)", field, tag)
+	return fmt.Errorf("campo %s es invalido, revisar: (%s) (%s)", field, tag, param)
 }
 
 type PurchaseProductUpdate struct {
 	ID        string  `json:"id" validate:"required"`
 	ProductID string  `json:"product_id" validate:"required"`
 	ExpiredAt string  `json:"expired_at"`
-	UnitPrice  float32 `json:"unit_price" validate:"required"`
-	Quantity   int     `json:"quantity" validate:"required"`
+	UnitPrice float32 `json:"unit_price" validate:"required"`
+	Quantity  int     `json:"quantity" validate:"required"`
 }
 
 func (p *PurchaseProductUpdate) Validate() error {
@@ -60,6 +61,7 @@ func (p *PurchaseProductUpdate) Validate() error {
 	validationErr := err.(validator.ValidationErrors)[0]
 	field := validationErr.Field()
 	tag := validationErr.Tag()
+	param := validationErr.Param()
 
-	return fmt.Errorf("campo %s es invalido, revisar: (%s)", field, tag)
+	return fmt.Errorf("campo %s es invalido, revisar: (%s) (%s)", field, tag, param)
 }

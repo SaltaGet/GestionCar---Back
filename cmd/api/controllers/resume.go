@@ -1,13 +1,16 @@
 package controllers
 
 import (
+	"github.com/DanielChachagua/GestionCar/cmd/api/logging"
 	"github.com/DanielChachagua/GestionCar/pkg/models"
 	"github.com/gofiber/fiber/v2"
 )
 
 func (r *ResumeController) ExpenseResumeCreate(c *fiber.Ctx) error {
+	logging.INFO("Crear Resumen de gastos")
 	resume := &models.ResumeExpenseCreate{}
 	if err := c.BodyParser(resume); err != nil {
+		logging.ERROR("Error: %s", err.Error())
 		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
 			Status:  false,
 			Body:    nil,
@@ -15,6 +18,7 @@ func (r *ResumeController) ExpenseResumeCreate(c *fiber.Ctx) error {
 		})
 	}
 	if err := resume.Validate(); err != nil {
+		logging.ERROR("Error: %s", err.Error())
 		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
 			Status:  false,
 			Body:    nil,
@@ -25,12 +29,14 @@ func (r *ResumeController) ExpenseResumeCreate(c *fiber.Ctx) error {
 	id, err := r.ResumeExpenseService.ResumeExpenseCreate(resume)
 	if err != nil {
 		if errResp, ok := err.(*models.ErrorStruc); ok {
+			logging.ERROR("Error: %s", errResp.Err.Error())
 			return c.Status(errResp.StatusCode).JSON(models.Response{
 				Status:  false,
 				Body:    nil,
 				Message: errResp.Message,
 			})
 		}
+		logging.ERROR("Error: %s", err.Error())
 		return c.Status(fiber.StatusInternalServerError).JSON(models.Response{
 			Status:  false,
 			Body:    nil,
@@ -38,6 +44,7 @@ func (r *ResumeController) ExpenseResumeCreate(c *fiber.Ctx) error {
 		})
 	}
 
+	logging.INFO("Resumen creado exitosamente")
 	return c.Status(fiber.StatusOK).JSON(models.Response{
 		Status:  true,
 		Body:    id,
@@ -46,9 +53,11 @@ func (r *ResumeController) ExpenseResumeCreate(c *fiber.Ctx) error {
 }
 
 func (r *ResumeController) ExpenseResumeGetByDateBetween(c *fiber.Ctx) error {
+	logging.INFO("Obtener resumen de gastos")
 	fromDate := c.Query("fromDate")
 	toDate := c.Query("toDate")
 	if fromDate == "" || toDate == "" {
+		logging.ERROR("Error: fromDate y toDate son requiridos")
 		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
 			Status:  false,
 			Body:    nil,
@@ -59,12 +68,14 @@ func (r *ResumeController) ExpenseResumeGetByDateBetween(c *fiber.Ctx) error {
 	resumes, err := r.ResumeExpenseService.ResumeExpenseGetByDateBetween(fromDate, toDate)
 	if err != nil {
 		if errResp, ok := err.(*models.ErrorStruc); ok {
+			logging.ERROR("Error: %s", errResp.Err.Error())
 			return c.Status(errResp.StatusCode).JSON(models.Response{
 				Status:  false,
 				Body:    nil,
 				Message: errResp.Message,
 			})
 		}
+		logging.ERROR("Error: %s", err.Error())
 		return c.Status(fiber.StatusInternalServerError).JSON(models.Response{
 			Status:  false,
 			Body:    nil,
@@ -72,6 +83,7 @@ func (r *ResumeController) ExpenseResumeGetByDateBetween(c *fiber.Ctx) error {
 		})
 	}
 
+	logging.INFO("Resumen obtenido exitosamente")
 	return c.Status(fiber.StatusOK).JSON(models.Response{
 		Status:  true,
 			Body:    resumes,
@@ -80,8 +92,10 @@ func (r *ResumeController) ExpenseResumeGetByDateBetween(c *fiber.Ctx) error {
 }
 
 func (r *ResumeController) ExpenseResumeGetByID(c *fiber.Ctx) error {
+	logging.INFO("Obtener resumen de gastos")
 	id := c.Params("id")
 	if id == "" {
+		logging.ERROR("Error: id is required")
 		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
 			Status:  false,
 			Body:    nil,
@@ -92,12 +106,14 @@ func (r *ResumeController) ExpenseResumeGetByID(c *fiber.Ctx) error {
 	resume, err := r.ResumeExpenseService.ResumeExpenseGetByID(id)
 	if err != nil {
 		if errResp, ok := err.(*models.ErrorStruc); ok {
+			logging.ERROR("Error: %s", errResp.Err.Error())
 			return c.Status(errResp.StatusCode).JSON(models.Response{
 				Status:  false,
 				Body:    nil,
 				Message: errResp.Message,
 			})
 		}
+		logging.ERROR("Error: %s", err.Error())
 		return c.Status(fiber.StatusInternalServerError).JSON(models.Response{
 			Status:  false,
 			Body:    nil,
@@ -105,6 +121,7 @@ func (r *ResumeController) ExpenseResumeGetByID(c *fiber.Ctx) error {
 		})
 	}
 
+	logging.INFO("Resumen obtenido exitosamente")
 	return c.Status(fiber.StatusOK).JSON(models.Response{
 		Status:  true,
 			Body:    resume,
@@ -113,8 +130,10 @@ func (r *ResumeController) ExpenseResumeGetByID(c *fiber.Ctx) error {
 }
 
 func (r *ResumeController) ExpenseResumeUpdate(c *fiber.Ctx) error {
+	logging.INFO("Actualizar resumen de gastos")
 	resume := &models.ResumeExpenseUpdate{}
 	if err := c.BodyParser(resume); err != nil {
+		logging.ERROR("Error: %s", err.Error())
 		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
 			Status:  false,
 			Body:    nil,
@@ -122,6 +141,7 @@ func (r *ResumeController) ExpenseResumeUpdate(c *fiber.Ctx) error {
 		})
 	}
 	if err := resume.Validate(); err != nil {
+		logging.ERROR("Error: %s", err.Error())
 		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
 			Status:  false,
 			Body:    nil,
@@ -132,12 +152,14 @@ func (r *ResumeController) ExpenseResumeUpdate(c *fiber.Ctx) error {
 	err := r.ResumeExpenseService.ResumeExpenseUpdate(resume)
 	if err != nil {
 		if errResp, ok := err.(*models.ErrorStruc); ok {
+			logging.ERROR("Error: %s", errResp.Err.Error())
 			return c.Status(errResp.StatusCode).JSON(models.Response{
 				Status:  false,
 				Body:    nil,
 				Message: errResp.Message,
 			})
 		}
+		logging.ERROR("Error: %s", err.Error())
 		return c.Status(fiber.StatusInternalServerError).JSON(models.Response{
 			Status:  false,
 			Body:    nil,
@@ -145,6 +167,7 @@ func (r *ResumeController) ExpenseResumeUpdate(c *fiber.Ctx) error {
 		})
 	}
 
+	logging.INFO("Resumen actualizado exitosamente")
 	return c.Status(fiber.StatusOK).JSON(models.Response{
 		Status:  true,
 			Body:    nil,
@@ -156,8 +179,10 @@ func (r *ResumeController) ExpenseResumeUpdate(c *fiber.Ctx) error {
 // INCOME
 
 func (r *ResumeController) IncomeResumeCreate(c *fiber.Ctx) error {
+	logging.INFO("Crear resumen de ingresos")
 	resume := &models.ResumeIncomeCreate{}
 	if err := c.BodyParser(resume); err != nil {
+		logging.ERROR("Error: %s", err.Error())
 		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
 			Status:  false,
 			Body:    nil,
@@ -165,6 +190,7 @@ func (r *ResumeController) IncomeResumeCreate(c *fiber.Ctx) error {
 		})
 	}
 	if err := resume.Validate(); err != nil {
+		logging.ERROR("Error: %s", err.Error())
 		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
 			Status:  false,
 			Body:    nil,
@@ -175,12 +201,14 @@ func (r *ResumeController) IncomeResumeCreate(c *fiber.Ctx) error {
 	id, err := r.ResumeIncomeService.ResumeIncomeCreate(resume)
 	if err != nil {
 		if errResp, ok := err.(*models.ErrorStruc); ok {
+			logging.ERROR("Error: %s", errResp.Err.Error())
 			return c.Status(errResp.StatusCode).JSON(models.Response{
 				Status:  false,
 				Body:    nil,
 				Message: errResp.Message,
 			})
 		}
+		logging.ERROR("Error: %s", err.Error())
 		return c.Status(fiber.StatusInternalServerError).JSON(models.Response{
 			Status:  false,
 			Body:    nil,
@@ -188,6 +216,7 @@ func (r *ResumeController) IncomeResumeCreate(c *fiber.Ctx) error {
 		})
 	}
 
+	logging.INFO("Resumen creado exitosamente")
 	return c.Status(fiber.StatusOK).JSON(models.Response{
 		Status:  true,
 		Body:    id,
@@ -196,9 +225,11 @@ func (r *ResumeController) IncomeResumeCreate(c *fiber.Ctx) error {
 }
 
 func (r *ResumeController) IncomeResumeGetByDateBetween(c *fiber.Ctx) error {
+	logging.INFO("Obtener resumen de ingresos")
 	fromDate := c.Query("from_date")
 	toDate := c.Query("to_date")
 	if fromDate == "" || toDate == "" {
+		logging.ERROR("Error: from_date y to_date son requiridos")
 		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
 			Status:  false,
 			Body:    nil,
@@ -209,12 +240,14 @@ func (r *ResumeController) IncomeResumeGetByDateBetween(c *fiber.Ctx) error {
 	resume, err := r.ResumeIncomeService.ResumeIncomeGetByDateBetween(fromDate, toDate)
 	if err != nil {
 		if errResp, ok := err.(*models.ErrorStruc); ok {
+			logging.ERROR("Error: %s", errResp.Err.Error())
 			return c.Status(errResp.StatusCode).JSON(models.Response{
 				Status:  false,
 				Body:    nil,
 				Message: errResp.Message,
 			})
 		}
+		logging.ERROR("Error: %s", err.Error())
 		return c.Status(fiber.StatusInternalServerError).JSON(models.Response{
 			Status:  false,
 			Body:    nil,
@@ -222,6 +255,7 @@ func (r *ResumeController) IncomeResumeGetByDateBetween(c *fiber.Ctx) error {
 		})
 	}
 
+	logging.INFO("Resumen obtenido exitosamente")
 	return c.Status(fiber.StatusOK).JSON(models.Response{
 		Status:  true,
 			Body:    resume,
@@ -230,8 +264,10 @@ func (r *ResumeController) IncomeResumeGetByDateBetween(c *fiber.Ctx) error {
 }
 
 func (r *ResumeController) IncomeResumeGetByID(c *fiber.Ctx) error {
+	logging.INFO("Obtener resumen de ingresos")
 	id := c.Params("id")
 	if id == "" {
+		logging.ERROR("Error: id is required")
 		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
 			Status:  false,
 			Body:    nil,
@@ -242,12 +278,14 @@ func (r *ResumeController) IncomeResumeGetByID(c *fiber.Ctx) error {
 	resume, err := r.ResumeIncomeService.ResumeIncomeGetByID(id)
 	if err != nil {
 		if errResp, ok := err.(*models.ErrorStruc); ok {
+			logging.ERROR("Error: %s", errResp.Err.Error())
 			return c.Status(errResp.StatusCode).JSON(models.Response{
 				Status:  false,
 				Body:    nil,
 				Message: errResp.Message,
 			})
 		}
+		logging.ERROR("Error: %s", err.Error())
 		return c.Status(fiber.StatusInternalServerError).JSON(models.Response{
 			Status:  false,
 			Body:    nil,
@@ -255,6 +293,7 @@ func (r *ResumeController) IncomeResumeGetByID(c *fiber.Ctx) error {
 		})
 	}
 
+	logging.INFO("Resumen obtenido exitosamente")
 	return c.Status(fiber.StatusOK).JSON(models.Response{
 		Status:  true,
 			Body:    resume,
@@ -263,8 +302,10 @@ func (r *ResumeController) IncomeResumeGetByID(c *fiber.Ctx) error {
 }
 
 func (r *ResumeController) IncomeResumeUpdate(c *fiber.Ctx) error {
+	logging.INFO("Actualizar resumen de ingresos")
 	resume := &models.ResumeIncomeUpdate{}
 	if err := c.BodyParser(resume); err != nil {
+		logging.ERROR("Error: %s", err.Error())
 		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
 			Status:  false,
 			Body:    nil,
@@ -272,6 +313,7 @@ func (r *ResumeController) IncomeResumeUpdate(c *fiber.Ctx) error {
 		})
 	}
 	if err := resume.Validate(); err != nil {
+		logging.ERROR("Error: %s", err.Error())
 		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
 			Status:  false,
 			Body:    nil,
@@ -282,12 +324,14 @@ func (r *ResumeController) IncomeResumeUpdate(c *fiber.Ctx) error {
 	err := r.ResumeIncomeService.ResumeIncomeUpdate(resume)
 	if err != nil {
 		if errResp, ok := err.(*models.ErrorStruc); ok {
+			logging.ERROR("Error: %s", errResp.Err.Error())
 			return c.Status(errResp.StatusCode).JSON(models.Response{
 				Status:  false,
 				Body:    nil,
 				Message: errResp.Message,
 			})
 		}
+		logging.ERROR("Error: %s", err.Error())
 		return c.Status(fiber.StatusInternalServerError).JSON(models.Response{
 			Status:  false,
 			Body:    nil,
@@ -295,6 +339,7 @@ func (r *ResumeController) IncomeResumeUpdate(c *fiber.Ctx) error {
 		})
 	}
 
+	logging.INFO("Resumen actualizado exitosamente")
 	return c.Status(fiber.StatusOK).JSON(models.Response{
 		Status:  true,
 			Body:    nil,

@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"github.com/DanielChachagua/GestionCar/cmd/api/logging"
 	"github.com/DanielChachagua/GestionCar/pkg/models"
 	"github.com/gofiber/fiber/v2"
 )
@@ -21,8 +22,10 @@ import (
 //	@Failure		500	{object}	models.Response
 //	@Router			/service/{id} [get]
 func (s *ServiceController) ServiceGetByID(c *fiber.Ctx) error {
+	logging.INFO("Obtener un servicio por ID")
 	id := c.Params("id")
 	if id == "" {
+		logging.ERROR("Error: ID is required")
 		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
 			Status:  false,
 			Body:    nil,
@@ -33,12 +36,14 @@ func (s *ServiceController) ServiceGetByID(c *fiber.Ctx) error {
 	service, err := s.ServiceService.ServiceGetByID(id)
 	if err != nil {
 		if errResp, ok := err.(*models.ErrorStruc); ok {
+			logging.ERROR("Error: %s", errResp.Err.Error())
 			return c.Status(errResp.StatusCode).JSON(models.Response{
 				Status:  false,
 				Body:    nil,
 				Message: errResp.Message,
 			})
 		}
+		logging.ERROR("Error: %s", err.Error())
 		return c.Status(fiber.StatusInternalServerError).JSON(models.Response{
 			Status:  false,
 			Body:    nil,
@@ -46,6 +51,7 @@ func (s *ServiceController) ServiceGetByID(c *fiber.Ctx) error {
 		})
 	}
 
+	logging.INFO("Servicio obtenido con éxito")
 	return c.Status(200).JSON(models.Response{
 		Status:  true,
 		Body:    service,
@@ -67,15 +73,18 @@ func (s *ServiceController) ServiceGetByID(c *fiber.Ctx) error {
 //	@Failure		500	{object}	models.Response
 //	@Router			/service/get_all [get]
 func (s *ServiceController) ServiceGetAll(c *fiber.Ctx) error {
+	logging.INFO("Obtener todos los servicios")
 	services, err := s.ServiceService.ServiceGetAll()
 	if err != nil {
 		if errResp, ok := err.(*models.ErrorStruc); ok {
+			logging.ERROR("Error: %s", errResp.Err.Error())
 			return c.Status(errResp.StatusCode).JSON(models.Response{
 				Status:  false,
 				Body:    nil,
 				Message: errResp.Message,
 			})
 		}
+		logging.ERROR("Error: %s", err.Error())
 		return c.Status(fiber.StatusInternalServerError).JSON(models.Response{
 			Status:  false,
 			Body:    nil,
@@ -83,6 +92,7 @@ func (s *ServiceController) ServiceGetAll(c *fiber.Ctx) error {
 		})
 	}
 
+	logging.INFO("Servicios obtenidos con éxito")
 	return c.Status(200).JSON(models.Response{
 		Status:  true,
 		Body:    services,
@@ -106,8 +116,10 @@ func (s *ServiceController) ServiceGetAll(c *fiber.Ctx) error {
 //	@Failure		500				{object}	models.Response					"Internal server error"
 //	@Router			/service/create      [post]
 func (s *ServiceController) ServiceCreate(c *fiber.Ctx) error {
+	logging.INFO("Crear servicio")
 	var serviceCreate models.ServiceCreate
 	if err := c.BodyParser(&serviceCreate); err != nil {
+		logging.ERROR("Error: %s", err.Error())
 		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
 			Status:  false,
 			Body:    nil,
@@ -115,6 +127,7 @@ func (s *ServiceController) ServiceCreate(c *fiber.Ctx) error {
 		})
 	}
 	if err := serviceCreate.Validate(); err != nil {
+		logging.ERROR("Error: %s", err.Error())
 		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
 			Status:  false,
 			Body:    nil,
@@ -125,12 +138,14 @@ func (s *ServiceController) ServiceCreate(c *fiber.Ctx) error {
 	id, err := s.ServiceService.ServiceCreate(&serviceCreate)
 	if err != nil {
 		if errResp, ok := err.(*models.ErrorStruc); ok {
+			logging.ERROR("Error: %s", errResp.Err.Error())
 			return c.Status(errResp.StatusCode).JSON(models.Response{
 				Status:  false,
 				Body:    nil,
 				Message: errResp.Message,
 			})
 		}
+		logging.ERROR("Error: %s", err.Error())
 		return c.Status(fiber.StatusInternalServerError).JSON(models.Response{
 			Status:  false,
 			Body:    nil,
@@ -138,6 +153,7 @@ func (s *ServiceController) ServiceCreate(c *fiber.Ctx) error {
 		})
 	}
 
+	logging.INFO("Servicio creado con éxito")
 	return c.Status(200).JSON(models.Response{
 		Status:  true,
 		Body:    id,
@@ -163,8 +179,10 @@ func (s *ServiceController) ServiceCreate(c *fiber.Ctx) error {
 //	@Router			/service/update [put]
 //	@Security		BearerAuth
 func (s *ServiceController) ServiceUpdate(c *fiber.Ctx) error {
+	logging.INFO("Actualizar servicio")
 	var serviceUpdate models.ServiceUpdate
 	if err := c.BodyParser(&serviceUpdate); err != nil {
+		logging.ERROR("Error: %s", err.Error())
 		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
 			Status:  false,
 			Body:    nil,
@@ -172,6 +190,7 @@ func (s *ServiceController) ServiceUpdate(c *fiber.Ctx) error {
 		})
 	}
 	if err := serviceUpdate.Validate(); err != nil {
+		logging.ERROR("Error: %s", err.Error())
 		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
 			Status:  false,
 			Body:    nil,
@@ -182,12 +201,14 @@ func (s *ServiceController) ServiceUpdate(c *fiber.Ctx) error {
 	err := s.ServiceService.ServiceUpdate(&serviceUpdate)
 	if err != nil {
 		if errResp, ok := err.(*models.ErrorStruc); ok {
+			logging.ERROR("Error: %s", errResp.Err.Error())
 			return c.Status(errResp.StatusCode).JSON(models.Response{
 				Status:  false,
 				Body:    nil,
 				Message: errResp.Message,
 			})
 		}
+		logging.ERROR("Error: %s", err.Error())
 		return c.Status(fiber.StatusInternalServerError).JSON(models.Response{
 			Status:  false,
 			Body:    nil,
@@ -195,6 +216,7 @@ func (s *ServiceController) ServiceUpdate(c *fiber.Ctx) error {
 		})
 	}
 
+	logging.INFO("Servicio editado con éxito")
 	return c.Status(200).JSON(models.Response{
 		Status:  true,
 		Body:    nil,
@@ -218,8 +240,10 @@ func (s *ServiceController) ServiceUpdate(c *fiber.Ctx) error {
 //	@Failure		500	{object}	models.Response	"Error interno"
 //	@Router			/service/delete/{id} [delete]
 func (s *ServiceController) ServiceDeleteByID(c *fiber.Ctx) error {
+	logging.INFO("Eliminar servicio por ID")
 	id := c.Params("id")
 	if id == "" {
+		logging.ERROR("Error: ID is required")
 		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
 			Status:  false,
 			Body:    nil,
@@ -230,12 +254,14 @@ func (s *ServiceController) ServiceDeleteByID(c *fiber.Ctx) error {
 	err := s.ServiceService.ServiceDelete(id)
 	if err != nil {
 		if errResp, ok := err.(*models.ErrorStruc); ok {
+			logging.ERROR("Error: %s", errResp.Err.Error())
 			return c.Status(errResp.StatusCode).JSON(models.Response{
 				Status:  false,
 				Body:    nil,
 				Message: errResp.Message,
 			})
 		}
+		logging.ERROR("Error: %s", err.Error())
 		return c.Status(fiber.StatusInternalServerError).JSON(models.Response{
 			Status:  false,
 			Body:    nil,
@@ -243,6 +269,7 @@ func (s *ServiceController) ServiceDeleteByID(c *fiber.Ctx) error {
 		})
 	}
 
+	logging.INFO("Servicio eliminado con éxito")
 	return c.Status(200).JSON(models.Response{
 		Status:  true,
 		Body:    nil,

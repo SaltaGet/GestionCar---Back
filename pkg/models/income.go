@@ -8,21 +8,21 @@ import (
 )
 
 type Income struct {
-	ID                  string              `gorm:"primaryKey;size:36" json:"id"`
-	Ticket              string              `json:"ticket"`
-	Details             string              `json:"details"`
-	ClientID            string              `gorm:"not null;size:36" json:"client_id"`
-	VehicleID           string              `gorm:"not null;size:36" json:"vehicle_id"`
-	EmployeeID          string              `gorm:"null;size:36" json:"employee_id"`
-	Amount              float32             `gorm:"not null" json:"amount"`
-	MovementTypeID      string              `gorm:"not null;size:36" json:"movement_type_id"`
-	CreatedAt           time.Time           `gorm:"autoCreateTime" json:"created_at"`
-	UpdatedAt           time.Time           `gorm:"autoUpdateTime" json:"updated_at"`
-	Client              Client              `gorm:"foreignKey:ClientID" json:"client"`
-	Vehicle             Vehicle             `gorm:"foreignKey:VehicleID" json:"vehicle"`
-	Employee     Employee     `gorm:"foreignKey:EmployeeID" json:"employee"`
-	MovementType MovementType `gorm:"foreignKey:MovementTypeID;references:ID" json:"movement_type"`
-	Services      []Service   `gorm:"many2many:income_services;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"services"`
+	ID             string       `gorm:"primaryKey;size:36" json:"id"`
+	Ticket         string       `json:"ticket"`
+	Details        string       `json:"details"`
+	ClientID       string       `gorm:"not null;size:36" json:"client_id"`
+	VehicleID      string       `gorm:"not null;size:36" json:"vehicle_id"`
+	EmployeeID     string       `gorm:"null;size:36" json:"employee_id"`
+	Amount         float32      `gorm:"not null" json:"amount"`
+	MovementTypeID string       `gorm:"not null;size:36" json:"movement_type_id"`
+	CreatedAt      time.Time    `gorm:"autoCreateTime" json:"created_at"`
+	UpdatedAt      time.Time    `gorm:"autoUpdateTime" json:"updated_at"`
+	Client         Client       `gorm:"foreignKey:ClientID" json:"client"`
+	Vehicle        Vehicle      `gorm:"foreignKey:VehicleID" json:"vehicle"`
+	Employee       Employee     `gorm:"foreignKey:EmployeeID" json:"employee"`
+	MovementType   MovementType `gorm:"foreignKey:MovementTypeID;references:ID" json:"movement_type"`
+	Services       []Service    `gorm:"many2many:income_services;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"services"`
 }
 
 type IncomeCreate struct {
@@ -46,8 +46,9 @@ func (i *IncomeCreate) Validate() error {
 	validationErr := err.(validator.ValidationErrors)[0]
 	field := validationErr.Field()
 	tag := validationErr.Tag()
+	param := validationErr.Param()
 
-	return fmt.Errorf("campo %s es invalido, revisar: (%s)", field, tag)
+	return fmt.Errorf("campo %s es invalido, revisar: (%s) (%s)", field, tag, param)
 }
 
 type IncomeUpdate struct {
@@ -72,6 +73,7 @@ func (i *IncomeUpdate) Validate() error {
 	validationErr := err.(validator.ValidationErrors)[0]
 	field := validationErr.Field()
 	tag := validationErr.Tag()
+	param := validationErr.Param()
 
-	return fmt.Errorf("campo %s es invalido, revisar: (%s)", field, tag)
+	return fmt.Errorf("campo %s es invalido, revisar: (%s) (%s)", field, tag, param)
 }

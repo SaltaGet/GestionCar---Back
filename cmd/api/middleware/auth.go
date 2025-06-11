@@ -100,7 +100,7 @@ func AuthMiddleware() fiber.Handler {
 				permissions := func(perms []models.Permission) []string {
 					names := make([]string, 0, len(perms))
 					for _, p := range perms {
-						names = append(names, p.Name)
+						names = append(names, p.Code)
 					}
 					return names
 				}(user.Role.Permissions)

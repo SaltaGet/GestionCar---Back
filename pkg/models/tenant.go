@@ -10,7 +10,7 @@ import (
 type Tenant struct {
 	ID          string       `gorm:"primaryKey;size:36" json:"id"`
 	Name        string       `gorm:"not null" json:"name"`
-	Identifier string       `gorm:"not null;unique" json:"identifier"`
+	Identifier  string       `gorm:"not null;unique" json:"identifier"`
 	Address     string       `gorm:"not null" json:"address"`
 	Phone       string       `gorm:"not null" json:"phone"`
 	Email       string       `gorm:"Index;not null" json:"email"`
@@ -23,12 +23,12 @@ type Tenant struct {
 }
 
 type TenantCreate struct {
-	Name    string `json:"name" validate:"required"`
+	Name       string `json:"name" validate:"required"`
 	Identifier string `json:"identifier" validate:"required"`
-	Address string `json:"address" validate:"required"`
-	Phone   string `json:"phone" validate:"required"`
-	Email   string `json:"email" validate:"required,email"`
-	CuitPdv string `json:"cuit_pdv" validate:"required"`
+	Address    string `json:"address" validate:"required"`
+	Phone      string `json:"phone" validate:"required"`
+	Email      string `json:"email" validate:"required,email"`
+	CuitPdv    string `json:"cuit_pdv" validate:"required"`
 }
 
 func (t *TenantCreate) Validate() error {
@@ -41,8 +41,9 @@ func (t *TenantCreate) Validate() error {
 	validationErr := err.(validator.ValidationErrors)[0]
 	field := validationErr.Field()
 	tag := validationErr.Tag()
+	param := validationErr.Param()
 
-	return fmt.Errorf("campo %s es invalido, revisar: (%s)", field, tag)
+	return fmt.Errorf("campo %s es invalido, revisar: (%s) (%s)", field, tag, param)
 }
 
 type TenantUpdate struct {
@@ -63,8 +64,9 @@ func (t *TenantUpdate) Validate() error {
 	validationErr := err.(validator.ValidationErrors)[0]
 	field := validationErr.Field()
 	tag := validationErr.Tag()
+	param := validationErr.Param()
 
-	return fmt.Errorf("el campo %s es inválido (%s)", field, tag)
+	return fmt.Errorf("campo %s es invalido, revisar: (%s) (%s)", field, tag, param)
 }
 
 type TenantResponse struct {
@@ -86,5 +88,15 @@ type TenantUserCreate struct {
 
 func (t *TenantUserCreate) Validate() error {
 	validate := validator.New()
-	return validate.Struct(t)
+	err := validate.Struct(t)
+	if err == nil {
+		return nil
+	}
+
+	validationErr := err.(validator.ValidationErrors)[0]
+	field := validationErr.Field()
+	tag := validationErr.Tag()
+	param := validationErr.Param()
+
+	return fmt.Errorf("campo %s es invalido, revisar: (%s) (%s)", field, tag, param)
 }

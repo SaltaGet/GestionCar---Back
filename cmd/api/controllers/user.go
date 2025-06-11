@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"github.com/DanielChachagua/GestionCar/cmd/api/logging"
 	"github.com/DanielChachagua/GestionCar/pkg/models"
 	"github.com/gofiber/fiber/v2"
 )
@@ -20,6 +21,7 @@ import (
 //	@Failure		500			{object}	models.Response
 //	@Router			/user/create [post]
 func (u *UserController) CreateUser(c *fiber.Ctx) error {
+	logging.INFO("Crear usuario")
 	var userCreate models.UserCreate
 	if err := c.BodyParser(&userCreate); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
@@ -38,18 +40,22 @@ func (u *UserController) CreateUser(c *fiber.Ctx) error {
 	userCreated, err := u.UserService.UserCreate(&userCreate)
 	if err != nil {
 		if errResp, ok := err.(*models.ErrorStruc); ok {
+			logging.ERROR("Error: %s", errResp.Err.Error())
 			return c.Status(errResp.StatusCode).JSON(models.Response{
 				Status:  false,
 				Body:    nil,
 				Message: errResp.Message,
 			})
 		}
+		logging.ERROR("Error: %s", err.Error())
 		return c.Status(fiber.StatusInternalServerError).JSON(models.Response{
 			Status:  false,
 			Body:    nil,
 			Message: "Error interno",
 		})
 	}
+	
+	logging.INFO("Usuario creado")
 	return c.Status(fiber.StatusCreated).JSON(models.Response{
 		Status:  true,
 		Body:    userCreated,

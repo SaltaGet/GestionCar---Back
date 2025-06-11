@@ -9,11 +9,11 @@ import (
 
 // Proveedor
 type Supplier struct {
-	ID        string `gorm:"primaryKey;size:36" json:"id"`
-	Name      string `gorm:"not null" json:"name"`
-	Address   string `gorm:"not null" json:"address"`
-	Phone     string `gorm:"not null" json:"phone"`
-	Email     string `gorm:"not null" json:"email"`
+	ID        string    `gorm:"primaryKey;size:36" json:"id"`
+	Name      string    `gorm:"not null" json:"name"`
+	Address   string    `gorm:"not null" json:"address"`
+	Phone     string    `gorm:"not null" json:"phone"`
+	Email     string    `gorm:"not null" json:"email"`
 	CreatedAt time.Time `gorm:"autoCreateTime" json:"created_at"`
 	UpdatedAt time.Time `gorm:"autoUpdateTime" json:"updated_at"`
 }
@@ -35,8 +35,9 @@ func (s *SupplierCreate) Validate() error {
 	validationErr := err.(validator.ValidationErrors)[0]
 	field := validationErr.Field()
 	tag := validationErr.Tag()
+	param := validationErr.Param()
 
-	return fmt.Errorf("campo %s es invalido, revisar: (%s)", field, tag)
+	return fmt.Errorf("campo %s es invalido, revisar: (%s) (%s)", field, tag, param)
 }
 
 type SupplierUpdate struct {
@@ -57,6 +58,7 @@ func (s *SupplierUpdate) Validate() error {
 	validationErr := err.(validator.ValidationErrors)[0]
 	field := validationErr.Field()
 	tag := validationErr.Tag()
+	param := validationErr.Param()
 
-	return fmt.Errorf("campo %s es invalido, revisar: (%s)", field, tag)
+	return fmt.Errorf("campo %s es invalido, revisar: (%s) (%s)", field, tag, param)
 }

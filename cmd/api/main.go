@@ -1,14 +1,15 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"os"
 	"time"
 
+	_ "github.com/DanielChachagua/GestionCar/cmd/api/docs"
+	"github.com/DanielChachagua/GestionCar/cmd/api/logging"
 	"github.com/DanielChachagua/GestionCar/pkg/database"
 	"github.com/DanielChachagua/GestionCar/pkg/dependencies"
-	_ "github.com/DanielChachagua/GestionCar/cmd/api/docs"
+
 	// "github.com/DanielChachagua/GestionCar/cmd/api/jobs"
 	"github.com/DanielChachagua/GestionCar/cmd/api/middleware"
 	"github.com/DanielChachagua/GestionCar/cmd/api/routes"
@@ -30,11 +31,13 @@ import (
 //	@description				Type "Bearer" followed by a space and the JWT token. Example: "Bearer eyJhbGciOiJIUz..."
 
 func main() {
-	fmt.Println("Inicio app")
+	logging.INFO("Iniciando el servidor...")
+
 	err := godotenv.Load()
 	if err != nil {
 		log.Fatalf("Error loading .env file: %v", err)
 	}
+
 
 	db, err := database.ConnectDB(os.Getenv("URI_DB"))
 	if err != nil {

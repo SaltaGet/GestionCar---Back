@@ -1,10 +1,10 @@
 package controllers
 
 import (
+	"github.com/DanielChachagua/GestionCar/cmd/api/logging"
 	"github.com/DanielChachagua/GestionCar/pkg/models"
 	"github.com/gofiber/fiber/v2"
 )
-
 
 // GetEmployeeByID godoc
 //	@Summary		Get Employee By ID
@@ -22,8 +22,10 @@ import (
 //	@Failure		500	{object}	models.Response
 //	@Router			/employee/{id} [get]
 func (e *EmployeeController) GetEmployeeByID(c *fiber.Ctx) error {
+	logging.INFO("Obtener un empleado por ID")
 	id := c.Params("id")
 	if id == "" {
+		logging.ERROR("Error: ID is required")
 		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
 			Status:  false,
 			Body:    nil,
@@ -34,12 +36,14 @@ func (e *EmployeeController) GetEmployeeByID(c *fiber.Ctx) error {
 	employee, err := e.EmployeeService.EmployeeGetByID(id)
 	if err != nil {
 		if errResp, ok := err.(*models.ErrorStruc); ok {
+			logging.ERROR("Error: %s", errResp.Err.Error())
 			return c.Status(errResp.StatusCode).JSON(models.Response{
 				Status:  false,
 				Body:    nil,
 				Message: errResp.Message,
 			})
 		}
+		logging.ERROR("Error: %s", err.Error())
 		return c.Status(fiber.StatusInternalServerError).JSON(models.Response{
 			Status:  false,
 			Body:    nil,
@@ -47,6 +51,7 @@ func (e *EmployeeController) GetEmployeeByID(c *fiber.Ctx) error {
 		})
 	}
 
+	logging.INFO("Empleado obtenido con éxito")
 	return c.Status(200).JSON(models.Response{
 		Status:  true,
 		Body:    employee,
@@ -68,15 +73,18 @@ func (e *EmployeeController) GetEmployeeByID(c *fiber.Ctx) error {
 //	@Failure		500	{object}	models.Response							"Internal server error"
 //	@Router			/employee/get_all [get]
 func (e *EmployeeController) GetAllEmployees(c *fiber.Ctx) error {
+	logging.INFO("Obtener todos los empleados")
 	employees, err := e.EmployeeService.EmployeeGetAll()
 	if err != nil {
 		if errResp, ok := err.(*models.ErrorStruc); ok {
+			logging.ERROR("Error: %s", errResp.Err.Error())
 			return c.Status(errResp.StatusCode).JSON(models.Response{
 				Status:  false,
 				Body:    nil,
 				Message: errResp.Message,
 			})
 		}
+		logging.ERROR("Error: %s", err.Error())
 		return c.Status(fiber.StatusInternalServerError).JSON(models.Response{
 			Status:  false,
 			Body:    nil,
@@ -84,6 +92,7 @@ func (e *EmployeeController) GetAllEmployees(c *fiber.Ctx) error {
 		})
 	}
 
+	logging.INFO("Empleados obtenidos con éxito")
 	return c.Status(200).JSON(models.Response{
 		Status:  true,
 		Body:    employees,
@@ -106,8 +115,10 @@ func (e *EmployeeController) GetAllEmployees(c *fiber.Ctx) error {
 //	@Failure		500		{object}	models.Response							"Internal server error"
 //	@Router			/employee/get_by_name [get]
 func (e *EmployeeController) GetEmployeeByName(c *fiber.Ctx) error {
+	logging.INFO("Obtener un empleado por nombre")
 	name := c.Query("name")
 	if name == "" || len(name) < 3 {
+		logging.ERROR("Error: El valor no debe de ser vacio o menor a 3 caracteres")
 		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
 			Status:  false,
 			Body:    nil,
@@ -118,12 +129,14 @@ func (e *EmployeeController) GetEmployeeByName(c *fiber.Ctx) error {
 	employees, err := e.EmployeeService.EmployeeGetByName(name)
 	if err != nil {
 		if errResp, ok := err.(*models.ErrorStruc); ok {
+			logging.ERROR("Error: %s", errResp.Err.Error())
 			return c.Status(errResp.StatusCode).JSON(models.Response{
 				Status:  false,
 				Body:    nil,
 				Message: errResp.Message,
 			})
 		}
+		logging.ERROR("Error: %s", err.Error())
 		return c.Status(fiber.StatusInternalServerError).JSON(models.Response{
 			Status:  false,
 			Body:    nil,
@@ -131,6 +144,7 @@ func (e *EmployeeController) GetEmployeeByName(c *fiber.Ctx) error {
 		})
 	}
 
+	logging.INFO("Empleados obtenidos con éxito")
 	return c.Status(200).JSON(models.Response{
 		Status:  true,
 		Body:    employees,
@@ -154,8 +168,10 @@ func (e *EmployeeController) GetEmployeeByName(c *fiber.Ctx) error {
 //	@Failure		500				{object}	models.Response					"Internal server error"
 //	@Router			/employee/create [post]
 func (e *EmployeeController) CreateEmployee(c *fiber.Ctx) error {
+	logging.INFO("Crear un empleado")
 	var employeeCreate models.EmployeeCreate
 	if err := c.BodyParser(&employeeCreate); err != nil {
+		logging.ERROR("Error: %s", err.Error())
 		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
 			Status:  false,
 			Body:    nil,
@@ -163,6 +179,7 @@ func (e *EmployeeController) CreateEmployee(c *fiber.Ctx) error {
 		})
 	}
 	if err := employeeCreate.Validate(); err != nil {
+		logging.ERROR("Error: %s", err.Error())
 		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
 			Status:  false,
 			Body:    nil,
@@ -173,12 +190,14 @@ func (e *EmployeeController) CreateEmployee(c *fiber.Ctx) error {
 	id, err := e.EmployeeService.EmployeeCreate(&employeeCreate)
 	if err != nil {
 		if errResp, ok := err.(*models.ErrorStruc); ok {
+			logging.ERROR("Error: %s", errResp.Err.Error())
 			return c.Status(errResp.StatusCode).JSON(models.Response{
 				Status:  false,
 				Body:    nil,
 				Message: errResp.Message,
 			})
 		}
+		logging.ERROR("Error: %s", err.Error())
 		return c.Status(fiber.StatusInternalServerError).JSON(models.Response{
 			Status:  false,
 			Body:    nil,
@@ -186,6 +205,7 @@ func (e *EmployeeController) CreateEmployee(c *fiber.Ctx) error {
 		})
 	}
 
+	logging.INFO("Empleado creado con éxito")
 	return c.Status(200).JSON(models.Response{
 		Status:  true,
 		Body:    id,
@@ -210,8 +230,10 @@ func (e *EmployeeController) CreateEmployee(c *fiber.Ctx) error {
 //	@Failure		500				{object}	models.Response			"Error interno"
 //	@Router			/employee/update [put]
 func (e *EmployeeController) UpdateEmployee(c *fiber.Ctx) error {
+	logging.INFO("Actualizar un empleado")
 	var employeeUpdate models.EmployeeUpdate
 	if err := c.BodyParser(&employeeUpdate); err != nil {
+		logging.ERROR("Error: %s", err.Error())
 		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
 			Status:  false,
 			Body:    nil,
@@ -219,6 +241,7 @@ func (e *EmployeeController) UpdateEmployee(c *fiber.Ctx) error {
 		})
 	}
 	if err := employeeUpdate.Validate(); err != nil {
+		logging.ERROR("Error: %s", err.Error())
 		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
 			Status:  false,
 			Body:    nil,
@@ -229,12 +252,14 @@ func (e *EmployeeController) UpdateEmployee(c *fiber.Ctx) error {
 	err := e.EmployeeService.EmployeeUpdate(&employeeUpdate)
 	if err != nil {
 		if errResp, ok := err.(*models.ErrorStruc); ok {
+			logging.ERROR("Error: %s", errResp.Err.Error())
 			return c.Status(errResp.StatusCode).JSON(models.Response{
 				Status:  false,
 				Body:    nil,
 				Message: errResp.Message,
 			})
 		}
+		logging.ERROR("Error: %s", err.Error())
 		return c.Status(fiber.StatusInternalServerError).JSON(models.Response{
 			Status:  false,
 			Body:    nil,
@@ -242,6 +267,7 @@ func (e *EmployeeController) UpdateEmployee(c *fiber.Ctx) error {
 		})
 	}
 
+	logging.INFO("Empleado editado con éxito")
 	return c.Status(200).JSON(models.Response{
 		Status:  true,
 		Body:    nil,
@@ -265,8 +291,10 @@ func (e *EmployeeController) UpdateEmployee(c *fiber.Ctx) error {
 //	@Failure		500	{object}	models.Response	"Error interno"
 //	@Router			/employee/delete/{id} [delete]
 func (e *EmployeeController) DeleteEmployee(c *fiber.Ctx) error {
+	logging.INFO("Eliminar un empleado")
 	id := c.Params("id")
 	if id == "" {
+		logging.ERROR("Error: ID is required")
 		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
 			Status:  false,
 			Body:    nil,
@@ -277,12 +305,14 @@ func (e *EmployeeController) DeleteEmployee(c *fiber.Ctx) error {
 	err := e.EmployeeService.EmployeeDelete(id)
 	if err != nil {
 		if errResp, ok := err.(*models.ErrorStruc); ok {
+			logging.ERROR("Error: %s", errResp.Err.Error())
 			return c.Status(errResp.StatusCode).JSON(models.Response{
 				Status:  false,
 				Body:    nil,
 				Message: errResp.Message,
 			})
 		}
+		logging.ERROR("Error: %s", err.Error())
 		return c.Status(fiber.StatusInternalServerError).JSON(models.Response{
 			Status:  false,
 			Body:    nil,
@@ -290,6 +320,7 @@ func (e *EmployeeController) DeleteEmployee(c *fiber.Ctx) error {
 		})
 	}
 
+	logging.INFO("Empleado eliminado con éxito")
 	return c.Status(200).JSON(models.Response{
 		Status:  true,
 		Body:    nil,

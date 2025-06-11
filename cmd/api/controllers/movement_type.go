@@ -3,6 +3,7 @@ package controllers
 import (
 	"strconv"
 
+	"github.com/DanielChachagua/GestionCar/cmd/api/logging"
 	"github.com/DanielChachagua/GestionCar/pkg/models"
 	"github.com/gofiber/fiber/v2"
 )
@@ -24,8 +25,10 @@ import (
 //	@Failure		500	{object}	models.Response								"Internal server error"
 //	@Router			/movement/{id} [get]
 func (m *MovementTypeController) GetMovementTypeByID(c *fiber.Ctx) error {
+	logging.INFO("Obtener un movimiento por ID")
 	id := c.Params("id")
 	if id == "" {
+		logging.ERROR("Error: ID is required")
 		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
 			Status:  false,
 			Body:    nil,
@@ -36,12 +39,14 @@ func (m *MovementTypeController) GetMovementTypeByID(c *fiber.Ctx) error {
 	movement, err := m.MovementTypeService.MovementTypeGetByID(id)
 	if err != nil {
 		if errResp, ok := err.(*models.ErrorStruc); ok {
+			logging.ERROR("Error: %s", errResp.Err.Error())
 			return c.Status(errResp.StatusCode).JSON(models.Response{
 				Status:  false,
 				Body:    nil,
 				Message: errResp.Message,
 			})
 		}
+		logging.ERROR("Error: %s", err.Error())
 		return c.Status(fiber.StatusInternalServerError).JSON(models.Response{
 			Status:  false,
 			Body:    nil,
@@ -49,6 +54,7 @@ func (m *MovementTypeController) GetMovementTypeByID(c *fiber.Ctx) error {
 		})
 	}
 
+	logging.INFO("Movimiento obtenido con éxito")
 	return c.Status(200).JSON(models.Response{
 		Status:  true,
 		Body:    movement,
@@ -57,7 +63,6 @@ func (m *MovementTypeController) GetMovementTypeByID(c *fiber.Ctx) error {
 }
 
 // GetAllMovementTypes godoc
-//
 //	@Summary		Get all movement types
 //	@Description	Get all movement types from either laundry or workshop based on the provided isIncome query parameter.
 //	@Tags			Movement
@@ -73,12 +78,14 @@ func (m *MovementTypeController) GetMovementTypeByID(c *fiber.Ctx) error {
 //	@Failure		500			{object}	models.Response								"Internal server error"
 //	@Router			/movement/get_all [get]
 func (m *MovementTypeController) GetAllMovementTypes(c *fiber.Ctx) error {
+	logging.INFO("Obtener todos los movimientos")
 	isIncomeStr := c.Query("isIncome")
 	isIncome := false
 	if isIncomeStr != "" {
 		var err error
 		isIncome, err = strconv.ParseBool(isIncomeStr)
 		if err != nil {
+			logging.ERROR("Error: %s", err.Error())
 			return c.Status(fiber.StatusBadRequest).JSON(models.Response{
 				Status:  false,
 				Body:    nil,
@@ -90,12 +97,14 @@ func (m *MovementTypeController) GetAllMovementTypes(c *fiber.Ctx) error {
 	movements, err := m.MovementTypeService.MovementTypeGetAll(isIncome)
 	if err != nil {
 		if errResp, ok := err.(*models.ErrorStruc); ok {
+			logging.ERROR("Error: %s", errResp.Err.Error())
 			return c.Status(errResp.StatusCode).JSON(models.Response{
 				Status:  false,
 				Body:    nil,
 				Message: errResp.Message,
 			})
 		}
+		logging.ERROR("Error: %s", err.Error())
 		return c.Status(fiber.StatusInternalServerError).JSON(models.Response{
 			Status:  false,
 			Body:    nil,
@@ -103,6 +112,7 @@ func (m *MovementTypeController) GetAllMovementTypes(c *fiber.Ctx) error {
 		})
 	}
 
+	logging.INFO("Movimientos obtenidos con éxito")
 	return c.Status(200).JSON(models.Response{
 		Status:  true,
 		Body:    movements,
@@ -128,8 +138,10 @@ func (m *MovementTypeController) GetAllMovementTypes(c *fiber.Ctx) error {
 //	@Failure		500				{object}	models.Response					"Internal server error"
 //	@Router			/movement/create [post]
 func (m *MovementTypeController) MovementTypeCreate(c *fiber.Ctx) error {
+	logging.INFO("Crear un movimiento")
 	var movementCreate models.MovementTypeCreate
 	if err := c.BodyParser(&movementCreate); err != nil {
+		logging.ERROR("Error: %s", err.Error())
 		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
 			Status:  false,
 			Body:    nil,
@@ -137,6 +149,7 @@ func (m *MovementTypeController) MovementTypeCreate(c *fiber.Ctx) error {
 		})
 	}
 	if err := movementCreate.Validate(); err != nil {
+		logging.ERROR("Error: %s", err.Error())
 		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
 			Status:  false,
 			Body:    nil,
@@ -147,12 +160,14 @@ func (m *MovementTypeController) MovementTypeCreate(c *fiber.Ctx) error {
 	id, err := m.MovementTypeService.MovementTypeCreate(&movementCreate)
 	if err != nil {
 		if errResp, ok := err.(*models.ErrorStruc); ok {
+			logging.ERROR("Error: %s", errResp.Err.Error())
 			return c.Status(errResp.StatusCode).JSON(models.Response{
 				Status:  false,
 				Body:    nil,
 				Message: errResp.Message,
 			})
 		}
+		logging.ERROR("Error: %s", err.Error())
 		return c.Status(fiber.StatusInternalServerError).JSON(models.Response{
 			Status:  false,
 			Body:    nil,
@@ -160,6 +175,7 @@ func (m *MovementTypeController) MovementTypeCreate(c *fiber.Ctx) error {
 		})
 	}
 
+	logging.INFO("Movimiento creado con éxito")
 	return c.Status(200).JSON(models.Response{
 		Status:  true,
 		Body:    id,
@@ -168,7 +184,6 @@ func (m *MovementTypeController) MovementTypeCreate(c *fiber.Ctx) error {
 }
 
 // MovementTypeUpdate godoc
-//
 //	@Summary		Update Movement Type
 //	@Description	This endpoint updates a movement type based on the provided JSON payload.
 //	@Tags			Movement
@@ -185,8 +200,10 @@ func (m *MovementTypeController) MovementTypeCreate(c *fiber.Ctx) error {
 //	@Failure		500				{object}	models.Response				"Internal server error"
 //	@Router			/movement/update [put]
 func (m *MovementTypeController) MovementTypeUpdate(c *fiber.Ctx) error {
+	logging.INFO("Actualizar un movimiento")
 	var movementUpdate models.MovementTypeUpdate
 	if err := c.BodyParser(&movementUpdate); err != nil {
+		logging.ERROR("Error: %s", err.Error())
 		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
 			Status:  false,
 			Body:    nil,
@@ -194,6 +211,7 @@ func (m *MovementTypeController) MovementTypeUpdate(c *fiber.Ctx) error {
 		})
 	}
 	if err := movementUpdate.Validate(); err != nil {
+		logging.ERROR("Error: %s", err.Error())
 		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
 			Status:  false,
 			Body:    nil,
@@ -204,12 +222,14 @@ func (m *MovementTypeController) MovementTypeUpdate(c *fiber.Ctx) error {
 	err := m.MovementTypeService.MovementTypeUpdate(&movementUpdate)
 	if err != nil {
 		if errResp, ok := err.(*models.ErrorStruc); ok {
+			logging.ERROR("Error: %s", errResp.Err.Error())
 			return c.Status(errResp.StatusCode).JSON(models.Response{
 				Status:  false,
 				Body:    nil,
 				Message: errResp.Message,
 			})
 		}
+		logging.ERROR("Error: %s", err.Error())
 		return c.Status(fiber.StatusInternalServerError).JSON(models.Response{
 			Status:  false,
 			Body:    nil,
@@ -217,6 +237,7 @@ func (m *MovementTypeController) MovementTypeUpdate(c *fiber.Ctx) error {
 		})
 	}
 
+	logging.INFO("Movimiento editado con éxito")
 	return c.Status(200).JSON(models.Response{
 		Status:  true,
 		Body:    nil,
@@ -225,7 +246,6 @@ func (m *MovementTypeController) MovementTypeUpdate(c *fiber.Ctx) error {
 }
 
 // MovementTypeDelete godoc
-//
 //	@Summary		Delete Movement Type
 //	@Description	Deletes a movement type based on its ID.
 //	@Tags			Movement
@@ -241,8 +261,10 @@ func (m *MovementTypeController) MovementTypeUpdate(c *fiber.Ctx) error {
 //	@Failure		500	{object}	models.Response	"Internal server error"
 //	@Router			/movement/delete/{id} [delete]
 func (m *MovementTypeController) MovementTypeDelete(c *fiber.Ctx) error {
+	logging.INFO("Eliminar un movimiento")
 	id := c.Params("id")
 	if id == "" {
+		logging.ERROR("Error: ID is required")
 		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
 			Status:  false,
 			Body:    nil,
@@ -253,12 +275,14 @@ func (m *MovementTypeController) MovementTypeDelete(c *fiber.Ctx) error {
 	err := m.MovementTypeService.MovementTypeDelete(id)
 	if err != nil {
 		if errResp, ok := err.(*models.ErrorStruc); ok {
+			logging.ERROR("Error: %s", errResp.Err.Error())
 			return c.Status(errResp.StatusCode).JSON(models.Response{
 				Status:  false,
 				Body:    nil,
 				Message: errResp.Message,
 			})
 		}
+		logging.ERROR("Error: %s", err.Error())
 		return c.Status(fiber.StatusInternalServerError).JSON(models.Response{
 			Status:  false,
 			Body:    nil,
@@ -266,6 +290,7 @@ func (m *MovementTypeController) MovementTypeDelete(c *fiber.Ctx) error {
 		})
 	}
 
+	logging.INFO("Movimiento eliminado con éxito")
 	return c.Status(200).JSON(models.Response{
 		Status:  true,
 		Body:    nil,

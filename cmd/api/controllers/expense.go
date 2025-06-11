@@ -1,10 +1,10 @@
 package controllers
 
 import (
+	"github.com/DanielChachagua/GestionCar/cmd/api/logging"
 	"github.com/DanielChachagua/GestionCar/pkg/models"
 	"github.com/gofiber/fiber/v2"
 )
-
 
 // GetExpenseByID godoc
 //	@Summary		Get Expense By ID
@@ -22,8 +22,10 @@ import (
 //	@Failure		500	{object}	models.Response
 //	@Router			/expense/{id} [get]
 func (e *ExpenseController) GetExpenseByID(c *fiber.Ctx) error {
+	logging.INFO("Obtener un egreso por ID")
 	id := c.Params("id")
 	if id == "" {
+		logging.ERROR("Error: ID is required")
 		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
 			Status:  false,
 			Body:    nil,
@@ -34,12 +36,14 @@ func (e *ExpenseController) GetExpenseByID(c *fiber.Ctx) error {
 	expense, err := e.ExpenseService.ExpenseGetByID(id)
 	if err != nil {
 		if errResp, ok := err.(*models.ErrorStruc); ok {
+			logging.ERROR("Error: %s", errResp.Err.Error())
 			return c.Status(errResp.StatusCode).JSON(models.Response{
 				Status:  false,
 				Body:    nil,
 				Message: errResp.Message,
 			})
 		}
+		logging.ERROR("Error: %s", err.Error())
 		return c.Status(fiber.StatusInternalServerError).JSON(models.Response{
 			Status:  false,
 			Body:    nil,
@@ -47,6 +51,7 @@ func (e *ExpenseController) GetExpenseByID(c *fiber.Ctx) error {
 		})
 	}
 
+	logging.INFO("Egreso obtenido con éxito")
 	return c.Status(200).JSON(models.Response{
 		Status:  true,
 		Body:    expense,
@@ -68,15 +73,18 @@ func (e *ExpenseController) GetExpenseByID(c *fiber.Ctx) error {
 //	@Failure		500	{object}	models.Response							"Internal server error"
 //	@Router			/expense/get_all [get]
 func (e *ExpenseController) GetAllExpenses(c *fiber.Ctx) error {
+	logging.INFO("Obtener todos los egresos")
 	expenses, err := e.ExpenseService.ExpenseGetAll()
 	if err != nil {
 		if errResp, ok := err.(*models.ErrorStruc); ok {
+			logging.ERROR("Error: %s", errResp.Err.Error())
 			return c.Status(errResp.StatusCode).JSON(models.Response{
 				Status:  false,
 				Body:    nil,
 				Message: errResp.Message,
 			})
 		}
+		logging.ERROR("Error: %s", err.Error())
 		return c.Status(fiber.StatusInternalServerError).JSON(models.Response{
 			Status:  false,
 			Body:    nil,
@@ -84,6 +92,7 @@ func (e *ExpenseController) GetAllExpenses(c *fiber.Ctx) error {
 		})
 	}
 
+	logging.INFO("Egresos obtenidos con éxito")
 	return c.Status(200).JSON(models.Response{
 		Status:  true,
 		Body:    expenses,
@@ -105,15 +114,18 @@ func (e *ExpenseController) GetAllExpenses(c *fiber.Ctx) error {
 //	@Failure		500	{object}	models.Response							"Internal server error"
 //	@Router			/expense/get_today [get]
 func (e *ExpenseController) GetExpenseToday(c *fiber.Ctx) error {
+	logging.INFO("Obtener todos los egresos de hoy")
 	expenses, err := e.ExpenseService.ExpenseGetToday()
 	if err != nil {
 		if errResp, ok := err.(*models.ErrorStruc); ok {
+			logging.ERROR("Error: %s", errResp.Err.Error())
 			return c.Status(errResp.StatusCode).JSON(models.Response{
 				Status:  false,
 				Body:    nil,
 				Message: errResp.Message,
 			})
 		}
+		logging.ERROR("Error: %s", err.Error())
 		return c.Status(fiber.StatusInternalServerError).JSON(models.Response{
 			Status:  false,
 			Body:    nil,
@@ -121,6 +133,7 @@ func (e *ExpenseController) GetExpenseToday(c *fiber.Ctx) error {
 		})
 	}
 
+	logging.INFO("Egresos obtenidos con éxito")
 	return c.Status(200).JSON(models.Response{
 		Status:  true,
 		Body:    expenses,
@@ -144,8 +157,10 @@ func (e *ExpenseController) GetExpenseToday(c *fiber.Ctx) error {
 //	@Failure		500				{object}	models.Response					"Internal server error"
 //	@Router			/expense/create [post]
 func (e *ExpenseController) CreateExpense(c *fiber.Ctx) error {
+	logging.INFO("Crear un egreso")
 	var expenseCreate models.ExpenseCreate
 	if err := c.BodyParser(&expenseCreate); err != nil {
+		logging.ERROR("Error: %s", err.Error())
 		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
 			Status:  false,
 			Body:    nil,
@@ -153,6 +168,7 @@ func (e *ExpenseController) CreateExpense(c *fiber.Ctx) error {
 		})
 	}
 	if err := expenseCreate.Validate(); err != nil {
+		logging.ERROR("Error: %s", err.Error())
 		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
 			Status:  false,
 			Body:    nil,
@@ -163,12 +179,14 @@ func (e *ExpenseController) CreateExpense(c *fiber.Ctx) error {
 	id, err := e.ExpenseService.ExpenseCreate(&expenseCreate)
 	if err != nil {
 		if errResp, ok := err.(*models.ErrorStruc); ok {
+			logging.ERROR("Error: %s", errResp.Err.Error())
 			return c.Status(errResp.StatusCode).JSON(models.Response{
 				Status:  false,
 				Body:    nil,
 				Message: errResp.Message,
 			})
 		}
+		logging.ERROR("Error: %s", err.Error())
 		return c.Status(fiber.StatusInternalServerError).JSON(models.Response{
 			Status:  false,
 			Body:    nil,
@@ -176,6 +194,7 @@ func (e *ExpenseController) CreateExpense(c *fiber.Ctx) error {
 		})
 	}
 
+	logging.INFO("Egreso creado con éxito")
 	return c.Status(200).JSON(models.Response{
 		Status:  true,
 		Body:    id,
@@ -199,8 +218,10 @@ func (e *ExpenseController) CreateExpense(c *fiber.Ctx) error {
 //	@Failure		500				{object}	models.Response			"Internal server error"
 //	@Router			/expense/update [put]
 func (e *ExpenseController) UpdateExpense(c *fiber.Ctx) error {
+	logging.INFO("Actualizar un egreso")
 	var expenseUpdate models.ExpenseUpdate
 	if err := c.BodyParser(&expenseUpdate); err != nil {
+		logging.ERROR("Error: %s", err.Error())
 		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
 			Status:  false,
 			Body:    nil,
@@ -208,6 +229,7 @@ func (e *ExpenseController) UpdateExpense(c *fiber.Ctx) error {
 		})
 	}
 	if err := expenseUpdate.Validate(); err != nil {
+		logging.ERROR("Error: %s", err.Error())
 		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
 			Status:  false,
 			Body:    nil,
@@ -218,12 +240,14 @@ func (e *ExpenseController) UpdateExpense(c *fiber.Ctx) error {
 	err := e.ExpenseService.ExpenseUpdate(&expenseUpdate)
 	if err != nil {
 		if errResp, ok := err.(*models.ErrorStruc); ok {
+			logging.ERROR("Error: %s", errResp.Err.Error())
 			return c.Status(errResp.StatusCode).JSON(models.Response{
 				Status:  false,
 				Body:    nil,
 				Message: errResp.Message,
 			})
 		}
+		logging.ERROR("Error: %s", err.Error())
 		return c.Status(fiber.StatusInternalServerError).JSON(models.Response{
 			Status:  false,
 			Body:    nil,
@@ -231,6 +255,7 @@ func (e *ExpenseController) UpdateExpense(c *fiber.Ctx) error {
 		})
 	}
 
+	logging.INFO("Egreso editado con éxito")
 	return c.Status(200).JSON(models.Response{
 		Status:  true,
 		Body:    nil,
@@ -253,8 +278,10 @@ func (e *ExpenseController) UpdateExpense(c *fiber.Ctx) error {
 //	@Failure		500	{object}	models.Response	"Internal server error"
 //	@Router			/expense/delete/{id} [delete]
 func (e *ExpenseController) DeleteExpense(c *fiber.Ctx) error {
+	logging.INFO("Eliminar un egreso")
 	id := c.Params("id")
 	if id == "" {
+		logging.ERROR("Error: ID is required")
 		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
 			Status:  false,
 			Body:    nil,
@@ -265,12 +292,14 @@ func (e *ExpenseController) DeleteExpense(c *fiber.Ctx) error {
 	err := e.ExpenseService.ExpenseDelete(id)
 	if err != nil {
 		if errResp, ok := err.(*models.ErrorStruc); ok {
+			logging.ERROR("Error: %s", errResp.Err.Error())
 			return c.Status(errResp.StatusCode).JSON(models.Response{
 				Status:  false,
 				Body:    nil,
 				Message: errResp.Message,
 			})
 		}
+		logging.ERROR("Error: %s", err.Error())
 		return c.Status(fiber.StatusInternalServerError).JSON(models.Response{
 			Status:  false,
 			Body:    nil,
@@ -278,6 +307,7 @@ func (e *ExpenseController) DeleteExpense(c *fiber.Ctx) error {
 		})
 	}
 
+	logging.INFO("Egreso eliminado con éxito")
 	return c.Status(200).JSON(models.Response{
 		Status:  true,
 		Body:    nil,

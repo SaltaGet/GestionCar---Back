@@ -16,13 +16,13 @@ type Client struct {
 	Email     string    `gorm:"not null;unique" json:"email" validate:"email"`
 	CreatedAt time.Time `gorm:"autoCreateTime" json:"created_at"`
 	UpdatedAt time.Time `gorm:"autoUpdateTime" json:"updated_at"`
-	Vehicles  []Vehicle  `gorm:"foreignKey:ClientID" json:"vehicles"`
+	Vehicles  []Vehicle `gorm:"foreignKey:ClientID" json:"vehicles"`
 }
 
 type ClientCreate struct {
 	FirstName string `json:"first_name" validate:"required"`
 	LastName  string `json:"last_name" validate:"required"`
-	Cuil      string `json:"cuil" validate:"required"`		
+	Cuil      string `json:"cuil" validate:"required"`
 	Dni       string `json:"dni" validate:""`
 	Email     string `json:"email" validate:"required,email"`
 }
@@ -37,15 +37,16 @@ func (c *ClientCreate) Validate() error {
 	validationErr := err.(validator.ValidationErrors)[0]
 	field := validationErr.Field()
 	tag := validationErr.Tag()
+	param := validationErr.Param()
 
-	return fmt.Errorf("campo %s es invalido, revisar: (%s)", field, tag)
+	return fmt.Errorf("campo %s es invalido, revisar: (%s) (%s)", field, tag, param)
 }
 
 type ClientUpdate struct {
 	ID        string `json:"id" validate:"required"`
 	FirstName string `json:"first_name" validate:"required"`
 	LastName  string `json:"last_name" validate:"required"`
-	Cuil      string `json:"cuil" validate:"required"`		
+	Cuil      string `json:"cuil" validate:"required"`
 	Dni       string `json:"dni" validate:""`
 	Email     string `json:"email" validate:"required,email"`
 }
@@ -60,6 +61,7 @@ func (c *ClientUpdate) Validate() error {
 	validationErr := err.(validator.ValidationErrors)[0]
 	field := validationErr.Field()
 	tag := validationErr.Tag()
+	param := validationErr.Param()
 
-	return fmt.Errorf("campo %s es invalido, revisar: (%s)", field, tag)
+	return fmt.Errorf("campo %s es invalido, revisar: (%s) (%s)", field, tag, param)
 }

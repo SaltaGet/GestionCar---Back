@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"github.com/DanielChachagua/GestionCar/cmd/api/logging"
 	"github.com/DanielChachagua/GestionCar/pkg/models"
 	"github.com/gofiber/fiber/v2"
 )
@@ -20,15 +21,18 @@ import (
 // @Failure		500				{object}	models.Response
 // @Router			/permission/get_all [post]
 func (p *PermissionController) PermissionGetAll(c *fiber.Ctx) error {
+	logging.INFO("Obtener todos los permisos")
 	permissions, err := p.PermissionService.PermissionGetAll()
 	if err != nil {
 		if errResp, ok := err.(*models.ErrorStruc); ok {
+			logging.ERROR("Error: %s", errResp.Err.Error())
 			return c.Status(errResp.StatusCode).JSON(models.Response{
 				Status:  false,
 				Body:    nil,
 				Message: errResp.Message,
 			})
 		}
+		logging.ERROR("Error: %s", err.Error())
 		return c.Status(fiber.StatusInternalServerError).JSON(models.Response{
 			Status:  false,
 			Body:    nil,
@@ -36,6 +40,7 @@ func (p *PermissionController) PermissionGetAll(c *fiber.Ctx) error {
 		})
 	}
 
+	logging.INFO("Permisos obtenidos con éxito")
 	return c.Status(fiber.StatusOK).JSON(models.Response{
 		Status:  true,
 		Body:    permissions,
@@ -44,6 +49,7 @@ func (p *PermissionController) PermissionGetAll(c *fiber.Ctx) error {
 }
 
 //	Permissions GetAllToMe godoc
+//
 // @Summary		Permissions GetAlltoME
 // @Description	Permissions GetAllToMe required auth token
 // @Tags			Member
@@ -57,31 +63,29 @@ func (p *PermissionController) PermissionGetAll(c *fiber.Ctx) error {
 // @Failure		500				{object}	models.Response
 // @Router			/permission/get_to_me [post]
 func (p *PermissionController) PermissionGetToMe(c *fiber.Ctx) error {
-	user, ok := c.Locals("user").(*models.AuthenticatedUser)
-	if !ok {
-		return c.Status(fiber.StatusUnauthorized).JSON(models.Response{
-			Status:  false,
-			Body:    nil,
-			Message: "Usuario requerido",
-		})
-	}
+	logging.INFO("Obtener todos mis permisos")
+	user := c.Locals("user").(*models.AuthenticatedUser)
 
 	if user.IsAdminTenant {
 		permissions, err := p.PermissionService.PermissionGetAll()
 		if err != nil {
 			if errResp, ok := err.(*models.ErrorStruc); ok {
+				logging.ERROR("Error: %s", errResp.Err.Error())
 				return c.Status(errResp.StatusCode).JSON(models.Response{
 					Status:  false,
 					Body:    nil,
 					Message: errResp.Message,
 				})
 			}
+			logging.ERROR("Error: %s", err.Error())
 			return c.Status(fiber.StatusInternalServerError).JSON(models.Response{
 				Status:  false,
 				Body:    nil,
 				Message: "Error interno",
 			})
 		}
+
+		logging.INFO("Tiene todos los permsios")
 		return c.Status(fiber.StatusForbidden).JSON(models.Response{
 			Status:  false,
 			Body:    permissions,
@@ -92,12 +96,14 @@ func (p *PermissionController) PermissionGetToMe(c *fiber.Ctx) error {
 	permissions, err := p.PermissionService.PermissionGetToMe(*user.RoleID)
 	if err != nil {
 		if errResp, ok := err.(*models.ErrorStruc); ok {
+			logging.ERROR("Error: %s", errResp.Err.Error())
 			return c.Status(errResp.StatusCode).JSON(models.Response{
 				Status:  false,
 				Body:    nil,
 				Message: errResp.Message,
 			})
 		}
+		logging.ERROR("Error: %s", err.Error())
 		return c.Status(fiber.StatusInternalServerError).JSON(models.Response{
 			Status:  false,
 			Body:    nil,
@@ -105,6 +111,7 @@ func (p *PermissionController) PermissionGetToMe(c *fiber.Ctx) error {
 		})
 	}
 
+	logging.INFO("Permisos obtenidos con éxito")
 	return c.Status(fiber.StatusOK).JSON(models.Response{
 		Status:  true,
 		Body:    permissions,

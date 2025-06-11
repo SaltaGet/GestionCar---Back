@@ -8,21 +8,21 @@ import (
 )
 
 type Employee struct {
-	ID   string `gorm:"primaryKey;size:36" json:"id"`
-	Name string `gorm:"not null" json:"name"`
-	Phone string `gorm:"not null" json:"phone"`
-	Email string `gorm:"not null" json:"email"`
-	Address string `gorm:"not null" json:"address"`
+	ID        string    `gorm:"primaryKey;size:36" json:"id"`
+	Name      string    `gorm:"not null" json:"name"`
+	Phone     string    `gorm:"not null" json:"phone"`
+	Email     string    `gorm:"not null" json:"email"`
+	Address   string    `gorm:"not null" json:"address"`
 	CreatedAt time.Time `gorm:"autoCreateTime" json:"created_at"`
 	UpdatedAt time.Time `gorm:"autoUpdateTime" json:"updated_at"`
 }
 
 type EmployeeCreate struct {
-	Name string `json:"name" validate:"required"`
-	Phone string `json:"phone" validate:"required"`
-	Email string `json:"email" validate:"required,email"`
+	Name    string `json:"name" validate:"required"`
+	Phone   string `json:"phone" validate:"required"`
+	Email   string `json:"email" validate:"required,email"`
 	Address string `json:"address" validate:"required"`
-} 
+}
 
 func (e *EmployeeCreate) Validate() error {
 	validate := validator.New()
@@ -34,15 +34,16 @@ func (e *EmployeeCreate) Validate() error {
 	validationErr := err.(validator.ValidationErrors)[0]
 	field := validationErr.Field()
 	tag := validationErr.Tag()
+	param := validationErr.Param()
 
-	return fmt.Errorf("campo %s es invalido, revisar: (%s)", field, tag)
+	return fmt.Errorf("campo %s es invalido, revisar: (%s) (%s)", field, tag, param)
 }
 
 type EmployeeUpdate struct {
-	ID   string `json:"id" validate:"required"`
-	Name string `json:"name" validate:"required"`
-	Phone string `json:"phone" validate:"required"`
-	Email string `json:"email" validate:"required,email"`
+	ID      string `json:"id" validate:"required"`
+	Name    string `json:"name" validate:"required"`
+	Phone   string `json:"phone" validate:"required"`
+	Email   string `json:"email" validate:"required,email"`
 	Address string `json:"address" validate:"required"`
 }
 
@@ -56,6 +57,7 @@ func (e *EmployeeUpdate) Validate() error {
 	validationErr := err.(validator.ValidationErrors)[0]
 	field := validationErr.Field()
 	tag := validationErr.Tag()
+	param := validationErr.Param()
 
-	return fmt.Errorf("campo %s es invalido, revisar: (%s)", field, tag)
+	return fmt.Errorf("campo %s es invalido, revisar: (%s) (%s)", field, tag, param)
 }

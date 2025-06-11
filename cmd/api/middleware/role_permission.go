@@ -1,15 +1,13 @@
 package middleware
 
 import (
-	"github.com/DanielChachagua/GestionCar/pkg/dependencies"
-	"github.com/DanielChachagua/GestionCar/pkg/key"
 	"github.com/DanielChachagua/GestionCar/pkg/models"
 	"github.com/gofiber/fiber/v2"
 )
 
-func RolePermissionMiddleware(permissionName string) fiber.Handler {
+func RolePermissionMiddleware(code string) fiber.Handler {
 	return func(c *fiber.Ctx) error {
-		user, ok := c.Locals("user").(*models.User)
+		user, ok := c.Locals("user").(*models.AuthenticatedUser)
 		if !ok {
 			return c.Status(fiber.StatusUnauthorized).JSON(models.Response{
 				Status:  false,
@@ -18,38 +16,12 @@ func RolePermissionMiddleware(permissionName string) fiber.Handler {
 			})
 		}
 
-		ctx := c.UserContext()
-		depsTenant, ok := ctx.Value(key.TenantDBKey).(*dependencies.TenantApplication)
-		if !ok {
-			return c.Status(fiber.StatusInternalServerError).JSON(models.Response{
-				Status:  false,
-				Body:    nil,
-				Message: "Dependencias del tenant no disponibles",
-			})
-		}
-
-		member, err := depsTenant.MemberController.MemberService.MemberGetPermissionByUserID(user.ID)
-		if err != nil {
-			if errResp, ok := err.(*models.ErrorStruc); ok {
-				return c.Status(errResp.StatusCode).JSON(models.Response{
-					Status:  false,
-					Body:    nil,
-					Message: errResp.Message,
-				})
-			}
-			return c.Status(fiber.StatusInternalServerError).JSON(models.Response{
-				Status:  false,
-				Body:    nil,
-				Message: "Error interno",
-			})
-		}
-
-		if member.Role.Name == "admin" {
+		if user.IsAdminTenant {
 			return c.Next()
 		}
 
-		for _, permission := range member.Role.Permissions {
-			if permission.Name == permissionName {
+		for _, permission := range user.Permissions {
+			if permission == code {
 				return c.Next()
 			}
 		} 

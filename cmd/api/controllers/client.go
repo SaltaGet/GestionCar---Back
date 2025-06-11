@@ -1,10 +1,10 @@
 package controllers
 
 import (
+	"github.com/DanielChachagua/GestionCar/cmd/api/logging"
 	"github.com/DanielChachagua/GestionCar/pkg/models"
 	"github.com/gofiber/fiber/v2"
 )
-
 
 // ClientGetByID godoc
 //	@Summary		Get client by id
@@ -22,8 +22,10 @@ import (
 //	@Failure		500	{object}	models.Response
 //	@Router			/client/{id} [get]
 func (cl *ClientController) ClientGetByID(c *fiber.Ctx) error {
+	logging.INFO("Obtener un cliente por ID")
 	id := c.Params("id")
 	if id == "" {
+		logging.ERROR("Error: ID is required")
 		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
 			Status:  false,
 			Body:    nil,
@@ -34,12 +36,14 @@ func (cl *ClientController) ClientGetByID(c *fiber.Ctx) error {
 	client, err := cl.ClientService.ClientGetByID(id)
 	if err != nil {
 		if errResp, ok := err.(*models.ErrorStruc); ok {
+			logging.ERROR("Error: %s", errResp.Err.Error())
 			return c.Status(errResp.StatusCode).JSON(models.Response{
 				Status:  false,
 				Body:    nil,
 				Message: errResp.Message,
 			})
 		}
+		logging.ERROR("Error: %s", err.Error())
 		return c.Status(fiber.StatusInternalServerError).JSON(models.Response{
 			Status:  false,
 			Body:    nil,
@@ -47,6 +51,7 @@ func (cl *ClientController) ClientGetByID(c *fiber.Ctx) error {
 		})
 	}
 
+	logging.INFO("Cliente obtenido con éxito")
 	return c.Status(200).JSON(models.Response{
 		Status:  true,
 		Body:    client,
@@ -69,15 +74,18 @@ func (cl *ClientController) ClientGetByID(c *fiber.Ctx) error {
 //	@Failure		500	{object}	models.Response
 //	@Router			/client/get_all [get]
 func (cl *ClientController) ClientGetAll(c *fiber.Ctx) error {
+	logging.INFO("Obtener todos los clientes")
 	clients, err := cl.ClientService.ClientGetAll()
 	if err != nil {
 		if errResp, ok := err.(*models.ErrorStruc); ok {
+			logging.ERROR("Error: %s", errResp.Err.Error())
 			return c.Status(errResp.StatusCode).JSON(models.Response{
 				Status:  false,
 				Body:    nil,
 				Message: errResp.Message,
 			})
 		}
+		logging.ERROR("Error: %s", err.Error())
 		return c.Status(fiber.StatusInternalServerError).JSON(models.Response{
 			Status:  false,
 			Body:    nil,
@@ -85,6 +93,7 @@ func (cl *ClientController) ClientGetAll(c *fiber.Ctx) error {
 		})
 	}
 
+	logging.INFO("Clientes obtenidos con éxito")
 	return c.Status(200).JSON(models.Response{
 		Status:  true,
 		Body:    clients,
@@ -108,8 +117,10 @@ func (cl *ClientController) ClientGetAll(c *fiber.Ctx) error {
 //	@Failure		500		{object}	models.Response
 //	@Router			/client/get_by_name [get]
 func (cl *ClientController) ClientGetByName(c *fiber.Ctx) error {
+	logging.INFO("Obtener un cliente por nombre")
 	name := c.Query("name")
 	if name == "" || len(name) < 3 {
+		logging.ERROR("Error: El valor no debe de ser vacio o menor a 3 caracteres")
 		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
 			Status:  false,
 			Body:    nil,
@@ -120,12 +131,14 @@ func (cl *ClientController) ClientGetByName(c *fiber.Ctx) error {
 	clients, err := cl.ClientService.ClientGetByName(name)
 	if err != nil {
 		if errResp, ok := err.(*models.ErrorStruc); ok {
+			logging.ERROR("Error: %s", errResp.Err.Error())
 			return c.Status(errResp.StatusCode).JSON(models.Response{
 				Status:  false,
 				Body:    nil,
 				Message: errResp.Message,
 			})
 		}
+		logging.ERROR("Error: %s", err.Error())
 		return c.Status(fiber.StatusInternalServerError).JSON(models.Response{
 			Status:  false,
 			Body:    nil,
@@ -133,6 +146,7 @@ func (cl *ClientController) ClientGetByName(c *fiber.Ctx) error {
 		})
 	}
 
+	logging.INFO("Clientes obtenidos con éxito")
 	return c.Status(200).JSON(models.Response{
 		Status:  true,
 		Body:    clients,
@@ -157,8 +171,10 @@ func (cl *ClientController) ClientGetByName(c *fiber.Ctx) error {
 //	@Failure		500				{object}	models.Response
 //	@Router			/client/update [put]
 func (cl *ClientController) ClientUpdate(c *fiber.Ctx) error {
+	logging.INFO("Actualizar un cliente")
 	var clientUpdate models.ClientUpdate
 	if err := c.BodyParser(&clientUpdate); err != nil {
+		logging.ERROR("Error: %s", err.Error())
 		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
 			Status:  false,
 			Body:    nil,
@@ -166,6 +182,7 @@ func (cl *ClientController) ClientUpdate(c *fiber.Ctx) error {
 		})
 	}
 	if err := clientUpdate.Validate(); err != nil {
+		logging.ERROR("Error: %s", err.Error())
 		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
 			Status:  false,
 			Body:    nil,
@@ -175,12 +192,14 @@ func (cl *ClientController) ClientUpdate(c *fiber.Ctx) error {
 	err := cl.ClientService.ClientUpdate(&clientUpdate)
 	if err != nil {
 		if errResp, ok := err.(*models.ErrorStruc); ok {
+			logging.ERROR("Error: %s", errResp.Err.Error())
 			return c.Status(errResp.StatusCode).JSON(models.Response{
 				Status:  false,
 				Body:    nil,
 				Message: errResp.Message,
 			})
 		}
+		logging.ERROR("Error: %s", err.Error())
 		return c.Status(fiber.StatusInternalServerError).JSON(models.Response{
 			Status:  false,
 			Body:    nil,
@@ -188,6 +207,7 @@ func (cl *ClientController) ClientUpdate(c *fiber.Ctx) error {
 		})
 	}
 
+	logging.INFO("Cliente actualizado con éxito")
 	return c.Status(200).JSON(models.Response{
 		Status:  true,
 		Body:    nil,
@@ -211,8 +231,10 @@ func (cl *ClientController) ClientUpdate(c *fiber.Ctx) error {
 //	@Failure		500	{object}	models.Response
 //	@Router			/client/delete/{id} [delete]
 func (cl *ClientController) ClientDelete(c *fiber.Ctx) error {
+	logging.INFO("Eliminar un cliente")
 	id := c.Params("id")
 	if id == "" {
+		logging.ERROR("Error: ID is required")
 		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
 			Status:  false,
 			Body:    nil,
@@ -223,12 +245,14 @@ func (cl *ClientController) ClientDelete(c *fiber.Ctx) error {
 	err := cl.ClientService.ClientDelete(id)
 	if err != nil {
 		if errResp, ok := err.(*models.ErrorStruc); ok {
+			logging.ERROR("Error: %s", errResp.Err.Error())
 			return c.Status(errResp.StatusCode).JSON(models.Response{
 				Status:  false,
 				Body:    nil,
 				Message: errResp.Message,
 			})
 		}
+		logging.ERROR("Error: %s", err.Error())
 		return c.Status(fiber.StatusInternalServerError).JSON(models.Response{
 			Status:  false,
 			Body:    nil,
@@ -236,6 +260,7 @@ func (cl *ClientController) ClientDelete(c *fiber.Ctx) error {
 		})
 	}
 
+	logging.INFO("Cliente eliminado con éxito")
 	return c.Status(200).JSON(models.Response{
 		Status:  true,
 		Body:    nil,
@@ -259,8 +284,10 @@ func (cl *ClientController) ClientDelete(c *fiber.Ctx) error {
 //	@Failure		500				{object}	models.Response
 //	@Router			/client/create [post]
 func (cl *ClientController) CreateClient(c *fiber.Ctx) error {
+	logging.INFO("Crear un cliente")
 	var clientCreate models.ClientCreate
 	if err := c.BodyParser(&clientCreate); err != nil {
+		logging.ERROR("Error: %s", err.Error())
 		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
 			Status:  false,
 			Body:    nil,
@@ -268,21 +295,25 @@ func (cl *ClientController) CreateClient(c *fiber.Ctx) error {
 		})
 	}
 	if err := clientCreate.Validate(); err != nil {
+		logging.ERROR("Error: %s", err.Error())
 		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
 			Status:  false,
 			Body:    nil,
 			Message: err.Error(),
 		})
 	}
+
 	clientCreated, err := cl.ClientService.ClientCreate(&clientCreate)
 	if err != nil {
 		if errResp, ok := err.(*models.ErrorStruc); ok {
+			logging.ERROR("Error: %s", errResp.Err.Error())
 			return c.Status(errResp.StatusCode).JSON(models.Response{
 				Status:  false,
 				Body:    nil,
 				Message: errResp.Message,
 			})
 		}
+		logging.ERROR("Error: %s", err.Error())
 		return c.Status(fiber.StatusInternalServerError).JSON(models.Response{
 			Status:  false,
 			Body:    nil,
@@ -290,6 +321,7 @@ func (cl *ClientController) CreateClient(c *fiber.Ctx) error {
 		})
 	}
 
+	logging.INFO("Cliente creado con éxito")
 	return c.Status(200).JSON(models.Response{
 		Status:  true,
 		Body:    clientCreated,

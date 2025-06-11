@@ -16,7 +16,7 @@ type ResumeExpense struct {
 }
 
 type ResumeExpenseCreate struct {
-	Data string `json:"data" validate:"required"`
+	Data string    `json:"data" validate:"required"`
 	Date time.Time `json:"date" validate:"required"`
 }
 
@@ -30,8 +30,9 @@ func (e *ResumeExpenseCreate) Validate() error {
 	validationErr := err.(validator.ValidationErrors)[0]
 	field := validationErr.Field()
 	tag := validationErr.Tag()
+	param := validationErr.Param()
 
-	return fmt.Errorf("campo %s es invalido, revisar: (%s)", field, tag)
+	return fmt.Errorf("campo %s es invalido, revisar: (%s) (%s)", field, tag, param)
 }
 
 type ResumeExpenseUpdate struct {
@@ -49,9 +50,7 @@ func (e *ResumeExpenseUpdate) Validate() error {
 	validationErr := err.(validator.ValidationErrors)[0]
 	field := validationErr.Field()
 	tag := validationErr.Tag()
+	param := validationErr.Param()
 
-	return fmt.Errorf("campo %s es invalido, revisar: (%s)", field, tag)
+	return fmt.Errorf("campo %s es invalido, revisar: (%s) (%s)", field, tag, param)
 }
-
-
-

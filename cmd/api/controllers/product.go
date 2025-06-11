@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"github.com/DanielChachagua/GestionCar/cmd/api/logging"
 	"github.com/DanielChachagua/GestionCar/pkg/models"
 	"github.com/gofiber/fiber/v2"
 )
@@ -22,8 +23,10 @@ import (
 //	@Failure		500	{object}	models.Response							"Internal server error"
 //	@Router			/product/{id} [get]
 func (p *ProductController) ProductGetByID(c *fiber.Ctx) error {
+	logging.INFO("Obtener un producto por ID")
 	id := c.Params("id")
 	if id == "" {
+		logging.ERROR("Error: ID is required")
 		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
 			Status:  false,
 			Body:    nil,
@@ -34,12 +37,14 @@ func (p *ProductController) ProductGetByID(c *fiber.Ctx) error {
 	product, err := p.ProductService.ProductGetByID(id)
 	if err != nil {
 		if errResp, ok := err.(*models.ErrorStruc); ok {
+			logging.ERROR("Error: %s", errResp.Err.Error())
 			return c.Status(errResp.StatusCode).JSON(models.Response{
 				Status:  false,
 				Body:    nil,
 				Message: errResp.Message,
 			})
 		}
+		logging.ERROR("Error: %s", err.Error())
 		return c.Status(fiber.StatusInternalServerError).JSON(models.Response{
 			Status:  false,
 			Body:    nil,
@@ -47,6 +52,7 @@ func (p *ProductController) ProductGetByID(c *fiber.Ctx) error {
 		})
 	}
 
+	logging.INFO("Producto obtenido con éxito")
 	return c.Status(200).JSON(models.Response{
 		Status:  true,
 		Body:    product,
@@ -69,15 +75,18 @@ func (p *ProductController) ProductGetByID(c *fiber.Ctx) error {
 //	@Failure		500	{object}	models.Response							"Internal server error"
 //	@Router			/product/get_all [get]
 func (p *ProductController) ProductGetAll(c *fiber.Ctx) error {
+	logging.INFO("Obtener todos los productos")
 	products, err := p.ProductService.ProductGetAll()
 	if err != nil {
 		if errResp, ok := err.(*models.ErrorStruc); ok {
+			logging.ERROR("Error: %s", errResp.Err.Error())
 			return c.Status(errResp.StatusCode).JSON(models.Response{
 				Status:  false,
 				Body:    nil,
 				Message: errResp.Message,
 			})
 		}
+		logging.ERROR("Error: %s", err.Error())
 		return c.Status(fiber.StatusInternalServerError).JSON(models.Response{
 			Status:  false,
 			Body:    nil,
@@ -85,6 +94,7 @@ func (p *ProductController) ProductGetAll(c *fiber.Ctx) error {
 		})
 	}
 
+	logging.INFO("Productos obtenidos con éxito")
 	return c.Status(200).JSON(models.Response{
 		Status:  true,
 		Body:    products,
@@ -108,8 +118,10 @@ func (p *ProductController) ProductGetAll(c *fiber.Ctx) error {
 //	@Failure		500		{object}	models.Response							"Internal server error"
 //	@Router			/product/get_by_name [get]
 func (p *ProductController) ProductGetByName(c *fiber.Ctx) error {
+	logging.INFO("Obtener productos por nombre")
 	name := c.Query("name")
 	if name == "" || len(name) < 3 {
+		logging.ERROR("Error: El valor no debe de ser vacio o menor a 3 caracteres")
 		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
 			Status:  false,
 			Body:    nil,
@@ -120,12 +132,14 @@ func (p *ProductController) ProductGetByName(c *fiber.Ctx) error {
 	products, err := p.ProductService.ProductGetByName(name)
 	if err != nil {
 		if errResp, ok := err.(*models.ErrorStruc); ok {
+			logging.ERROR("Error: %s", errResp.Err.Error())
 			return c.Status(errResp.StatusCode).JSON(models.Response{
 				Status:  false,
 				Body:    nil,
 				Message: errResp.Message,
 			})
 		}
+		logging.ERROR("Error: %s", err.Error())
 		return c.Status(fiber.StatusInternalServerError).JSON(models.Response{
 			Status:  false,
 			Body:    nil,
@@ -133,6 +147,7 @@ func (p *ProductController) ProductGetByName(c *fiber.Ctx) error {
 		})
 	}
 
+	logging.INFO("Productos obtenidos con éxito")
 	return c.Status(200).JSON(models.Response{
 		Status:  true,
 		Body:    products,
@@ -156,8 +171,10 @@ func (p *ProductController) ProductGetByName(c *fiber.Ctx) error {
 //	@Failure		500			{object}	models.Response							"Internal server error"
 //	@Router			/product/get_by_identifier [get]
 func (p *ProductController) ProductGetByIdentifier(c *fiber.Ctx) error {
+	logging.INFO("Obtener productos por identificador")
 	identifire := c.Query("identifier")
 	if identifire == "" || len(identifire) < 3 {
+		logging.ERROR("Error: El valor no debe de ser vacio o menor a 3 caracteres")
 		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
 			Status:  false,
 			Body:    nil,
@@ -168,12 +185,14 @@ func (p *ProductController) ProductGetByIdentifier(c *fiber.Ctx) error {
 	products, err := p.ProductService.ProductGetByIdentifier(identifire)
 	if err != nil {
 		if errResp, ok := err.(*models.ErrorStruc); ok {
+			logging.ERROR("Error: %s", errResp.Err.Error())
 			return c.Status(errResp.StatusCode).JSON(models.Response{
 				Status:  false,
 				Body:    nil,
 				Message: errResp.Message,
 			})
 		}
+		logging.ERROR("Error: %s", err.Error())
 		return c.Status(fiber.StatusInternalServerError).JSON(models.Response{
 			Status:  false,
 			Body:    nil,
@@ -181,6 +200,7 @@ func (p *ProductController) ProductGetByIdentifier(c *fiber.Ctx) error {
 		})
 	}
 
+	logging.INFO("Productos obtenidos con éxito")
 	return c.Status(200).JSON(models.Response{
 		Status:  true,
 		Body:    products,
@@ -206,8 +226,10 @@ func (p *ProductController) ProductGetByIdentifier(c *fiber.Ctx) error {
 //	@Failure		500		{object}	models.Response		"Internal server error"
 //	@Router			/product/update_stock [put]
 func (p *ProductController) ProductUpdateStock(c *fiber.Ctx) error {
+	logging.INFO("Actualizar stock de producto")
 	var stockUpdate models.StockUpdate
 	if err := c.BodyParser(&stockUpdate); err != nil {
+		logging.ERROR("Error: %s", err.Error())
 		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
 			Status:  false,
 			Body:    nil,
@@ -215,6 +237,7 @@ func (p *ProductController) ProductUpdateStock(c *fiber.Ctx) error {
 		})
 	}
 	if err := stockUpdate.Validate(); err != nil {
+		logging.ERROR("Error: %s", err.Error())
 		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
 			Status:  false,
 			Body:    nil,
@@ -225,12 +248,14 @@ func (p *ProductController) ProductUpdateStock(c *fiber.Ctx) error {
 	err := p.ProductService.ProductUpdateStock(&stockUpdate)
 	if err != nil {
 		if errResp, ok := err.(*models.ErrorStruc); ok {
+			logging.ERROR("Error: %s", errResp.Err.Error())
 			return c.Status(errResp.StatusCode).JSON(models.Response{
 				Status:  false,
 				Body:    nil,
 				Message: errResp.Message,
 			})
 		}
+		logging.ERROR("Error: %s", err.Error())
 		return c.Status(fiber.StatusInternalServerError).JSON(models.Response{
 			Status:  false,
 			Body:    nil,
@@ -238,6 +263,7 @@ func (p *ProductController) ProductUpdateStock(c *fiber.Ctx) error {
 		})
 	}
 
+	logging.INFO("Producto actualizado con éxito")
 	return c.Status(200).JSON(models.Response{
 		Status:  true,
 		Body:    nil,
@@ -263,8 +289,10 @@ func (p *ProductController) ProductUpdateStock(c *fiber.Ctx) error {
 //	@Failure		500		{object}	models.Response			"Internal server error"
 //	@Router			/product/update [put]
 func (p *ProductController) ProductUpdate(c *fiber.Ctx) error {
+	logging.INFO("Actualizar producto")
 	var productUpdate models.ProductUpdate
 	if err := c.BodyParser(&productUpdate); err != nil {
+		logging.ERROR("Error: %s", err.Error())
 		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
 			Status:  false,
 			Body:    nil,
@@ -272,6 +300,7 @@ func (p *ProductController) ProductUpdate(c *fiber.Ctx) error {
 		})
 	}
 	if err := productUpdate.Validate(); err != nil {
+		logging.ERROR("Error: %s", err.Error())
 		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
 			Status:  false,
 			Body:    nil,
@@ -282,12 +311,14 @@ func (p *ProductController) ProductUpdate(c *fiber.Ctx) error {
 	err := p.ProductService.ProductUpdate(&productUpdate)
 	if err != nil {
 		if errResp, ok := err.(*models.ErrorStruc); ok {
+			logging.ERROR("Error: %s", errResp.Err.Error())
 			return c.Status(errResp.StatusCode).JSON(models.Response{
 				Status:  false,
 				Body:    nil,
 				Message: errResp.Message,
 			})
 		}
+		logging.ERROR("Error: %s", err.Error())
 		return c.Status(fiber.StatusInternalServerError).JSON(models.Response{
 			Status:  false,
 			Body:    nil,
@@ -295,6 +326,7 @@ func (p *ProductController) ProductUpdate(c *fiber.Ctx) error {
 		})
 	}
 
+	logging.INFO("Producto actualizado con éxito")
 	return c.Status(200).JSON(models.Response{
 		Status:  true,
 		Body:    nil,
@@ -319,8 +351,10 @@ func (p *ProductController) ProductUpdate(c *fiber.Ctx) error {
 //	@Failure		500	{object}	models.Response	"Internal server error"
 //	@Router			/product/delete/{id} [delete]
 func (p *ProductController) ProductDelete(c *fiber.Ctx) error {
+	logging.INFO("Eliminar producto")
 	id := c.Params("id")
 	if id == "" {
+		logging.ERROR("Error: ID is required")
 		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
 			Status:  false,
 			Body:    nil,
@@ -331,12 +365,14 @@ func (p *ProductController) ProductDelete(c *fiber.Ctx) error {
 	err := p.ProductService.ProductDelete(id)
 	if err != nil {
 		if errResp, ok := err.(*models.ErrorStruc); ok {
+			logging.ERROR("Error: %s", errResp.Err.Error())
 			return c.Status(errResp.StatusCode).JSON(models.Response{
 				Status:  false,
 				Body:    nil,
 				Message: errResp.Message,
 			})
 		}
+		logging.ERROR("Error: %s", err.Error())
 		return c.Status(fiber.StatusInternalServerError).JSON(models.Response{
 			Status:  false,
 			Body:    nil,
@@ -344,6 +380,7 @@ func (p *ProductController) ProductDelete(c *fiber.Ctx) error {
 		})
 	}
 
+	logging.INFO("Producto eliminado con éxito")
 	return c.Status(200).JSON(models.Response{
 		Status:  true,
 		Body:    nil,
@@ -368,8 +405,10 @@ func (p *ProductController) ProductDelete(c *fiber.Ctx) error {
 //	@Failure		500		{object}	models.Response			"Internal server error"
 //	@Router			/product/create [post]
 func (p *ProductController) ProductCreate(c *fiber.Ctx) error {
+	logging.INFO("Crear producto")
 	var productCreate models.ProductCreate
 	if err := c.BodyParser(&productCreate); err != nil {
+		logging.ERROR("Error: %s", err.Error())
 		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
 			Status:  false,
 			Body:    nil,
@@ -377,6 +416,7 @@ func (p *ProductController) ProductCreate(c *fiber.Ctx) error {
 		})
 	}
 	if err := productCreate.Validate(); err != nil {
+		logging.ERROR("Error: %s", err.Error())
 		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
 			Status:  false,
 			Body:    nil,
@@ -387,12 +427,14 @@ func (p *ProductController) ProductCreate(c *fiber.Ctx) error {
 	productCreated, err := p.ProductService.ProductCreate(&productCreate)
 	if err != nil {
 		if errResp, ok := err.(*models.ErrorStruc); ok {
+			logging.ERROR("Error: %s", errResp.Err.Error())
 			return c.Status(errResp.StatusCode).JSON(models.Response{
 				Status:  false,
 				Body:    nil,
 				Message: errResp.Message,
 			})
 		}
+		logging.ERROR("Error: %s", err.Error())
 		return c.Status(fiber.StatusInternalServerError).JSON(models.Response{
 			Status:  false,
 			Body:    nil,
@@ -400,6 +442,7 @@ func (p *ProductController) ProductCreate(c *fiber.Ctx) error {
 		})
 	}
 
+	logging.INFO("Producto creado con éxito")
 	return c.Status(200).JSON(models.Response{
 		Status:  true,
 		Body:    productCreated,

@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"github.com/DanielChachagua/GestionCar/cmd/api/logging"
 	"github.com/DanielChachagua/GestionCar/pkg/models"
 	"github.com/gofiber/fiber/v2"
 )
@@ -21,8 +22,10 @@ import (
 //	@Failure		500	{object}	models.Response								"Internal server error"
 //	@Router			/purchase_order/{id} [get]
 func (p *PurchaseOrderController) PurchaseOrderGetByID(c *fiber.Ctx) error {
+	logging.INFO("Obtener orden de compra por ID")
 	id := c.Params("id")
 	if id == "" {
+		logging.ERROR("Error: ID is required")
 		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
 			Status:  false,
 			Body:    nil,
@@ -33,12 +36,14 @@ func (p *PurchaseOrderController) PurchaseOrderGetByID(c *fiber.Ctx) error {
 	purchaseOrder, err := p.PurchaseOrderService.PurchaseOrderGetByID(id)
 	if err != nil {
 		if errResp, ok := err.(*models.ErrorStruc); ok {
+			logging.ERROR("Error: %s", errResp.Err.Error())
 			return c.Status(errResp.StatusCode).JSON(models.Response{
 				Status:  false,
 				Body:    nil,
 				Message: errResp.Message,
 			})
 		}
+		logging.ERROR("Error: %s", err.Error())
 		return c.Status(fiber.StatusInternalServerError).JSON(models.Response{
 			Status:  false,
 			Body:    nil,
@@ -46,6 +51,7 @@ func (p *PurchaseOrderController) PurchaseOrderGetByID(c *fiber.Ctx) error {
 		})
 	}
 
+	logging.INFO("Orden de compra obtenida con éxito")
 	return c.Status(200).JSON(models.Response{
 		Status:  true,
 		Body:    purchaseOrder,
@@ -68,15 +74,18 @@ func (p *PurchaseOrderController) PurchaseOrderGetByID(c *fiber.Ctx) error {
 //	@Router			/purchase_order/get_all [get]
 //	@Security		BearerAuth
 func (p *PurchaseOrderController) PurchaseOrderGetAll(c *fiber.Ctx) error {
+	logging.INFO("Obtener todas las ordenes de compra")
 	purchasesOrder, err := p.PurchaseOrderService.PurchaseOrderGetAll()
 	if err != nil {
 		if errResp, ok := err.(*models.ErrorStruc); ok {
+			logging.ERROR("Error: %s", errResp.Err.Error())
 			return c.Status(errResp.StatusCode).JSON(models.Response{
 				Status:  false,
 				Body:    nil,
 				Message: errResp.Message,
 			})
 		}
+		logging.ERROR("Error: %s", err.Error())
 		return c.Status(fiber.StatusInternalServerError).JSON(models.Response{
 			Status:  false,
 			Body:    nil,
@@ -84,6 +93,7 @@ func (p *PurchaseOrderController) PurchaseOrderGetAll(c *fiber.Ctx) error {
 		})
 	}
 
+	logging.INFO("Ordenes de compra obtenidas con éxito")
 	return c.Status(200).JSON(models.Response{
 		Status:  true,
 		Body:    purchasesOrder,
@@ -108,8 +118,10 @@ func (p *PurchaseOrderController) PurchaseOrderGetAll(c *fiber.Ctx) error {
 //	@Router			/purchase_order/create     [post]
 //	@Security		BearerAuth
 func (p *PurchaseOrderController) PurchaseOrderCreate(c *fiber.Ctx) error {
+	logging.INFO("Crear orden de compra")
 	var purchaseOrderCreate models.PurchaseOrderCreate
 	if err := c.BodyParser(&purchaseOrderCreate); err != nil {
+		logging.ERROR("Error: %s", err.Error())
 		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
 			Status:  false,
 			Body:    nil,
@@ -117,6 +129,7 @@ func (p *PurchaseOrderController) PurchaseOrderCreate(c *fiber.Ctx) error {
 		})
 	}
 	if err := purchaseOrderCreate.Validate(); err != nil {
+		logging.ERROR("Error: %s", err.Error())
 		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
 			Status:  false,
 			Body:    nil,
@@ -127,12 +140,14 @@ func (p *PurchaseOrderController) PurchaseOrderCreate(c *fiber.Ctx) error {
 	id, err := p.PurchaseOrderService.PurchaseOrderCreate(&purchaseOrderCreate)
 	if err != nil {
 		if errResp, ok := err.(*models.ErrorStruc); ok {
+			logging.ERROR("Error: %s", errResp.Err.Error())
 			return c.Status(errResp.StatusCode).JSON(models.Response{
 				Status:  false,
 				Body:    nil,
 				Message: errResp.Message,
 			})
 		}
+		logging.ERROR("Error: %s", err.Error())
 		return c.Status(fiber.StatusInternalServerError).JSON(models.Response{
 			Status:  false,
 			Body:    nil,
@@ -140,6 +155,7 @@ func (p *PurchaseOrderController) PurchaseOrderCreate(c *fiber.Ctx) error {
 		})
 	}
 
+	logging.INFO("Orden de compra creada con éxito")
 	return c.Status(200).JSON(models.Response{
 		Status:  true,
 		Body:    id,
@@ -165,8 +181,10 @@ func (p *PurchaseOrderController) PurchaseOrderCreate(c *fiber.Ctx) error {
 //	@Failure		500					{object}	models.Response				"Internal server error"
 //	@Router			/purchase_order/update [put]
 func (p *PurchaseOrderController) PurchaseOrderUpdate(c *fiber.Ctx) error {
+	logging.INFO("Actualizar orden de compra")
 	var purchaseOrderUpdate models.PurchaseOrderUpdate
 	if err := c.BodyParser(&purchaseOrderUpdate); err != nil {
+		logging.ERROR("Error: %s", err.Error())
 		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
 			Status:  false,
 			Body:    nil,
@@ -174,6 +192,7 @@ func (p *PurchaseOrderController) PurchaseOrderUpdate(c *fiber.Ctx) error {
 		})
 	}
 	if err := purchaseOrderUpdate.Validate(); err != nil {
+		logging.ERROR("Error: %s", err.Error())
 		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
 			Status:  false,
 			Body:    nil,
@@ -184,12 +203,14 @@ func (p *PurchaseOrderController) PurchaseOrderUpdate(c *fiber.Ctx) error {
 	err := p.PurchaseOrderService.PurchaseOrderUpdate(&purchaseOrderUpdate)
 	if err != nil {
 		if errResp, ok := err.(*models.ErrorStruc); ok {
+			logging.ERROR("Error: %s", errResp.Err.Error())
 			return c.Status(errResp.StatusCode).JSON(models.Response{
 				Status:  false,
 				Body:    nil,
 				Message: errResp.Message,
 			})
 		}
+		logging.ERROR("Error: %s", err.Error())
 		return c.Status(fiber.StatusInternalServerError).JSON(models.Response{
 			Status:  false,
 			Body:    nil,
@@ -197,6 +218,7 @@ func (p *PurchaseOrderController) PurchaseOrderUpdate(c *fiber.Ctx) error {
 		})
 	}
 
+	logging.INFO("Orden de compra editada con éxito")
 	return c.Status(200).JSON(models.Response{
 		Status:  true,
 		Body:    nil,
@@ -220,8 +242,10 @@ func (p *PurchaseOrderController) PurchaseOrderUpdate(c *fiber.Ctx) error {
 //	@Failure		500	{object}	models.Response	"Internal server error"
 //	@Router			/purchase_order/delete/{id} [delete]
 func (p *PurchaseOrderController) PurchaseOrderDelete(c *fiber.Ctx) error {
+	logging.INFO("Eliminar orden de compra")
 	id := c.Params("id")
 	if id == "" {
+		logging.ERROR("Error: ID is required")
 		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
 			Status:  false,
 			Body:    nil,
@@ -232,12 +256,14 @@ func (p *PurchaseOrderController) PurchaseOrderDelete(c *fiber.Ctx) error {
 	err := p.PurchaseOrderService.PurchaseOrderDelete(id)
 	if err != nil {
 		if errResp, ok := err.(*models.ErrorStruc); ok {
+			logging.ERROR("Error: %s", errResp.Err.Error())
 			return c.Status(errResp.StatusCode).JSON(models.Response{
 				Status:  false,
 				Body:    nil,
 				Message: errResp.Message,
 			})
 		}
+		logging.ERROR("Error: %s", err.Error())
 		return c.Status(fiber.StatusInternalServerError).JSON(models.Response{
 			Status:  false,
 			Body:    nil,
@@ -245,6 +271,7 @@ func (p *PurchaseOrderController) PurchaseOrderDelete(c *fiber.Ctx) error {
 		})
 	}
 
+	logging.INFO("Orden de compra eliminada con éxito")
 	return c.Status(200).JSON(models.Response{
 		Status:  true,
 		Body:    nil,

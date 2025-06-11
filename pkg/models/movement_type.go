@@ -8,15 +8,15 @@ import (
 )
 
 type MovementType struct {
-	ID   string `gorm:"primaryKey;size:36" json:"id"`
-	Name string `gorm:"not null" json:"name"`
-	IsIncome bool   `gorm:"not null" json:"is_income"`
-	CreatedAt time.Time `gorm:"autoCreateTime" json:"created_at"`	
+	ID        string    `gorm:"primaryKey;size:36" json:"id"`
+	Name      string    `gorm:"not null" json:"name"`
+	IsIncome  bool      `gorm:"not null" json:"is_income"`
+	CreatedAt time.Time `gorm:"autoCreateTime" json:"created_at"`
 	UpdatedAt time.Time `gorm:"autoUpdateTime" json:"updated_at"`
 }
 
 type MovementTypeCreate struct {
-	Name string `json:"name"`
+	Name     string `json:"name"`
 	IsIncome bool   `json:"is_income"`
 }
 
@@ -30,13 +30,14 @@ func (m *MovementTypeCreate) Validate() error {
 	validationErr := err.(validator.ValidationErrors)[0]
 	field := validationErr.Field()
 	tag := validationErr.Tag()
+	param := validationErr.Param()
 
-	return fmt.Errorf("campo %s es invalido, revisar: (%s)", field, tag)
+	return fmt.Errorf("campo %s es invalido, revisar: (%s) (%s)", field, tag, param)
 }
 
 type MovementTypeUpdate struct {
-	ID string `gojson:"id"`
-	Name string `json:"name"`
+	ID       string `gojson:"id"`
+	Name     string `json:"name"`
 	IsIncome bool   `json:"is_income"`
 }
 
@@ -50,6 +51,7 @@ func (m *MovementTypeUpdate) Validate() error {
 	validationErr := err.(validator.ValidationErrors)[0]
 	field := validationErr.Field()
 	tag := validationErr.Tag()
+	param := validationErr.Param()
 
-	return fmt.Errorf("campo %s es invalido, revisar: (%s)", field, tag)
+	return fmt.Errorf("campo %s es invalido, revisar: (%s) (%s)", field, tag, param)
 }

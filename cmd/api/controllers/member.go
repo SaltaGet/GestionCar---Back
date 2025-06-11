@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"github.com/DanielChachagua/GestionCar/cmd/api/logging"
 	"github.com/DanielChachagua/GestionCar/pkg/models"
 	"github.com/gofiber/fiber/v2"
 )
@@ -20,15 +21,18 @@ import (
 // @Failure		500	{object}	models.Response
 // @Router			/member/get_all [get]
 func (m *MemberController) MemberGetAll(c *fiber.Ctx) error {
+	logging.INFO("Obtener todos los miembros")
 	memebers, err := m.MemberService.MemberGetAll()
 	if err != nil {
 		if errResp, ok := err.(*models.ErrorStruc); ok {
+			logging.ERROR("Error: %s", errResp.Err.Error())
 			return c.Status(errResp.StatusCode).JSON(models.Response{
 				Status:  false,
 				Body:    nil,
 				Message: errResp.Message,
 			})
 		}
+		logging.ERROR("Error: %s", err.Error())
 		return c.Status(fiber.StatusInternalServerError).JSON(models.Response{
 			Status:  false,
 			Body:    nil,
@@ -36,10 +40,11 @@ func (m *MemberController) MemberGetAll(c *fiber.Ctx) error {
 		})
 	}
 
+	logging.INFO("Miembros obtenidos con éxito")
 	return c.Status(fiber.StatusOK).JSON(models.Response{
 		Status:  true,
 		Body:    memebers,
-		Message: "Memebers received successfully",
+		Message: "Miembros obtenidos con éxito",
 	})
 }
 
@@ -59,17 +64,12 @@ func (m *MemberController) MemberGetAll(c *fiber.Ctx) error {
 // @Failure		500				{object}	models.Response
 // @Router			/member/create [post]
 func (m *MemberController) MemberCreate(c *fiber.Ctx) error {
-	user, ok := c.Locals("user").(*models.AuthenticatedUser)
-	if !ok {
-		return c.Status(fiber.StatusUnauthorized).JSON(models.Response{
-			Status:  false,
-			Body:    nil,
-			Message: "Teanant No autenticado",
-		})
-	}
+	logging.INFO("Crear miembro")
+	user := c.Locals("user").(*models.AuthenticatedUser)
 
 	var memberCreate models.MemberCreate
 	if err := c.BodyParser(&memberCreate); err != nil {
+		logging.ERROR("Error: %s", err.Error())
 		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
 			Status:  false,
 			Body:    nil,
@@ -77,6 +77,7 @@ func (m *MemberController) MemberCreate(c *fiber.Ctx) error {
 		})
 	}
 	if err := memberCreate.Validate(); err != nil {
+		logging.ERROR("Error: %s", err.Error())
 		return c.Status(422).JSON(models.Response{
 			Status:  false,
 			Body:    nil,
@@ -87,12 +88,14 @@ func (m *MemberController) MemberCreate(c *fiber.Ctx) error {
 	id, err := m.MemberService.MemberCreate(&memberCreate, user)
 	if err != nil {
 		if errResp, ok := err.(*models.ErrorStruc); ok {
+			logging.ERROR("Error: %s", errResp.Err.Error())
 			return c.Status(errResp.StatusCode).JSON(models.Response{
 				Status:  false,
 				Body:    nil,
 				Message: errResp.Message,
 			})
 		}
+		logging.ERROR("Error: %s", err.Error())
 		return c.Status(fiber.StatusInternalServerError).JSON(models.Response{
 			Status:  false,
 			Body:    nil,
@@ -100,9 +103,10 @@ func (m *MemberController) MemberCreate(c *fiber.Ctx) error {
 		})
 	}
 
+	logging.INFO("Miembro creado con éxito")
 	return c.Status(fiber.StatusOK).JSON(models.Response{
 		Status:  true,
 		Body:    id,
-		Message: "Memebers received successfully",
+		Message: "Miembro creado con éxito",
 	})
 }

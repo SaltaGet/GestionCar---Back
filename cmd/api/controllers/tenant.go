@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"github.com/DanielChachagua/GestionCar/cmd/api/logging"
 	"github.com/DanielChachagua/GestionCar/pkg/models"
 	"github.com/gofiber/fiber/v2"
 )
@@ -19,16 +20,19 @@ import (
 //	@Failure		500	{object}	models.Response
 //	@Router			/tenant/get_all [get]
 func (t *TenantController) GetTenants(c *fiber.Ctx) error {
+	logging.INFO("Obtener todos los tenants")
 	user := c.Locals("user").(*models.AuthenticatedUser)
 	tenants, err := t.TenantService.TenantGetAll(user.ID)
 	if err != nil {
 		if errResp, ok := err.(*models.ErrorStruc); ok {
+			logging.ERROR("Error: %s", errResp.Err.Error())
 			return c.Status(errResp.StatusCode).JSON(models.Response{
 				Status:  false,
 				Body:    nil,
 				Message: errResp.Message,
 			})
 		}
+		logging.ERROR("Error: %s", err.Error())
 		return c.Status(fiber.StatusInternalServerError).JSON(models.Response{
 			Status:  false,
 			Body:    nil,
@@ -41,6 +45,7 @@ func (t *TenantController) GetTenants(c *fiber.Ctx) error {
 		tenants = &empty
 	}
 
+	logging.INFO("Tenants obtenidos con éxito")
 	return c.Status(200).JSON(models.Response{
 		Status:  true,
 		Body:    *tenants,
@@ -64,8 +69,10 @@ func (t *TenantController) GetTenants(c *fiber.Ctx) error {
 //	@Failure		500				{object}	models.Response
 //	@Router			/tenant/create [post]
 func (t *TenantController) TenantCreateByUserID(c *fiber.Ctx) error {
+	logging.INFO("Crear tenant")
 	userID := c.Query("user_id")
 	if userID == "" {
+		logging.ERROR("El user_id no debe de ser vacio")
 		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
 			Status:  false,
 			Body:    nil,
@@ -75,6 +82,7 @@ func (t *TenantController) TenantCreateByUserID(c *fiber.Ctx) error {
 
 	var tenantCreate models.TenantCreate
 	if err := c.BodyParser(&tenantCreate); err != nil {
+		logging.ERROR("Invalid request %s", err.Error())
 		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
 			Status:  false,
 			Body:    nil,
@@ -82,6 +90,7 @@ func (t *TenantController) TenantCreateByUserID(c *fiber.Ctx) error {
 		})
 	}
 	if err := tenantCreate.Validate(); err != nil {
+		logging.ERROR("Error: %s", err.Error())
 		return c.Status(422).JSON(models.Response{
 			Status:  false,
 			Body:    nil,
@@ -92,12 +101,14 @@ func (t *TenantController) TenantCreateByUserID(c *fiber.Ctx) error {
 	id, err := t.TenantService.TenantCreateByUserID(&tenantCreate, userID)
 	if err != nil {
 		if errResp, ok := err.(*models.ErrorStruc); ok {
+			logging.ERROR("Error: %s", errResp.Err.Error())
 			return c.Status(errResp.StatusCode).JSON(models.Response{
 				Status:  false,
 				Body:    nil,
 				Message: errResp.Message,
 			})
 		}
+		logging.ERROR("Error: %s", err.Error())
 		return c.Status(fiber.StatusInternalServerError).JSON(models.Response{
 			Status:  false,
 			Body:    nil,
@@ -105,6 +116,7 @@ func (t *TenantController) TenantCreateByUserID(c *fiber.Ctx) error {
 		})
 	}
 
+	logging.INFO("Tenant creado con éxito")
 	return c.Status(200).JSON(models.Response{
 		Status:  true,
 		Body:    id,
@@ -127,8 +139,10 @@ func (t *TenantController) TenantCreateByUserID(c *fiber.Ctx) error {
 //	@Failure		500					{object}	models.Response
 //	@Router			/tenant/create_tenant_user [post]
 func (t *TenantController) TenantUserCreate(c *fiber.Ctx) error {
+	logging.INFO("Crear tenant y user")
 	var tenantUserCrate models.TenantUserCreate
 	if err := c.BodyParser(&tenantUserCrate); err != nil {
+		logging.ERROR("Invalid request %s", err.Error())
 		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
 			Status:  false,
 			Body:    nil,
@@ -136,6 +150,7 @@ func (t *TenantController) TenantUserCreate(c *fiber.Ctx) error {
 		})
 	}
 	if err := tenantUserCrate.TenantCreate.Validate(); err != nil {
+		logging.ERROR("Tenant Error: %s", err.Error())
 		return c.Status(422).JSON(models.Response{
 			Status:  false,
 			Body:    nil,
@@ -143,6 +158,7 @@ func (t *TenantController) TenantUserCreate(c *fiber.Ctx) error {
 		})
 	}
 	if err := tenantUserCrate.UserCreate.Validate(); err != nil {
+		logging.ERROR("User Error: %s", err.Error())
 		return c.Status(422).JSON(models.Response{
 			Status:  false,
 			Body:    nil,
@@ -153,12 +169,14 @@ func (t *TenantController) TenantUserCreate(c *fiber.Ctx) error {
 	id, err := t.TenantService.TenantUserCreate(&tenantUserCrate)
 	if err != nil {
 		if errResp, ok := err.(*models.ErrorStruc); ok {
+			logging.ERROR("Error: %s", errResp.Err.Error())
 			return c.Status(errResp.StatusCode).JSON(models.Response{
 				Status:  false,
 				Body:    nil,
 				Message: errResp.Message,
 			})
 		}
+		logging.ERROR("Error: %s", err.Error())
 		return c.Status(fiber.StatusInternalServerError).JSON(models.Response{
 			Status:  false,
 			Body:    nil,
@@ -166,6 +184,7 @@ func (t *TenantController) TenantUserCreate(c *fiber.Ctx) error {
 		})
 	}
 
+	logging.INFO("Tenant creado con éxito")
 	return c.Status(200).JSON(models.Response{
 		Status:  true,
 		Body:    id,

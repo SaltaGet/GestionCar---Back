@@ -1,10 +1,10 @@
 package controllers
 
 import (
+	"github.com/DanielChachagua/GestionCar/cmd/api/logging"
 	"github.com/DanielChachagua/GestionCar/pkg/models"
 	"github.com/gofiber/fiber/v2"
 )
-
 
 // VehicleCreate godoc
 //	@Summary		Create Vehicle
@@ -22,8 +22,10 @@ import (
 //	@Failure		500				{object}	models.Response
 //	@Router			/vehicle/create [post]
 func (v *VehicleController) VehicleCreate(c *fiber.Ctx) error{
+	logging.INFO("Crear vehiculo")
 	var vehicleCreate models.VehicleCreate
 	if err := c.BodyParser(&vehicleCreate); err != nil {
+		logging.ERROR("Error: %s", err.Error())
 		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
 			Status:  false,
 			Body:    nil,
@@ -31,6 +33,7 @@ func (v *VehicleController) VehicleCreate(c *fiber.Ctx) error{
 		})
 	}
 	if err := vehicleCreate.Validate(); err != nil {
+		logging.ERROR("Error: %s", err.Error())
 		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
 			Status:  false,
 			Body:    nil,
@@ -41,18 +44,22 @@ func (v *VehicleController) VehicleCreate(c *fiber.Ctx) error{
 	vehicle, err := v.VehicleService.VehicleCreate(&vehicleCreate)
 	if err != nil {
 		if errResp, ok := err.(*models.ErrorStruc); ok {
+			logging.ERROR("Error: %s", errResp.Err.Error())
 			return c.Status(errResp.StatusCode).JSON(models.Response{
 				Status:  false,
 				Body:    nil,
 				Message: errResp.Message,
 			})
 		}
+		logging.ERROR("Error: %s", err.Error())
 		return c.Status(fiber.StatusInternalServerError).JSON(models.Response{
 			Status:  false,
 			Body:    nil,
 			Message: "Error interno",
 		})
 	}
+	
+	logging.INFO("Vehiculo creado con exito")
 	return c.Status(fiber.StatusOK).JSON(models.Response{
 		Status:  true,
 		Body:    vehicle,
@@ -74,15 +81,18 @@ func (v *VehicleController) VehicleCreate(c *fiber.Ctx) error{
 //	@Failure		500	{object}	models.Response		"Internal server error"
 //	@Router			/vehicle/get_all [get]
 func (v *VehicleController) VehicleGetAll(c *fiber.Ctx) error {
+	logging.INFO("Obtener todos los vehiculos")
 	vehicles, err := v.VehicleService.VehicleGetAll()
 	if err != nil {
 		if errResp, ok := err.(*models.ErrorStruc); ok {
+			logging.ERROR("Error: %s", errResp.Err.Error())
 			return c.Status(errResp.StatusCode).JSON(models.Response{
 				Status:  false,
 				Body:    nil,
 				Message: errResp.Message,
 			})
 		}
+		logging.ERROR("Error: %s", err.Error())
 		return c.Status(fiber.StatusInternalServerError).JSON(models.Response{
 			Status:  false,
 			Body:    nil,
@@ -90,6 +100,7 @@ func (v *VehicleController) VehicleGetAll(c *fiber.Ctx) error {
 		})
 	}
 
+	logging.INFO("Vehiculos obtenidos con exito")
 	return c.Status(fiber.StatusOK).JSON(models.Response{
 		Status:  true,
 		Body:    vehicles,
@@ -113,8 +124,10 @@ func (v *VehicleController) VehicleGetAll(c *fiber.Ctx) error {
 //	@Failure		500	{object}	models.Response
 //	@Router			/vehicle/{id} [get]
 func (v *VehicleController) VehicleGetByID(c *fiber.Ctx) error {
+	logging.INFO("Obtener un vehiculo por ID")
 	id := c.Params("id")
 	if id == "" {
+		logging.ERROR("Error: ID is required")
 		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
 			Status:  false,
 			Body:    nil,
@@ -125,18 +138,22 @@ func (v *VehicleController) VehicleGetByID(c *fiber.Ctx) error {
 	vehicle, err := v.VehicleService.VehicleGetByID(id)
 	if err != nil {
 		if errResp, ok := err.(*models.ErrorStruc); ok {
+			logging.ERROR("Error: %s", errResp.Err.Error())
 			return c.Status(errResp.StatusCode).JSON(models.Response{
 				Status:  false,
 				Body:    nil,
 				Message: errResp.Message,
 			})
 		}
+		logging.ERROR("Error: %s", err.Error())
 		return c.Status(fiber.StatusInternalServerError).JSON(models.Response{
 			Status:  false,
 			Body:    nil,
 			Message: "Error interno",
 		})
 	}
+
+	logging.INFO("Vehiculo obtenido con exito")
 	return c.Status(fiber.StatusOK).JSON(models.Response{
 		Status:  true,
 		Body:    vehicle,
@@ -158,8 +175,10 @@ func (v *VehicleController) VehicleGetByID(c *fiber.Ctx) error {
 //	@Failure		500		{object}	models.Response		"Internal server error"
 //	@Router			/vehicle/get_by_domain [get]
 func (v *VehicleController) VehicleGetByDomain(c *fiber.Ctx) error {
+	logging.INFO("Obtener vehiculos por dominio")
 	domain := c.Query("domain")
 	if domain == "" || len(domain) < 3 {
+		logging.ERROR("Error: Dominio requerido o debe de tener al menos 3 caracteres")
 		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
 			Status:  false,
 			Body:    nil,
@@ -170,12 +189,14 @@ func (v *VehicleController) VehicleGetByDomain(c *fiber.Ctx) error {
 	vehicles, err := v.VehicleService.VehicleGetByDomain(domain)
 	if err != nil {
 		if errResp, ok := err.(*models.ErrorStruc); ok {
+			logging.ERROR("Error: %s", errResp.Err.Error())
 			return c.Status(errResp.StatusCode).JSON(models.Response{
 				Status:  false,
 				Body:    nil,
 				Message: errResp.Message,
 			})
 		}
+		logging.ERROR("Error: %s", err.Error())
 		return c.Status(fiber.StatusInternalServerError).JSON(models.Response{
 			Status:  false,
 			Body:    nil,
@@ -183,6 +204,7 @@ func (v *VehicleController) VehicleGetByDomain(c *fiber.Ctx) error {
 		})
 	}
 
+	logging.INFO("Vehiculos obtenidos con exito")
 	return c.Status(fiber.StatusOK).JSON(models.Response{
 		Status:  true,
 		Body:    vehicles,
@@ -204,8 +226,10 @@ func (v *VehicleController) VehicleGetByDomain(c *fiber.Ctx) error {
 //	@Failure		500			{object}	models.Response		"Internal server error"
 //	@Router			/vehicle/get_by_client/{client_id} [get]
 func (v *VehicleController) VehicleGetByClientID(c *fiber.Ctx) error {
+	logging.INFO("Obtener vehiculos por ID de cliente")
 	clientID := c.Params("client_id")
 	if clientID == "" {
+		logging.ERROR("Error: Client ID is required")
 		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
 			Status:  false,
 			Body:    nil,
@@ -216,12 +240,14 @@ func (v *VehicleController) VehicleGetByClientID(c *fiber.Ctx) error {
 	vehicles, err := v.VehicleService.VehicleGetByClientID(clientID)
 	if err != nil {
 		if errResp, ok := err.(*models.ErrorStruc); ok {
+			logging.ERROR("Error: %s", errResp.Err.Error())
 			return c.Status(errResp.StatusCode).JSON(models.Response{
 				Status:  false,
 				Body:    nil,
 				Message: errResp.Message,
 			})
 		}
+		logging.ERROR("Error: %s", err.Error())
 		return c.Status(fiber.StatusInternalServerError).JSON(models.Response{
 			Status:  false,
 			Body:    nil,
@@ -229,6 +255,7 @@ func (v *VehicleController) VehicleGetByClientID(c *fiber.Ctx) error {
 		})
 	}
 
+	logging.INFO("Vehiculos obtenidos con exito")
 	return c.Status(fiber.StatusOK).JSON(models.Response{
 		Status:  true,
 		Body:    vehicles,
@@ -253,8 +280,10 @@ func (v *VehicleController) VehicleGetByClientID(c *fiber.Ctx) error {
 //	@Failure		500				{object}	models.Response
 //	@Router			/vehicle/update [put]
 func (v *VehicleController) VehicleUpdate(c *fiber.Ctx) error {
+	logging.INFO("Actualizar vehiculo")
 	var vehicleUpdate models.VehicleUpdate
 	if err := c.BodyParser(&vehicleUpdate); err != nil {
+		logging.ERROR("Error: %s", err.Error())
 		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
 			Status:  false,
 			Body:    nil,
@@ -263,6 +292,7 @@ func (v *VehicleController) VehicleUpdate(c *fiber.Ctx) error {
 	}
 
 	if err := vehicleUpdate.Validate(); err != nil {
+		logging.ERROR("Error: %s", err.Error())
 		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
 			Status:  false,
 			Body:    nil,
@@ -273,12 +303,14 @@ func (v *VehicleController) VehicleUpdate(c *fiber.Ctx) error {
 	err := v.VehicleService.VehicleUpdate(&vehicleUpdate)
 	if err != nil {
 		if errResp, ok := err.(*models.ErrorStruc); ok {
+			logging.ERROR("Error: %s", errResp.Err.Error())
 			return c.Status(errResp.StatusCode).JSON(models.Response{
 				Status:  false,
 				Body:    nil,
 				Message: errResp.Message,
 			})
 		}
+		logging.ERROR("Error: %s", err.Error())
 		return c.Status(fiber.StatusInternalServerError).JSON(models.Response{
 			Status:  false,
 			Body:    nil,
@@ -286,6 +318,7 @@ func (v *VehicleController) VehicleUpdate(c *fiber.Ctx) error {
 		})
 	}
 
+	logging.INFO("Vehiculo actualizado con exito")
 	return c.Status(fiber.StatusOK).JSON(models.Response{
 		Status:  true,
 		Body:    nil,
@@ -309,8 +342,10 @@ func (v *VehicleController) VehicleUpdate(c *fiber.Ctx) error {
 //	@Failure		500	{object}	models.Response
 //	@Router			/vehicle/delete/{id} [delete]
 func (v *VehicleController) VehicleDelete(c *fiber.Ctx) error {
+	logging.INFO("Eliminar vehiculo")
 	id := c.Params("id")
 	if id == "" {
+		logging.ERROR("Error: ID is required")
 		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
 			Status:  false,
 			Body:    nil,
@@ -321,12 +356,14 @@ func (v *VehicleController) VehicleDelete(c *fiber.Ctx) error {
 	err := v.VehicleService.VehicleDelete(id)
 	if err != nil {
 		if errResp, ok := err.(*models.ErrorStruc); ok {
+			logging.ERROR("Error: %s", errResp.Err.Error())
 			return c.Status(errResp.StatusCode).JSON(models.Response{
 				Status:  false,
 				Body:    nil,
 				Message: errResp.Message,
 			})
 		}
+		logging.ERROR("Error: %s", err.Error())
 		return c.Status(fiber.StatusInternalServerError).JSON(models.Response{
 			Status:  false,
 			Body:    nil,
@@ -334,6 +371,7 @@ func (v *VehicleController) VehicleDelete(c *fiber.Ctx) error {
 		})
 	}
 
+	logging.INFO("Vehiculo eliminado con exito")
 	return c.Status(fiber.StatusOK).JSON(models.Response{
 		Status:  true,
 		Body:    nil,

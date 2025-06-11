@@ -1,6 +1,10 @@
 package models
 
-import "github.com/go-playground/validator/v10"
+import (
+	"fmt"
+
+	"github.com/go-playground/validator/v10"
+)
 
 type AuthLogin struct {
 	Username string `json:"username" validate:"required"`
@@ -9,7 +13,17 @@ type AuthLogin struct {
 
 func (a *AuthLogin) Validate() error {
 	validate := validator.New()
-	return validate.Struct(a)
+	err := validate.Struct(a)
+	if err == nil {
+		return nil
+	}
+
+	validationErr := err.(validator.ValidationErrors)[0]
+	field := validationErr.Field()
+	tag := validationErr.Tag()
+	param := validationErr.Param()
+
+	return fmt.Errorf("campo %s es invalido, revisar: (%s) (%s)", field, tag, param)
 }
 
 type AuthResult struct {

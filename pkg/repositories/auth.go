@@ -30,7 +30,7 @@ func (r *MainRepository) AuthLogin(username, password string, connection string)
 
 		var permissions []string
 		for _, p := range member.Role.Permissions {
-			permissions = append(permissions, p.Name)
+			permissions = append(permissions, p.Code)
 		}
 
 		return &models.AuthResult{
