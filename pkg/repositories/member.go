@@ -41,19 +41,6 @@ func (t *TenantRepository) MemberGetByID(id string) (*models.Member, error) {
 	return &member, nil
 }
 
-func (t *TenantRepository) MemberAdd(memberAdd *models.MemberAdd) (id string, err error) {
-	newID := uuid.NewString()
-	if err := t.DB.Create(&models.Member{
-		ID: newID,
-		// UserID: memberAdd.UserID,
-		RoleID: memberAdd.RoleID,
-	}).Error; err != nil {
-		return "", err
-	}
-
-	return newID, nil
-}
-
 func (t *TenantRepository) MemberCreate(memeberCreate *models.MemberCreate, user *models.AuthenticatedUser) (id string, err error) {
 	newID := uuid.NewString()
 

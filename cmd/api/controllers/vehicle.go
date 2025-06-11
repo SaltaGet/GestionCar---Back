@@ -27,7 +27,7 @@ func (v *VehicleController) VehicleCreate(c *fiber.Ctx) error{
 		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
 			Status:  false,
 			Body:    nil,
-			Message: "Invalid request",
+			Message: "Invalid request" + err.Error(),
 		})
 	}
 	if err := vehicleCreate.Validate(); err != nil {
@@ -258,7 +258,7 @@ func (v *VehicleController) VehicleUpdate(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
 			Status:  false,
 			Body:    nil,
-			Message: "Invalid request",
+			Message: "Invalid request" + err.Error(),
 		})
 	}
 

@@ -149,7 +149,7 @@ func (e *ExpenseController) CreateExpense(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
 			Status:  false,
 			Body:    nil,
-			Message: "Invalid request",
+			Message: "Invalid request" + err.Error(),
 		})
 	}
 	if err := expenseCreate.Validate(); err != nil {
@@ -204,7 +204,7 @@ func (e *ExpenseController) UpdateExpense(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
 			Status:  false,
 			Body:    nil,
-			Message: "Invalid request",
+			Message: "Invalid request" + err.Error(),
 		})
 	}
 	if err := expenseUpdate.Validate(); err != nil {

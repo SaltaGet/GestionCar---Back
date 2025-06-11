@@ -162,7 +162,7 @@ func (cl *ClientController) ClientUpdate(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
 			Status:  false,
 			Body:    nil,
-			Message: "Invalid request",
+			Message: "Invalid request" + err.Error(),
 		})
 	}
 	if err := clientUpdate.Validate(); err != nil {
@@ -264,7 +264,7 @@ func (cl *ClientController) CreateClient(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
 			Status:  false,
 			Body:    nil,
-			Message: "Invalid request",
+			Message: "Invalid request" + err.Error(),
 		})
 	}
 	if err := clientCreate.Validate(); err != nil {

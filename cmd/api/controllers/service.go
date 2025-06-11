@@ -111,7 +111,7 @@ func (s *ServiceController) ServiceCreate(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
 			Status:  false,
 			Body:    nil,
-			Message: "Invalid request",
+			Message: "Invalid request" + err.Error(),
 		})
 	}
 	if err := serviceCreate.Validate(); err != nil {
@@ -168,7 +168,7 @@ func (s *ServiceController) ServiceUpdate(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
 			Status:  false,
 			Body:    nil,
-			Message: "Invalid request",
+			Message: "Invalid request" + err.Error(),
 		})
 	}
 	if err := serviceUpdate.Validate(); err != nil {

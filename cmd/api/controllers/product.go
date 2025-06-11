@@ -1,8 +1,6 @@
 package controllers
 
 import (
-	"fmt"
-
 	"github.com/DanielChachagua/GestionCar/pkg/models"
 	"github.com/gofiber/fiber/v2"
 )
@@ -208,21 +206,12 @@ func (p *ProductController) ProductGetByIdentifier(c *fiber.Ctx) error {
 //	@Failure		500		{object}	models.Response		"Internal server error"
 //	@Router			/product/update_stock [put]
 func (p *ProductController) ProductUpdateStock(c *fiber.Ctx) error {
-	defer func() {
-		if r := recover(); r != nil {
-			c.Status(fiber.StatusInternalServerError).JSON(models.Response{
-				Status:  false,
-				Body:    nil,
-				Message: fmt.Sprintf("panic: %v", r),
-			})
-		}
-	}()
 	var stockUpdate models.StockUpdate
 	if err := c.BodyParser(&stockUpdate); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
 			Status:  false,
 			Body:    nil,
-			Message: "Invalid request",
+			Message: "Invalid request" + err.Error(),
 		})
 	}
 	if err := stockUpdate.Validate(); err != nil {
@@ -279,7 +268,7 @@ func (p *ProductController) ProductUpdate(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
 			Status:  false,
 			Body:    nil,
-			Message: "Invalid request",
+			Message: "Invalid request" + err.Error(),
 		})
 	}
 	if err := productUpdate.Validate(); err != nil {
@@ -384,7 +373,7 @@ func (p *ProductController) ProductCreate(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
 			Status:  false,
 			Body:    nil,
-			Message: "Invalid request",
+			Message: "Invalid request" + err.Error(),
 		})
 	}
 	if err := productCreate.Validate(); err != nil {

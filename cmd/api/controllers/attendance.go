@@ -111,7 +111,7 @@ func (a *AttendanceController) GetAllAttendancesByDate(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
 			Status:  false,
 			Body:    nil,
-			Message: "Invalid request",
+			Message: "Invalid request" + err.Error(),
 		})
 	}
 	if err := dateBeetwen.Validate(); err != nil {
@@ -215,7 +215,7 @@ func (a *AttendanceController) CreateAttendance(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
 			Status:  false,
 			Body:    nil,
-			Message: "Invalid request",
+			Message: "Invalid request" + err.Error(),
 		})
 	}
 	if err := attendanceCreate.Validate(); err != nil {
@@ -271,7 +271,7 @@ func (a *AttendanceController) UpdateAttendance(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
 			Status:  false,
 			Body:    nil,
-			Message: "Invalid request",
+			Message: "Invalid request" + err.Error(),
 		})
 	}
 	if err := attendanceUpdate.Validate(); err != nil {

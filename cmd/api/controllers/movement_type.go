@@ -133,7 +133,7 @@ func (m *MovementTypeController) MovementTypeCreate(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
 			Status:  false,
 			Body:    nil,
-			Message: "Invalid request",
+			Message: "Invalid request" + err.Error(),
 		})
 	}
 	if err := movementCreate.Validate(); err != nil {
@@ -190,7 +190,7 @@ func (m *MovementTypeController) MovementTypeUpdate(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
 			Status:  false,
 			Body:    nil,
-			Message: "Invalid request",
+			Message: "Invalid request" + err.Error(),
 		})
 	}
 	if err := movementUpdate.Validate(); err != nil {

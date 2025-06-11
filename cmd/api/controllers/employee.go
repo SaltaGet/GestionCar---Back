@@ -159,7 +159,7 @@ func (e *EmployeeController) CreateEmployee(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
 			Status:  false,
 			Body:    nil,
-			Message: "Invalid request",
+			Message: "Invalid request" + err.Error(),
 		})
 	}
 	if err := employeeCreate.Validate(); err != nil {
@@ -215,7 +215,7 @@ func (e *EmployeeController) UpdateEmployee(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
 			Status:  false,
 			Body:    nil,
-			Message: "Invalid request",
+			Message: "Invalid request" + err.Error(),
 		})
 	}
 	if err := employeeUpdate.Validate(); err != nil {

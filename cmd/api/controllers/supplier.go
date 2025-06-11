@@ -159,7 +159,7 @@ func (s *SupplierController) SupplierCreate(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
 			Status:  false,
 			Body:    nil,
-			Message: "Invalid request",
+			Message: "Invalid request" + err.Error(),
 		})
 	}
 	if err := supplierCreate.Validate(); err != nil {
@@ -215,7 +215,7 @@ func (s *SupplierController) SupplierUpdate(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
 			Status:  false,
 			Body:    nil,
-			Message: "Invalid request",
+			Message: "Invalid request" + err.Error(),
 		})
 	}
 	if err := supplierUpdate.Validate(); err != nil {

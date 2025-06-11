@@ -78,7 +78,7 @@ func (t *TenantController) TenantCreateByUserID(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
 			Status:  false,
 			Body:    nil,
-			Message: "Invalid request",
+			Message: "Invalid request" + err.Error(),
 		})
 	}
 	if err := tenantCreate.Validate(); err != nil {
@@ -132,7 +132,7 @@ func (t *TenantController) TenantUserCreate(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
 			Status:  false,
 			Body:    nil,
-			Message: "Invalid request",
+			Message: "Invalid request" + err.Error(),
 		})
 	}
 	if err := tenantUserCrate.TenantCreate.Validate(); err != nil {

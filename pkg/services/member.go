@@ -1,7 +1,6 @@
 package services
 
 import (
-	"fmt"
 	"log"
 	"runtime/debug"
 
@@ -61,22 +60,6 @@ func (m *MemberService) MemberGetPermissionByUserID(userID string) (*models.Memb
 	}
 
 	return member, nil
-}
-
-func (m *MemberService) MemberAdd(memberAdd *models.MemberAdd, tenantID, userID string) (string, error) { 
-	id, err := m.MemberRepository.MemberAdd(memberAdd) 
-	if err != nil {
-		return "", err
-	}
-
-	if err := m.UserRepository.UserTenantAdd(memberAdd.UserID, tenantID); err != nil {
-		if delErr := m.MemberRepository.MemberDelete(id); delErr != nil {
-        return "", fmt.Errorf("UserTenantAdd failed: %v, rollback also failed: %v", err, delErr)
-    }
-		return "", err
-	}
-
-	return id, nil
 }
 
 func (m *MemberService) MemberGetByID(id string) (*models.Member, error) {

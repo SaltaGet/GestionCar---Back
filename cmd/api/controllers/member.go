@@ -45,8 +45,8 @@ func (m *MemberController) MemberGetAll(c *fiber.Ctx) error {
 
 //	Member godoc
 //
-// @Summary		Memeber GetAll
-// @Description	Memeber GetAll required auth token
+// @Summary		Memeber Create
+// @Description	Memeber Create required auth token
 // @Tags			Member
 // @Accept			json
 // @Produce		json
@@ -73,7 +73,7 @@ func (m *MemberController) MemberCreate(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
 			Status:  false,
 			Body:    nil,
-			Message: "Invalid request",
+			Message: "Invalid request" + err.Error(),
 		})
 	}
 	if err := memberCreate.Validate(); err != nil {

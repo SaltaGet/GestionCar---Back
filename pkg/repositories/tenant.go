@@ -125,8 +125,12 @@ func (r *MainRepository) TenantCreateByUserID(tenantCreate *models.TenantCreate,
 	}
 
 	if err := tx.Create(tenant).Error; err != nil {
+		if errors.Is(err, gorm.ErrInvalidData){
+			tx.Rollback()
+			return "", models.ErrorResponse(400, "Los campos email, cuit_pdv y identifier deben ser únicos, algun campo ya existe", err)
+		}
 		tx.Rollback()
-		return "", models.ErrorResponse(500, "Error creating tenant", err)
+		return "", models.ErrorResponse(500, "Error al crear tenant", err)
 	}
 
 	var user models.User

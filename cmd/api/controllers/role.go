@@ -66,7 +66,7 @@ func (r *RoleController) RoleCreate(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
 			Status:  false,
 			Body:    nil,
-			Message: "Bad request",
+			Message: "Bad request" + err.Error(),
 		})
 	}
 	if err := roleCreate.Validate(); err != nil {

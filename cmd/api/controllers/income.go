@@ -151,7 +151,7 @@ func (i *IncomeController) CreateIncome(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
 			Status:  false,
 			Body:    nil,
-			Message: "Invalid request",
+			Message: "Invalid request" + err.Error(),
 		})
 	}
 	if err := incomeCreate.Validate(); err != nil {
@@ -207,7 +207,7 @@ func (i *IncomeController) UpdateIncome(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
 			Status:  false,
 			Body:    nil,
-			Message: "Invalid request",
+			Message: "Invalid request" + err.Error(),
 		})
 	}
 	if err := incomeUpdate.Validate(); err != nil {
