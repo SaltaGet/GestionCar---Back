@@ -8,7 +8,7 @@ import (
 func (u *UserService) UserGetByListID(ids []string) (*[]models.UserDTO, error) {
 	users, err := u.UserRepository.UserGetByListID(ids)
 	if err != nil {
-		return nil, models.ErrorResponse(500, "Error al obtener los usuarios", err)
+		return nil, err
 	}
 
 	return users, nil
@@ -17,21 +17,21 @@ func (u *UserService) UserGetByListID(ids []string) (*[]models.UserDTO, error) {
 func (u *UserService) UserCreate(userCreate *models.UserCreate) (string, error) {
 	existingUser, err := u.UserRepository.UserGetExistByUsernameEmail(userCreate.Username, userCreate.Email)
 	if err != nil {
-		return "", models.ErrorResponse(500, "Error al buscar el usuario", err)
+		return "",err
 	}
 	if existingUser {
-		return "", models.ErrorResponse(400, "El username o el email ya existe", nil)
+		return "", err
 	}
 
 	
 	userCreate.Password, err = utils.HashPassword(userCreate.Password)
 	if err != nil {
-		return "", models.ErrorResponse(500, "Error al hashear la contraseña", err)
+		return "", err
 	}
 
 	id, err := u.UserRepository.UserCreate(userCreate)
 	if err != nil {
-		return "", models.ErrorResponse(500, "Error al crear el usuario", err)
+		return "", err
 	}
 
 	return id, nil

@@ -80,7 +80,7 @@ func VerifyToken(tokenString string) (jwt.Claims, error) {
 		return []byte(os.Getenv("SECRET_KEY")), nil
 	})
 	if err != nil {
-		return nil, err
+		return nil, models.ErrorResponse(401, "Token inválido", err)
 	}
 
 	return token.Claims, nil

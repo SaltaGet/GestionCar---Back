@@ -11,7 +11,10 @@ import (
 func (r *TenantRepository) VehicleGetByID(id string) (*models.Vehicle, error) {
 	var vehicle models.Vehicle
 	if err := r.DB.Where("id = ?", id).First(&vehicle).Error; err != nil {
-		return nil, err
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, models.ErrorResponse(404, "Vehiculo no encontrado", err)
+		}
+		return nil, models.ErrorResponse(500, "Error interno al buscar vehiculo", err)
 	}
 	return &vehicle, nil
 }
@@ -19,7 +22,7 @@ func (r *TenantRepository) VehicleGetByID(id string) (*models.Vehicle, error) {
 func (r *TenantRepository) VehicleGetByDomain(domain string) (*[]models.Vehicle, error) {
 	var vehicles []models.Vehicle
 	if err := r.DB.Preload("Client").Where("domain LIKE ?", "%"+domain+"%").Find(&vehicles).Error; err != nil {
-		return nil, err
+		return nil, models.ErrorResponse(500, "Error interno al buscar vehiculo", err)
 	}
 	return &vehicles, nil
 }
@@ -30,7 +33,7 @@ func (r *TenantRepository) VehicleExistByDomain(domain string) (bool, error) {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return false, nil
 		}
-		return false, err
+		return false, models.ErrorResponse(500, "Error interno al buscar vehiculo", err)
 	}
 	return true, nil
 }
@@ -38,7 +41,7 @@ func (r *TenantRepository) VehicleExistByDomain(domain string) (bool, error) {
 func (r *TenantRepository) VehicleGetAll() (*[]models.Vehicle, error) {
 	var vehicles []models.Vehicle
 	if err := r.DB.Find(&vehicles).Error; err != nil {
-		return nil, err
+		return nil, models.ErrorResponse(500, "Error interno al buscar vehiculo", err)
 	}
 	return &vehicles, nil
 }
@@ -46,7 +49,7 @@ func (r *TenantRepository) VehicleGetAll() (*[]models.Vehicle, error) {
 func (r *TenantRepository) VehicleGetByClientID(clientID string) (*[]models.Vehicle, error) {
 	var vehicles []models.Vehicle
 	if err := r.DB.Where("client_id = ?", clientID).Find(&vehicles).Error; err != nil {
-		return nil, err
+		return nil, models.ErrorResponse(500, "Error interno al buscar vehiculo", err)
 	}
 	return &vehicles, nil
 }
@@ -62,7 +65,7 @@ func (r *TenantRepository) VehicleCreate(vehicle *models.VehicleCreate) (string,
 		ClientID: vehicle.ClientID,
 	}
 	if err := r.DB.Create(&newVehicle).Error; err != nil {
-		return "", err
+		return "", models.ErrorResponse(500, "Error interno al crear vehiculo", err)
 	}
 	return newVehicle.ID, nil
 }
@@ -72,7 +75,7 @@ func (r *TenantRepository) VehicleUpdate(vehicle *models.VehicleUpdate) error {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return models.ErrorResponse(404, "Vehiculo no encontrado", err)
 		}
-		return err 
+		return models.ErrorResponse(500, "Error interno al actualizar vehiculo", err) 
 	}
 
 	return nil
@@ -81,7 +84,10 @@ func (r *TenantRepository) VehicleUpdate(vehicle *models.VehicleUpdate) error {
 func (r *TenantRepository) VehicleDelete(id string) error {
 	var vehicle models.Vehicle
 	if err := r.DB.Where("id = ?", id).Delete(&vehicle).Error; err != nil {
-		return err
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return models.ErrorResponse(404, "Vehiculo no encontrado", err)
+		}
+		return models.ErrorResponse(500, "Error interno al eliminar vehiculo", err)
 	}
 	return nil
 }

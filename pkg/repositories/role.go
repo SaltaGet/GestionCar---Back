@@ -8,7 +8,7 @@ import (
 func (r *TenantRepository) RoleGetAll() (*[]models.Role, error) {
 	var allRoles []models.Role
 	if err := r.DB.Find(&allRoles).Error; err != nil {
-		return nil, err
+		return nil, models.ErrorResponse(500, "Error interno al obtener roles", err)
 	}
 	return &allRoles, nil
 }
@@ -17,7 +17,7 @@ func (t *TenantRepository) RoleCreate(roleCreate *models.RoleCreate) (string, er
 	newID := uuid.NewString()
 	err := t.DB.Create(&models.Role{ID: newID, Name: roleCreate.Name}).Error
 	if err != nil {
-		return "", err
+		return "", models.ErrorResponse(500, "Error interno al crear el rol", err)
 	}
 	return newID, nil
 }

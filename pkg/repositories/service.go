@@ -10,7 +10,10 @@ import (
 func (r *TenantRepository) ServiceGetByID(id string) (*models.Service, error) {
 	var service models.Service
 	if err := r.DB.Where("id = ?", id).First(&service).Error; err != nil {
-		return nil, err
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, models.ErrorResponse(404, "Servicio no encontrado", err)
+		}
+		return nil, models.ErrorResponse(500, "Error interno al buscar servicio", err)
 	}
 	return &service, nil
 }
@@ -29,7 +32,7 @@ func (r *TenantRepository) ServiceExistByName(name string) (bool, error) {
 func (r *TenantRepository) ServiceGetByName(name string) (*[]models.Service, error) {
 	var services []models.Service
 	if err := r.DB.Limit(5).Where("name LIKE ?", "%"+name+"%").Find(&services).Error; err != nil {
-		return nil, err
+		return nil, models.ErrorResponse(500, "Error interno al buscar servicio", err)
 	}
 
 	return &services, nil
@@ -38,7 +41,7 @@ func (r *TenantRepository) ServiceGetByName(name string) (*[]models.Service, err
 func (r *TenantRepository) ServiceGetAll() (*[]models.Service, error) {
 	var services []models.Service
 	if err := r.DB.Find(&services).Error; err != nil {
-		return nil, err
+		return nil, models.ErrorResponse(500, "Error interno al buscar servicios", err)
 	}
 	return &services, nil
 }
@@ -49,28 +52,34 @@ func (r *TenantRepository) ServiceCreate(service *models.ServiceCreate) (string,
 		ID:   newID,
 		Name: service.Name,
 	}).Error; err != nil {
-		return "", err
+		return "", models.ErrorResponse(500, "Error interno al crear servicio", err)
 	}
 	return newID, nil
 }
 
 func (r *TenantRepository) ServiceUpdate(service *models.ServiceUpdate) error {
 	if err := r.DB.Where("id = ?", service.ID).First(&models.Service{}).Error; err != nil {
-		return err
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return models.ErrorResponse(404, "Servicio no encontrado", err)
+		}
+		return models.ErrorResponse(500, "Error interno al buscar servicio", err)
 	}
 	s := models.Service{
 		ID:   service.ID,
 		Name: service.Name,
 	}
 	if err := r.DB.Save(&s).Error; err != nil {
-		return err
+		return models.ErrorResponse(500, "Error interno al actualizar servicio", err)
 	}
 	return nil
 }
 
 func (r *TenantRepository) ServiceDelete(id string) error {
 	if err := r.DB.Where("id = ?", id).Delete(&models.Service{}).Error; err != nil {
-		return err
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return models.ErrorResponse(404, "Servicio no encontrado", err)
+		}
+		return models.ErrorResponse(500, "Error interno al eliminar servicio", err)
 	}
 	return nil
 }

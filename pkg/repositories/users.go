@@ -13,7 +13,10 @@ func (r *MainRepository) UserGetByID(id string) (*models.User, error) {
 	err := r.DB.First(&user, "id = ?", id).Error
 	
 	if err != nil {
-		return nil, err
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, models.ErrorResponse(404, "Usuario no encontrado", err)
+		}
+		return nil, models.ErrorResponse(500, "Error interno al buscar usuario", err)
 	}
 
 	return &user, nil
@@ -41,7 +44,7 @@ func (r *MainRepository) UserGetByUsername(username string) (*models.User, error
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, errors.New("user not found")
 		}
-		return nil, err
+		return nil, models.ErrorResponse(500, "Error interno al buscar usuario", err)
 	}
 
 	return &user, nil
@@ -53,7 +56,7 @@ func (r *MainRepository) UserGetExistByUsernameEmail(username string, email stri
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return false, nil
 		}
-		return false, err
+		return false, models.ErrorResponse(500, "Error interno al buscar usuario", err)
 	}
 
 	return true, nil
@@ -63,7 +66,7 @@ func (r *MainRepository) UserCreate(user *models.UserCreate) (string, error) {
 	newID := uuid.NewString()
 	err := r.DB.Create(&models.User{Username: user.Username, Email: user.Email, Password: user.Password}).Error
 	if err != nil {
-		return "" ,err
+		return "" , models.ErrorResponse(500, "Error interno al crear usuario", err)
 	}
 	return newID, nil
 }
@@ -74,7 +77,7 @@ func (m *MainRepository) UserTenantAdd(userID, tenantID string) (err error) {
 		UserID: userID,
 		TenantID: tenantID,
 	}).Error; err != nil {
-		return err
+		return models.ErrorResponse(500, "Error interno al agregar usuario a tenant", err)
 	}
 
 	return nil

@@ -35,7 +35,7 @@ func (a *AuthService) AuthLogin(username, password string) (string, error) {
 
 	token, err := utils.GenerateToken(&authResult)
 	if err != nil {
-		return "", models.ErrorResponse(500, "Error al generar token", err)
+		return "", err
 	}
 
 	return token, nil
@@ -58,7 +58,7 @@ func (a *AuthService) AuthGetTenant(user *models.AuthenticatedUser, tenantID str
 		Permissions: nil,
 	})
 	if err != nil {
-		return "", models.ErrorResponse(500, "Error al generar token", err)
+		return "", err
 	}
 
 	return token, nil

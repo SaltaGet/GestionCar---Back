@@ -16,7 +16,7 @@ import (
 
 // SQLITE
 
-func PrepareDB(uri string, userID string) error {
+func PrepareDB(uri string) error {
 	// Si el archivo ya existe, no hacer nada
 	filePath := filePathFromURI(uri)
 	if _, err := os.Stat(filePath); err == nil {

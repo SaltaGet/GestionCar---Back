@@ -1,69 +1,82 @@
 package repositories
 
 import (
+	"errors"
+
 	"github.com/DanielChachagua/GestionCar/pkg/models"
 	"github.com/google/uuid"
+	"gorm.io/gorm"
 )
 
 func (r *TenantRepository) SupplierGetByID(id string) (*models.Supplier, error) {
-		var supplier models.Supplier
-		if err := r.DB.Where("id = ?", id).First(&supplier).Error; err != nil {
-			return nil, err
+	var supplier models.Supplier
+	if err := r.DB.Where("id = ?", id).First(&supplier).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, models.ErrorResponse(404, "Proveedor no encontrado", err)
 		}
-		return &supplier, nil
+		return nil, models.ErrorResponse(500, "Error interno al buscar proveedor", err)
+	}
+	return &supplier, nil
 }
 
 func (r *TenantRepository) SupplierGetAll() (*[]models.Supplier, error) {
-		var suppliers []models.Supplier
-		if err := r.DB.Find(&suppliers).Error; err != nil {
-			return nil, err
-		}
-		return &suppliers, nil
+	var suppliers []models.Supplier
+	if err := r.DB.Find(&suppliers).Error; err != nil {
+		return nil, models.ErrorResponse(500, "Error interno al buscar proveedores", err)
+	}
+	return &suppliers, nil
 }
 
 func (r *TenantRepository) SupplierGetByName(name string) (*[]models.Supplier, error) {
-		var supplier []models.Supplier
-		if err := r.DB.Where("name LIKE ?", "%"+name +"%").Find(&supplier).Error; err != nil {
-			return nil, err
-		}
-		return &supplier, nil
+	var supplier []models.Supplier
+	if err := r.DB.Where("name LIKE ?", "%"+name+"%").Find(&supplier).Error; err != nil {
+		return nil, models.ErrorResponse(500, "Error interno al buscar proveedores", err)
+	}
+	return &supplier, nil
 }
 
 func (r *TenantRepository) SupplierCreate(supplierCreate *models.SupplierCreate) (string, error) {
 	var supplierID string
-			supplier := models.Supplier{
-					ID:      uuid.NewString(),
-					Name:    supplierCreate.Name,
-					Address: supplierCreate.Address,
-					Phone:   supplierCreate.Phone,
-					Email:   supplierCreate.Email,
-			}
-			if err := r.DB.Create(&supplier).Error; err != nil {
-					return "", err
-			}
-			supplierID = supplier.ID
+	supplier := models.Supplier{
+		ID:      uuid.NewString(),
+		Name:    supplierCreate.Name,
+		Address: supplierCreate.Address,
+		Phone:   supplierCreate.Phone,
+		Email:   supplierCreate.Email,
+	}
+	if err := r.DB.Create(&supplier).Error; err != nil {
+		return "", models.ErrorResponse(500, "Error al crear proveedor", err)
+	}
+	supplierID = supplier.ID
 	return supplierID, nil
 }
 
 func (r *TenantRepository) SupplierUpdate(supplierUpdate *models.SupplierUpdate) error {
-		var supplierLaundry models.Supplier
-		if err := r.DB.Where("id = ?", supplierUpdate.ID).First(&supplierLaundry).Error; err != nil {
-			return err
+	var supplierLaundry models.Supplier
+	if err := r.DB.Where("id = ?", supplierUpdate.ID).First(&supplierLaundry).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound){
+			return models.ErrorResponse(404, "Proveedor no encontrado", err)
 		}
-		supplierLaundry.Name = supplierUpdate.Name
-		supplierLaundry.Address = supplierUpdate.Address
-		supplierLaundry.Phone = supplierUpdate.Phone
-		supplierLaundry.Email = supplierUpdate.Email
-		if err := r.DB.Save(&supplierLaundry).Error; err != nil {
-			return err
-		}
+		return models.ErrorResponse(500, "Error interno al buscar proveedor", err)
+	}
+	supplierLaundry.Name = supplierUpdate.Name
+	supplierLaundry.Address = supplierUpdate.Address
+	supplierLaundry.Phone = supplierUpdate.Phone
+	supplierLaundry.Email = supplierUpdate.Email
+	if err := r.DB.Save(&supplierLaundry).Error; err != nil {
+		return models.ErrorResponse(500, "Error al actualizar proveedor", err)
+	}
+
 	return nil
 }
 
 func (r *TenantRepository) SupplierDelete(id string) error {
-		var supplier models.Supplier
-		if err := r.DB.Where("id = ?", id).Delete(&supplier).Error; err != nil {
-			return err
+	var supplier models.Supplier
+	if err := r.DB.Where("id = ?", id).Delete(&supplier).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return models.ErrorResponse(404, "Proveedor no encontrado", err)
 		}
+		return models.ErrorResponse(500, "Error interno al eliminar proveedor", err)
+	}
 	return nil
 }

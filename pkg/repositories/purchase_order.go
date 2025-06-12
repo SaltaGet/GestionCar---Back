@@ -1,6 +1,8 @@
 package repositories
 
 import (
+	"errors"
+
 	"github.com/DanielChachagua/GestionCar/pkg/models"
 	"github.com/google/uuid"
 	"gorm.io/gorm"
@@ -9,7 +11,10 @@ import (
 func (r *TenantRepository) PurchaseOrderGetByID(id string) (*models.PurchaseOrder, error) {
 	var purchaseOrder models.PurchaseOrder
 	if err := r.DB.Where("id = ?", id).First(&purchaseOrder).Error; err != nil {
-		return nil, err
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, models.ErrorResponse(404, "Compra no encontrada", err)
+		}
+		return nil, models.ErrorResponse(500, "Error interno al obtener compra", err)
 	}
 	return &purchaseOrder, nil
 
@@ -18,7 +23,7 @@ func (r *TenantRepository) PurchaseOrderGetByID(id string) (*models.PurchaseOrde
 func (r *TenantRepository) PurchaseOrderGetAll() (*[]models.PurchaseOrder, error) {
 	var purchaseOrders []models.PurchaseOrder
 	if err := r.DB.Find(&purchaseOrders).Error; err != nil {
-		return nil, err
+		return nil, models.ErrorResponse(500, "Error interno al obtener compras", err)
 	}
 	return &purchaseOrders, nil
 
@@ -34,7 +39,7 @@ func (r *TenantRepository) PurchaseOrderCreate(purchaseOrder *models.PurchaseOrd
 			Amount:      purchaseOrder.Amount,
 			SupplierID:  purchaseOrder.SupplierID,
 		}).Error; err != nil {
-			return err
+			return models.ErrorResponse(500, "Error interno al crear compra", err)
 		}
 		for _, element := range purchaseOrder.PurchaseProductCreates {
 			if err := tx.Create(&models.PurchaseProduct{
@@ -46,13 +51,13 @@ func (r *TenantRepository) PurchaseOrderCreate(purchaseOrder *models.PurchaseOrd
 				Quantity:        element.Quantity,
 				TotalPrice:      element.UnitPrice * float32(element.Quantity),
 			}).Error; err != nil {
-				return err
+				return models.ErrorResponse(500, "Error interno al crear productos de compra", err)
 			}
 		}
 		return nil
 	})
 	if err != nil {
-		return "", err
+		return "", models.ErrorResponse(500, "Error interno al crear compra", err)
 	}
 	return newID, nil
 }
@@ -65,12 +70,15 @@ func (r *TenantRepository) PurchaseOrderUpdate(purchaseOrder *models.PurchaseOrd
 			Amount:      purchaseOrder.Amount,
 			SupplierID:  purchaseOrder.SupplierID,
 		}).Error; err != nil {
-			return err
+			if errors.Is(err, gorm.ErrRecordNotFound) {
+				return models.ErrorResponse(404, "Compra no encontrada", err)
+			}
+			return models.ErrorResponse(500, "Error interno al actualizar compra", err)
 		}
 
 		var existingProducts []models.PurchaseProduct
 		if err := tx.Where("purchase_order_id = ?", purchaseOrder.ID).Find(&existingProducts).Error; err != nil {
-			return err
+			return models.ErrorResponse(500, "Error interno al buscar productos de compra", err)
 		}
 		existingIDs := map[string]bool{}
 		for _, p := range existingProducts {
@@ -85,7 +93,10 @@ func (r *TenantRepository) PurchaseOrderUpdate(purchaseOrder *models.PurchaseOrd
 		for _, p := range existingProducts {
 			if !receivedIDs[p.ID] {
 				if err := tx.Delete(&models.PurchaseProduct{}, "id = ?", p.ID).Error; err != nil {
-					return err
+					if errors.Is(err, gorm.ErrRecordNotFound) {
+						return models.ErrorResponse(404, "Producto de la orden de compra no encontrado", err)
+					}
+					return models.ErrorResponse(500, "Error interno al eliminar producto de compra", err)
 				}
 			}
 		}
@@ -102,7 +113,7 @@ func (r *TenantRepository) PurchaseOrderUpdate(purchaseOrder *models.PurchaseOrd
 					TotalPrice:      prod.UnitPrice * float32(prod.Quantity),
 				}
 				if err := tx.Create(&newProd).Error; err != nil {
-					return err
+					return models.ErrorResponse(500, "Error interno al crear producto de compra", err)
 				}
 			} else {
 				if err := tx.Model(&models.PurchaseProduct{}).
@@ -114,7 +125,7 @@ func (r *TenantRepository) PurchaseOrderUpdate(purchaseOrder *models.PurchaseOrd
 						"quantity":    prod.Quantity,
 						"total_price": prod.UnitPrice * float32(prod.Quantity),
 					}).Error; err != nil {
-					return err
+					return models.ErrorResponse(500, "Error interno al actualizar producto de compra", err)
 				}
 			}
 		}
@@ -126,10 +137,13 @@ func (r *TenantRepository) PurchaseOrderUpdate(purchaseOrder *models.PurchaseOrd
 func (r *TenantRepository) PurchaseOrderDelete(id string) error {
 	return r.DB.Transaction(func(tx *gorm.DB) error {
 		if err := tx.Where("purchase_order_id = ?", id).Delete(&models.PurchaseProduct{}).Error; err != nil {
-			return err
+			return models.ErrorResponse(500, "Error interno al eliminar productos de compra", err)
 		}
 		if err := tx.Where("id = ?", id).Delete(&models.PurchaseOrder{}).Error; err != nil {
-			return err
+			if errors.Is(err, gorm.ErrRecordNotFound) {
+				return models.ErrorResponse(404, "Compra no encontrada", err)
+			}
+			return models.ErrorResponse(500, "Error interno al eliminar compra", err)
 		}
 		return nil
 	})

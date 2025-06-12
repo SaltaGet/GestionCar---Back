@@ -32,14 +32,6 @@ import (
 // 	return &tenant, nil
 // }
 func (r *MainRepository) TenantGetByID(tenantID string) (*models.Tenant, error) {
-    // Capturar panic
-    defer func() {
-        if rec := recover(); rec != nil {
-            // Aquí podés loguear el panic o convertirlo en error para devolverlo
-            fmt.Println("Panic capturado en TenantGetByID:", rec)
-        }
-    }()
-
     var tenant models.Tenant
     err := r.DB.
         Where("id = ?", tenantID).
@@ -48,7 +40,7 @@ func (r *MainRepository) TenantGetByID(tenantID string) (*models.Tenant, error) 
         if errors.Is(err, gorm.ErrRecordNotFound) {
             return nil, models.ErrorResponse(404, "Tenant not found", err)
         }
-        return nil, models.ErrorResponse(500, "Error retrieving tenant", err)
+        return nil, models.ErrorResponse(500, "Error interno retrieving tenant", err)
     }
 
     if !tenant.IsActive {
@@ -68,7 +60,7 @@ func (r *MainRepository) TenantGetByIdentifier(identifier string) (*models.Tenan
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, models.ErrorResponse(401, "Credenciales incorrectas", err)
 		}
-		return nil, models.ErrorResponse(500, "Error al obtener los tenants", err)
+		return nil, models.ErrorResponse(500, "Error interno al obtener los tenants", err)
 	}
 
 	if !tenant.IsActive {
@@ -92,7 +84,7 @@ func (r *MainRepository) TenantGetAll(userID string) (*[]models.TenantResponse, 
 		Scan(&tenants).Error
 
 	if err != nil {
-		return nil, models.ErrorResponse(500, "Error retrieving tenants", err)
+		return nil, models.ErrorResponse(500, "Error interno retrieving tenants", err)
 	}
 
 	return &tenants, nil
@@ -110,7 +102,7 @@ func (r *MainRepository) TenantCreateByUserID(tenantCreate *models.TenantCreate,
 	uri := fmt.Sprintf("%s%s_%s.db%s", os.Getenv("URI_PATH"), tenantName, uuid.NewString(), os.Getenv("URI_CONFIG"))
 	connection, err := utils.Encrypt(uri)
 	if err != nil {
-		return "", err
+		return "", models.ErrorResponse(500, "Error interno al obtener connection", err)
 	}
 
 	tenant := &models.Tenant{
@@ -125,18 +117,20 @@ func (r *MainRepository) TenantCreateByUserID(tenantCreate *models.TenantCreate,
 	}
 
 	if err := tx.Create(tenant).Error; err != nil {
+		tx.Rollback()
 		if errors.Is(err, gorm.ErrInvalidData){
-			tx.Rollback()
 			return "", models.ErrorResponse(400, "Los campos email, cuit_pdv y identifier deben ser únicos, algun campo ya existe", err)
 		}
-		tx.Rollback()
-		return "", models.ErrorResponse(500, "Error al crear tenant", err)
+		return "", models.ErrorResponse(500, "Error interno al crear tenant", err)
 	}
 
 	var user models.User
 	if err := tx.Where("id = ?", userID).First(&user).Error; err != nil {
 		tx.Rollback()
-		return "", err
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return "", models.ErrorResponse(404, "User no encontrado", err)
+		}
+		return "", models.ErrorResponse(500, "Error interno al obtener user", err)
 	}
 
 	if err := tx.Create(&models.UserTenant{
@@ -145,17 +139,17 @@ func (r *MainRepository) TenantCreateByUserID(tenantCreate *models.TenantCreate,
 		IsAdmin:   true,
 	}).Error; err != nil {
 		tx.Rollback()
-		return "", err
+		return "", models.ErrorResponse(500, "Error interno al crear user-tenant", err)
 	}
 
-	err = database.PrepareDB(uri, user.ID)
+	err = database.PrepareDB(uri)
 	if err != nil {
 		tx.Rollback()
-		return "", err
+		return "", models.ErrorResponse(500, "Error interno al crear la base de datos del tenant", err)
 	}
 
 	if err := tx.Commit().Error; err != nil {
-		return "", err
+		return "", models.ErrorResponse(500, "Error interno al crear user-tenant", err)
 	}
 
 	return tenant.ID, nil
@@ -189,12 +183,12 @@ func (r *MainRepository) TenantUserCreate(tenantUserCreate *models.TenantUserCre
 
 	if err := tx.Create(tenant).Error; err != nil {
 		tx.Rollback()
-		return "", models.ErrorResponse(500, "Error creating tenant", err)
+		return "", models.ErrorResponse(500, "Error interno creating tenant", err)
 	}
 
 	pass, err :=utils.HashPassword(tenantUserCreate.UserCreate.Password)
 	if err != nil {
-		return "", models.ErrorResponse(500, "Error hashed password", err)
+		return "", models.ErrorResponse(500, "Error interno hashed password", err)
 	}
 
 	user := &models.User{
@@ -208,7 +202,7 @@ func (r *MainRepository) TenantUserCreate(tenantUserCreate *models.TenantUserCre
 
 	if err := tx.Create(user).Error; err != nil {
 		tx.Rollback()
-		return "", err
+		return "", models.ErrorResponse(500, "Error interno al crear usuario", err)
 	}
 
 	if err := tx.Create(&models.UserTenant{
@@ -217,17 +211,17 @@ func (r *MainRepository) TenantUserCreate(tenantUserCreate *models.TenantUserCre
 		IsAdmin:   true,
 	}).Error; err != nil {
 		tx.Rollback()
-		return "", err
+		return "", models.ErrorResponse(500, "Error interno al crear tenant", err)
 	}
 
-	err = database.PrepareDB(uri, user.ID)
+	err = database.PrepareDB(uri)
 	if err != nil {
 		tx.Rollback()
-		return "", err
+		return "", models.ErrorResponse(500, "Error interno al crear la base de datos del tenant", err)
 	}
 
 	if err := tx.Commit().Error; err != nil {
-		return "", err
+		return "", models.ErrorResponse(500, "Error interno al crear user-tenant", err)
 	}
 
 	return tenant.ID, nil
@@ -249,7 +243,7 @@ func (r *MainRepository) TenantUpdate(userID string, tenant *models.TenantUpdate
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return models.ErrorResponse(404, "Tenant not found", err)
 		}
-		return models.ErrorResponse(500, "Error updating tenant", err)
+		return models.ErrorResponse(500, "Error interno updating tenant", err)
 	}
 
 	return nil

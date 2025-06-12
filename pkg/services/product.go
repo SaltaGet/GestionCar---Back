@@ -1,19 +1,13 @@
 package services
 
 import (
-	"errors"
-
 	"github.com/DanielChachagua/GestionCar/pkg/models"
-	"gorm.io/gorm"
 )
 
 func (p *ProductService) ProductGetByID(id string) (*models.Product, error) {
 	product, err := p.ProductRepository.ProductGetByID(id)
 	if err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, models.ErrorResponse(404, "Elemento no encontrado", err)
-		}
-		return nil, models.ErrorResponse(500, "Error al actualizar cliente", err)
+		return nil, err
 	}
 	return product, nil
 }
@@ -21,10 +15,7 @@ func (p *ProductService) ProductGetByID(id string) (*models.Product, error) {
 func (p *ProductService) ProductGetByIdentifier(identifier string) (*[]models.Product, error) {
 	product, err := p.ProductRepository.ProductGetByIdentifier(identifier)
 	if err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, models.ErrorResponse(404, "Elemento no encontrado", err)
-		}
-		return nil, models.ErrorResponse(500, "Error al actualizar cliente", err)
+		return nil, err
 	}
 	return product, nil
 }
@@ -32,7 +23,7 @@ func (p *ProductService) ProductGetByIdentifier(identifier string) (*[]models.Pr
 func (p *ProductService) ProductGetAll() (*[]models.Product, error) {
 	products, err := p.ProductRepository.ProductGetAll()
 	if err != nil {
-		return nil, models.ErrorResponse(500, "Error al actualizar cliente", err)
+		return nil, err
 	}
 	return products, nil
 }
@@ -40,7 +31,7 @@ func (p *ProductService) ProductGetAll() (*[]models.Product, error) {
 func (p *ProductService) ProductGetByName(name string) (*[]models.Product, error) {
 	products, err := p.ProductRepository.ProductGetByName(name)
 	if err != nil {
-		return nil, models.ErrorResponse(500, "Error al obtener productos", err)
+		return nil, err
 	}
 	return products, nil
 }
@@ -48,7 +39,7 @@ func (p *ProductService) ProductGetByName(name string) (*[]models.Product, error
 func (p *ProductService) ProductCreate(product *models.ProductCreate) (string, error) {
 	id, err := p.ProductRepository.ProductCreate(product)
 	if err != nil {
-		return "", models.ErrorResponse(500, "Error al crear producto", err)
+		return "", err
 	}
 	return id, nil
 }
@@ -56,10 +47,7 @@ func (p *ProductService) ProductCreate(product *models.ProductCreate) (string, e
 func (p *ProductService) ProductUpdate(product *models.ProductUpdate) error {
 	err := p.ProductRepository.ProductUpdate(product)
 	if err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return models.ErrorResponse(404, "Elemento no encontrado", err)
-		}
-		return models.ErrorResponse(500, "Error al actualizar cliente", err)
+		return err
 	}
 	return nil
 }
@@ -67,10 +55,7 @@ func (p *ProductService) ProductUpdate(product *models.ProductUpdate) error {
 func (p *ProductService) ProductUpdateStock(stock *models.StockUpdate) error {
 	product, err := p.ProductRepository.ProductGetByID(stock.ID)
 	if err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return models.ErrorResponse(404, "Elemento no encontrado", err)
-		}
-		return models.ErrorResponse(500, "Error al actualizar stock", err)
+		return err
 	}
 	switch stock.Method {
 	case "update":
@@ -100,10 +85,7 @@ func (p *ProductService) ProductUpdateStock(stock *models.StockUpdate) error {
 func (p *ProductService) ProductDelete(id string) error {
 	err := p.ProductRepository.ProductDelete(id)
 	if err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return models.ErrorResponse(404, "Producto no encontrado", err)
-		}
-		return models.ErrorResponse(500, "Error al eliminar producto", err)
+		return err
 	}
 	return nil
 }
