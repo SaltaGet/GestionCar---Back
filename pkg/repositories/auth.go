@@ -19,7 +19,7 @@ func (r *MainRepository) AuthLogin(username, password string, connection string)
 		var member models.Member
 		if err := db.Where("username = ? AND is_deleted = false", username).Preload("Role").First(&member).Error; err != nil {
 			if errors.Is(err, gorm.ErrRecordNotFound) {
-				return nil, models.ErrorResponse(404, "Miembro no encontrado", err)
+				return nil, models.ErrorResponse(401, "Credenciales incorrectas", err)
 			}
 			return nil, models.ErrorResponse(500, "Error al buscar el miembro", err)
 		}
@@ -48,7 +48,7 @@ func (r *MainRepository) AuthLogin(username, password string, connection string)
 		var user models.User
 		if err := r.DB.Where("username = ?", username).Preload("UserTenants").First(&user).Error; err != nil {
 			if errors.Is(err, gorm.ErrRecordNotFound) {
-				return nil, models.ErrorResponse(404, "Usuario no encontrado", err)
+				return nil, models.ErrorResponse(401, "Credenciales incorrectas", err)
 			}
 			return nil, models.ErrorResponse(500, "Error al buscar el usuario", err)
 		}
@@ -70,37 +70,37 @@ func (r *MainRepository) AuthLogin(username, password string, connection string)
 	}
 }
 
-func (r *MainRepository) AuthLoginMember(username, password, connection string) (*models.Member, *models.Role, *[]string, error) {
-	db, err := database.GetTenantDB(connection)
-	if err != nil {
-		return nil, nil, nil, models.ErrorResponse(500, "Error al recibir la conexión", err)
-	}
-	var member models.Member
-	if err := db.Where("username = ?", username).First(&member).Error; err != nil {
-		return nil, nil, nil, models.ErrorResponse(401, "Credenciales no válidas", err)
-	}
+// func (r *MainRepository) AuthLoginMember(username, password, connection string) (*models.Member, *models.Role, *[]string, error) {
+// 	db, err := database.GetTenantDB(connection)
+// 	if err != nil {
+// 		return nil, nil, nil, models.ErrorResponse(500, "Error al recibir la conexión", err)
+// 	}
+// 	var member models.Member
+// 	if err := db.Where("username = ?", username).First(&member).Error; err != nil {
+// 		return nil, nil, nil, models.ErrorResponse(401, "Credenciales incorrectas", err)
+// 	}
 
-	var role models.Role
-	if err := db.Where("id = ?", member.RoleID).First(&role).Error; err != nil {
-		return nil, nil, nil, models.ErrorResponse(500, "Error al obtenr rol", err)
-	}
+// 	var role models.Role
+// 	if err := db.Where("id = ?", member.RoleID).First(&role).Error; err != nil {
+// 		return nil, nil, nil, models.ErrorResponse(500, "Error al obtenr rol", err)
+// 	}
 
-	var permissions []string
-	err = db.Model(&models.Permission{}).
-		Select("permissions.name").
-		Joins("JOIN role_permissions ON role_permissions.permission_id = permissions.id").
-		Where("role_permissions.role_id = ?", role.ID).
-		Pluck("permissions.name", &permissions).Error
-	if err != nil {
-		return nil, nil, nil, models.ErrorResponse(500, "Error al obtener los permisos", err)
-	}
+// 	var permissions []string
+// 	err = db.Model(&models.Permission{}).
+// 		Select("permissions.name").
+// 		Joins("JOIN role_permissions ON role_permissions.permission_id = permissions.id").
+// 		Where("role_permissions.role_id = ?", role.ID).
+// 		Pluck("permissions.name", &permissions).Error
+// 	if err != nil {
+// 		return nil, nil, nil, models.ErrorResponse(500, "Error al obtener los permisos", err)
+// 	}
 
-	if !utils.CheckPasswordHash(password, member.Password) {
-		return nil, nil, nil, models.ErrorResponse(401, "Credenciales no válidas", nil)
-	}
+// 	if !utils.CheckPasswordHash(password, member.Password) {
+// 		return nil, nil, nil, models.ErrorResponse(401, "Credenciales no válidas", nil)
+// 	}
 
-	return &member, &role, &permissions, nil
-}
+// 	return &member, &role, &permissions, nil
+// }
 
 func (r *MainRepository) AuthGetTenant(userID string, tenantID string) (*models.Tenant, error) {
 	var tenant models.Tenant
@@ -110,9 +110,9 @@ func (r *MainRepository) AuthGetTenant(userID string, tenantID string) (*models.
 		First(&tenant).Error
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, models.ErrorResponse(404, "Tenant not found", err)
+			return nil, models.ErrorResponse(401, "Credenciales incorrectas", err)
 		}
-		return nil, models.ErrorResponse(500, "Error retrieving tenant", err)
+		return nil, models.ErrorResponse(500, "Error al obtener tenant", err)
 	}
 
 	if !tenant.IsActive {
@@ -142,31 +142,34 @@ func (r *MainRepository) CurrentUser(userID string) (*models.User, error) {
 	return &user, nil
 }
 
-func (r *MainRepository) UserGetRolePermissions(connection, userID string) (*models.Member, *models.Role, *[]string, error) {
-	db, err := database.GetTenantDB(connection)
-	if err != nil {
-		return nil, nil, nil, models.ErrorResponse(500, "Error retrieving the database", err)
-	}
+// func (r *MainRepository) UserGetRolePermissions(connection, userID string) (*models.Member, *models.Role, *[]string, error) {
+// 	db, err := database.GetTenantDB(connection)
+// 	if err != nil {
+// 		return nil, nil, nil, models.ErrorResponse(500, "Error al conectarse a la base de datos", err)
+// 	}
 
-	var member models.Member
-	if err := db.Where("user_id = ?", userID).First(&member).Error; err != nil {
-		return nil, nil, nil, models.ErrorResponse(404, "User not found", err)
-	}
+// 	var member models.Member
+// 	if err := db.Where("user_id = ?", userID).First(&member).Error; err != nil {
+// 		return nil, nil, nil, models.ErrorResponse(401, "Credenciales incorrectas", err)
+// 	}
 
-	var role models.Role
-	if err := db.Where("id = ?", member.RoleID).First(&role).Error; err != nil {
-		return nil, nil, nil, models.ErrorResponse(404, "Role not found", err)
-	}
+// 	var role models.Role
+// 	if err := db.Where("id = ?", member.RoleID).First(&role).Error; err != nil {
+// 		if errors.Is(err, gorm.ErrRecordNotFound) {
+// 			return nil, nil, nil, models.ErrorResponse(404, "Role not found", err)
+// 		}
+// 		return nil, nil, nil, models.ErrorResponse(500, "Errorinterno al obtener los roles", err)
+// 	}
 
-	var permissions []string
-	err = db.Model(&models.Permission{}).
-		Select("permissions.name").
-		Joins("JOIN role_permissions ON role_permissions.permission_id = permissions.id").
-		Where("role_permissions.role_id = ?", role.ID).
-		Pluck("permissions.name", &permissions).Error
-	if err != nil {
-		return nil, nil, nil, models.ErrorResponse(500, "Error al obtener los permisos", err)
-	}
+// 	var permissions []string
+// 	err = db.Model(&models.Permission{}).
+// 		Select("permissions.name").
+// 		Joins("JOIN role_permissions ON role_permissions.permission_id = permissions.id").
+// 		Where("role_permissions.role_id = ?", role.ID).
+// 		Pluck("permissions.name", &permissions).Error
+// 	if err != nil {
+// 		return nil, nil, nil, models.ErrorResponse(500, "Error al obtener los permisos", err)
+// 	}
 
-	return &member, &role, &permissions, nil
-}
+// 	return &member, &role, &permissions, nil
+// }

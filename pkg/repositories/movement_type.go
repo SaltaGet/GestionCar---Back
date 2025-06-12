@@ -1,14 +1,20 @@
 package repositories
 
 import (
+	"errors"
+
 	"github.com/DanielChachagua/GestionCar/pkg/models"
 	"github.com/google/uuid"
+	"gorm.io/gorm"
 )
 
 func (r *TenantRepository) MovementTypeGetByID(id string) (*models.MovementType, error) {
 		var movementType models.MovementType
 		if err := r.DB.Where("id = ?", id).First(&movementType).Error; err != nil {
-			return nil, err
+			if errors.Is(err, gorm.ErrRecordNotFound) {
+				return nil, models.ErrorResponse(404, "Movimiento no encontrado", err)
+			}
+			return nil, models.ErrorResponse(500, "Error interno al buscar movimiento", err)
 		}
 		return &movementType, nil
 }
@@ -16,7 +22,7 @@ func (r *TenantRepository) MovementTypeGetByID(id string) (*models.MovementType,
 func (r *TenantRepository) MovementTypeGetAll(isIncome bool) (*[]models.MovementType, error) {
 		var movementTypes []models.MovementType
 		if err := r.DB.Where("is_income = ?", isIncome).Find(&movementTypes).Error; err != nil {
-			return nil, err
+			return nil, models.ErrorResponse(500, "Error interno al buscar movimientos", err)
 		}
 		return &movementTypes, nil
 }
@@ -28,7 +34,7 @@ func (r *TenantRepository) MovementTypeCreate(movementType *models.MovementTypeC
 				Name: movementType.Name,
 				IsIncome: movementType.IsIncome,
 			}).Error; err != nil {
-				return "", err
+				return "", models.ErrorResponse(500, "Error interno al crear movimiento", err)
 			}
 			return newID, nil
 }
@@ -38,7 +44,10 @@ func (r *TenantRepository) MovementTypeUpdate(movementTypeUpdate *models.Movemen
 				Name: movementTypeUpdate.Name,
 				IsIncome: movementTypeUpdate.IsIncome,
 			}).Error; err != nil {
-				return err
+				if errors.Is(err, gorm.ErrRecordNotFound) {
+					return models.ErrorResponse(404, "Movimiento no encontrado", err)
+				}
+				return models.ErrorResponse(500, "Error interno al actualizar movimiento", err)
 			}
 			return nil
 }
@@ -46,7 +55,10 @@ func (r *TenantRepository) MovementTypeUpdate(movementTypeUpdate *models.Movemen
 func (r *TenantRepository) MovementTypeDelete(id string) error {
 		var movementType models.MovementType
 		if err := r.DB.Where("id = ?", id).Delete(&movementType).Error; err != nil {
-			return err
+			if errors.Is(err, gorm.ErrRecordNotFound) {
+				return models.ErrorResponse(404, "Movimiento no encontrado", err)
+			}
+			return models.ErrorResponse(500, "Error interno al eliminar movimiento", err)
 		}
 		return nil
 }

@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/go-playground/validator/v10"
+	"gorm.io/gorm"
 )
 
 type Member struct {
@@ -16,11 +17,10 @@ type Member struct {
 	Password  string `gorm:"not null" json:"password"`
 	IsActive  bool   `gorm:"not null;default:true" json:"is_active"`
 	RoleID    string `gorm:"not null;size:36" json:"role_id"`
-	IsDeleted bool   `gorm:"not null;default:false" json:"is_deleted"`
 
 	CreatedAt time.Time `gorm:"autoCreateTime" json:"created_at"`
 	UpdatedAt time.Time `gorm:"autoUpdateTime" json:"updated_at"`
-	DeletedAt time.Time `gorm:"default:null" json:"deleted_at"`
+	DeletedAt gorm.DeletedAt `gorm:"index" json:"deleted_at"`
 	Role      Role      `gorm:"foreignKey:RoleID;references:ID" json:"role"`
 }
 

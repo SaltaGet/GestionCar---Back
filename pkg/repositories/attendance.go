@@ -1,14 +1,20 @@
 package repositories
 
 import (
+	"errors"
+
 	"github.com/DanielChachagua/GestionCar/pkg/models"
 	"github.com/google/uuid"
+	"gorm.io/gorm"
 )
 
 func (r *TenantRepository) AttendanceGetByID(id string) (*models.Attendance, error) {
 	var attendance models.Attendance
 	if err := r.DB.Where("id = ?", id).First(&attendance).Error; err != nil {
-		return nil, err
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, models.ErrorResponse(404, "Asistencia no encontrada", err)
+		}
+		return nil, models.ErrorResponse(500, "Error interno al buscar la asistencia", err)
 	}
 	return &attendance, nil
 }
@@ -16,7 +22,7 @@ func (r *TenantRepository) AttendanceGetByID(id string) (*models.Attendance, err
 func (r *TenantRepository) AttendanceGetAll() (*[]models.Attendance, error) {
 	var attendances []models.Attendance
 	if err := r.DB.Find(&attendances).Error; err != nil {
-		return nil, err
+		return nil, models.ErrorResponse(500, "Error al buscar las asistencias", err)
 	}
 	return &attendances, nil
 
@@ -25,7 +31,7 @@ func (r *TenantRepository) AttendanceGetAll() (*[]models.Attendance, error) {
 func (r *TenantRepository) AttendanceGetByEmployeeID(userID string) (*[]models.Attendance, error) {
 	var attendances []models.Attendance
 	if err := r.DB.Where("employee_id = ?", userID).Find(&attendances).Error; err != nil {
-		return nil, err
+		return nil, models.ErrorResponse(500, "Error interno al buscar asistencias", err)
 	}
 	return &attendances, nil
 }
@@ -41,7 +47,7 @@ func (r *TenantRepository) AttendanceCreate(attendance *models.AttendanceCreate)
 		Amount:     attendance.Amount,
 		IsHoliday:  attendance.IsHoliday,
 	}).Error; err != nil {
-		return "", err
+		return "", models.ErrorResponse(500, "Error interno al crear la asistencia", err)
 	}
 
 	return newId, nil
@@ -55,7 +61,10 @@ func (r *TenantRepository) AttendanceUpdate(attendance *models.AttendanceUpdate)
 		Amount:     attendance.Amount,
 		IsHoliday:  attendance.IsHoliday,
 	}).Error; err != nil {
-		return err
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return models.ErrorResponse(404, "Asistencia no encontrada", err)
+		}
+		return models.ErrorResponse(500, "Error interno al actualizar la asistencia", err)
 	}
 	return nil
 
@@ -64,7 +73,10 @@ func (r *TenantRepository) AttendanceUpdate(attendance *models.AttendanceUpdate)
 func (r *TenantRepository) AttendanceDelete(id string) error {
 	var attendance models.Attendance
 	if err := r.DB.Where("id = ?", id).Delete(&attendance).Error; err != nil {
-		return err
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return models.ErrorResponse(404, "Asistencia no encontrada", err)
+		}
+		return models.ErrorResponse(500, "Error interno al eliminar la asistencia", err)
 	}
 	return nil
 }
@@ -72,7 +84,7 @@ func (r *TenantRepository) AttendanceDelete(id string) error {
 func (r *TenantRepository) AttendanceGetByDate(date_start string, date_end string) (*[]models.Attendance, error) {
 	var attendances []models.Attendance
 	if err := r.DB.Where("DATE(date) >= ? AND DATE(date) <= ?", date_start, date_end).Find(&attendances).Error; err != nil {
-		return nil, err
+		return nil, models.ErrorResponse(500, "Error interno al buscar las asistencias", err)
 	}
 	return &attendances, nil
 }

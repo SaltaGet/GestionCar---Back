@@ -13,7 +13,7 @@ import (
 func (t *TenantRepository) MemberGetAll() (*[]models.Member, error) {
 	var members []models.Member
 	if err := t.DB.Preload("Role").Find(&members).Error; err != nil {
-		return nil, err
+		return nil, models.ErrorResponse(500, "Error interno al buscar miembros", err)
 	}
 
 	return &members, nil
@@ -25,7 +25,7 @@ func (t *TenantRepository) MemberGetPermissionByUserID(userID string) (*models.M
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, models.ErrorResponse(404, "Miembro no encontrado", err)
 		}
-		return nil, models.ErrorResponse(500, "Error al buscar miembro", err)
+		return nil, models.ErrorResponse(500, "Error  internoal buscar miembro", err)
 	}
 	return &member, nil
 }
@@ -36,7 +36,7 @@ func (t *TenantRepository) MemberGetByID(id string) (*models.Member, error) {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, models.ErrorResponse(404, "Miembro no encontrado", err)
 		}
-		return nil, models.ErrorResponse(500, "Error al buscar miembro", err)
+		return nil, models.ErrorResponse(500, "Error interno al buscar miembro", err)
 	}
 	return &member, nil
 }
@@ -50,7 +50,7 @@ func (t *TenantRepository) MemberCreate(memeberCreate *models.MemberCreate, user
 	// }
 	hashPass, err := utils.HashPassword("1234")
 	if err != nil {
-		return "", err
+		return "", models.ErrorResponse(500, "Error al hashear la contraseña", err)
 	}
 
 	if err := t.DB.Create(&models.Member{
@@ -62,14 +62,17 @@ func (t *TenantRepository) MemberCreate(memeberCreate *models.MemberCreate, user
 		RoleID:    memeberCreate.RoleID,
 		Password:  hashPass,
 	}).Error; err != nil {
-		return "", err
+		return "", models.ErrorResponse(500, "Error interno al crear miembro", err)
 	}
 	return newID, nil
 }
 
 func (t *TenantRepository) MemberDelete(id string) error {
 	if err := t.DB.Delete(&models.Member{}, "id = ?", id).Error; err != nil {
-		return err
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return models.ErrorResponse(404, "Miembro no encontrado", err)
+		}
+		return models.ErrorResponse(500, "Error interno al eliminar miembro", err)
 	}
 	return nil
 }

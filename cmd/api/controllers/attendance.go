@@ -74,12 +74,14 @@ func (a *AttendanceController) GetAllAttendances(c *fiber.Ctx) error {
 	attendances, err := a.AttendanceService.AttendanceGetAll()
 	if err != nil {
 		if errResp, ok := err.(*models.ErrorStruc); ok {
+			logging.ERROR("Error: %s", errResp.Err.Error())
 			return c.Status(errResp.StatusCode).JSON(models.Response{
 				Status:  false,
 				Body:    nil,
 				Message: errResp.Message,
 			})
 		}
+		logging.ERROR("Error: %s", err.Error())
 		return c.Status(fiber.StatusInternalServerError).JSON(models.Response{
 			Status:  false,
 			Body:    nil,

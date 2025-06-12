@@ -18,7 +18,8 @@ type Attendance struct {
 	IsHoliday  bool      `gorm:"not null;default:false" json:"is_holiday"`
 	CreatedAt  time.Time `gorm:"autoCreateTime" json:"created_at"`
 	UpdatedAt  time.Time `gorm:"autoUpdateTime" json:"updated_at"`
-	Employee   Employee  `gorm:"foreignKey:EmployeeID;references:ID" json:"employee"`
+
+	Employee Employee `gorm:"foreignKey:EmployeeID;references:ID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"employee,omitzero"`
 }
 
 type AttendanceCreate struct {

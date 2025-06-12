@@ -2,6 +2,7 @@ package repositories
 
 import (
 	"errors"
+	"fmt"
 
 	"github.com/DanielChachagua/GestionCar/pkg/models"
 	"github.com/google/uuid"
@@ -11,7 +12,10 @@ import (
 func (r *TenantRepository) ClientGetByID(id string) (*models.Client, error) {
 	var client models.Client
 	if err := r.DB.Where("id = ?", id).First(&client).Error; err != nil {
-		return nil, err
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, models.ErrorResponse(404, "Client no encontrado", err)
+		}
+		return nil, models.ErrorResponse(500, "Error al buscar el cliente", err)
 	}
 	return &client, nil
 }
@@ -19,15 +23,40 @@ func (r *TenantRepository) ClientGetByID(id string) (*models.Client, error) {
 func (r *TenantRepository) ClientGetByName(name string) (*[]models.Client, error) {
 	var client []models.Client
 	if err := r.DB.Where("last_name LIKE ? OR first_name LIKE ?", "%"+name+"%", "%"+name+"%").Find(&client).Error; err != nil {
-    return nil, err
+    return nil, models.ErrorResponse(500, "Error al buscar el cliente", err)
 	}
 	return &client, nil
+}
+
+func (r *TenantRepository) ClientExist(email, dni, cuil string) (error) {
+	var field string
+	err := r.DB.Raw(`
+		SELECT 
+			CASE
+				WHEN email = ? THEN 'email'
+				WHEN dni = ? THEN 'dni'
+				WHEN cuil = ? THEN 'cuil'
+			END as field
+		FROM clients
+		WHERE email = ? OR dni = ? OR cuil = ?
+		LIMIT 1
+	`, email, dni, cuil, email, dni, cuil).Scan(&field).Error
+
+	if err != nil {
+		return models.ErrorResponse(500, "Error al corroborar el cliente", err)
+	}
+
+	if field == "" {
+		return models.ErrorResponse(400, fmt.Sprintf("El campo %s ya existe, debe de ser único", field), err)
+	}
+
+	return nil
 }
 
 func (r *TenantRepository) ClientGetAll() (*[]models.Client, error) {
 	var clients []models.Client
 	if err := r.DB.Find(&clients).Error; err != nil {
-		return nil, err
+		return nil, models.ErrorResponse(500, "Error al buscar los clientes", err)
 	}
 	return &clients, nil
 }
@@ -42,7 +71,7 @@ func (r *TenantRepository) ClientCreate(client *models.ClientCreate) (string, er
 		Email:     client.Email,
 	}
 	if err := r.DB.Create(&newClient).Error; err != nil {
-		return "", err
+		return "", models.ErrorResponse(500, "Error al crear el cliente", err)
 	}
 	return newClient.ID, nil
 }
@@ -58,18 +87,25 @@ func (r *TenantRepository) ClientUpdate(client *models.ClientUpdate) error {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return models.ErrorResponse(404, "Cliente no encontrado", err)
 		}	
-		return err 
+		return models.ErrorResponse(500, "Error al obtener el cliente", err) 
 	}
 	
 	return nil
 }
 
 func (r *TenantRepository) ClientDelete(id string) error {
-	if err := r.DB.Where("client_id = ?", id).Delete(&models.Vehicle{}).Error; err != nil {
-			return err
-	}
-	if err := r.DB.Where("id = ?", id).Delete(&models.Client{}).Error; err != nil {
-			return err
-	}
-	return nil
+	return r.DB.Transaction(func(tx *gorm.DB) error {
+		if err := tx.Where("client_id = ?", id).Delete(&models.Vehicle{}).Error; err != nil {
+			return models.ErrorResponse(500, "Error al eliminar vehiculos relacionados a el cliente", err)  
+		}
+
+		if err := tx.Where("id = ?", id).Delete(&models.Client{}).Error; err != nil {
+			if errors.Is(err, gorm.ErrRecordNotFound) {
+				return models.ErrorResponse(404, "Cliente no encontrado", err)
+			}
+			return models.ErrorResponse(500, "Error al eliminar el cliente", err)  
+		}
+
+		return nil
+	})
 }

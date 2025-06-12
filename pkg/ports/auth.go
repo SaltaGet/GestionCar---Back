@@ -9,7 +9,7 @@ type AuthRepository interface {
 	// AuthLoginMember(username, password, connection string) (member *models.Member, role *models.Role, permissions *[]string, err error)
 	AuthGetTenant(userID string, tenantID string) (tenant *models.Tenant, err error)
 	CurrentUser(userID string) (user *models.User, err error)
-	UserGetRolePermissions(connection, userID string) (member *models.Member, role *models.Role, permissions *[]string, err error)
+	// UserGetRolePermissions(connection, userID string) (member *models.Member, role *models.Role, permissions *[]string, err error)
 }
 
 type AuhtService interface {
