@@ -1,9 +1,16 @@
 package controllers
 
-import "github.com/DanielChachagua/GestionCar/pkg/ports"
+import (
+	"github.com/DanielChachagua/GestionCar/pkg/ports"
+	"github.com/DanielChachagua/GestionCar/pkg/services"
+)
+
+// type AttendanceController struct {
+// 	AttendanceService ports.AttendanceService
+// }
 
 type AttendanceController struct {
-	AttendanceService ports.AttendanceService
+    AttendanceService *services.AttendanceService
 }
 
 type AuthController struct {

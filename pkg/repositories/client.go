@@ -9,7 +9,7 @@ import (
 	"gorm.io/gorm"
 )
 
-func (r *TenantRepository) ClientGetByID(id string) (*models.Client, error) {
+func (r *ClientRepository) ClientGetByID(id string) (*models.Client, error) {
 	var client models.Client
 	if err := r.DB.Where("id = ?", id).First(&client).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
@@ -20,7 +20,7 @@ func (r *TenantRepository) ClientGetByID(id string) (*models.Client, error) {
 	return &client, nil
 }
 
-func (r *TenantRepository) ClientGetByName(name string) (*[]models.Client, error) {
+func (r *ClientRepository) ClientGetByName(name string) (*[]models.Client, error) {
 	var client []models.Client
 	if err := r.DB.Where("last_name LIKE ? OR first_name LIKE ?", "%"+name+"%", "%"+name+"%").Find(&client).Error; err != nil {
     return nil, models.ErrorResponse(500, "Error al buscar el cliente", err)
@@ -28,7 +28,7 @@ func (r *TenantRepository) ClientGetByName(name string) (*[]models.Client, error
 	return &client, nil
 }
 
-func (r *TenantRepository) ClientExist(email, dni, cuil string) (error) {
+func (r *ClientRepository) ClientExist(email, dni, cuil string) (error) {
 	var field string
 	err := r.DB.Raw(`
 		SELECT 
@@ -53,7 +53,7 @@ func (r *TenantRepository) ClientExist(email, dni, cuil string) (error) {
 	return nil
 }
 
-func (r *TenantRepository) ClientGetAll() (*[]models.Client, error) {
+func (r *ClientRepository) ClientGetAll() (*[]models.Client, error) {
 	var clients []models.Client
 	if err := r.DB.Find(&clients).Error; err != nil {
 		return nil, models.ErrorResponse(500, "Error al buscar los clientes", err)
@@ -61,7 +61,7 @@ func (r *TenantRepository) ClientGetAll() (*[]models.Client, error) {
 	return &clients, nil
 }
 
-func (r *TenantRepository) ClientCreate(client *models.ClientCreate) (string, error) {
+func (r *ClientRepository) ClientCreate(client *models.ClientCreate) (string, error) {
 	newClient := models.Client{
 		ID: uuid.NewString(),
 		FirstName: client.FirstName,
@@ -76,7 +76,7 @@ func (r *TenantRepository) ClientCreate(client *models.ClientCreate) (string, er
 	return newClient.ID, nil
 }
 
-func (r *TenantRepository) ClientUpdate(client *models.ClientUpdate) error {
+func (r *ClientRepository) ClientUpdate(client *models.ClientUpdate) error {
 	if err := r.DB.Where("id = ?", client.ID).Updates(&models.Client{
 		FirstName: client.FirstName,
 		LastName:  client.LastName,
@@ -93,7 +93,7 @@ func (r *TenantRepository) ClientUpdate(client *models.ClientUpdate) error {
 	return nil
 }
 
-func (r *TenantRepository) ClientDelete(id string) error {
+func (r *ClientRepository) ClientDelete(id string) error {
 	return r.DB.Transaction(func(tx *gorm.DB) error {
 		if err := tx.Where("client_id = ?", id).Delete(&models.Vehicle{}).Error; err != nil {
 			return models.ErrorResponse(500, "Error al eliminar vehiculos relacionados a el cliente", err)  

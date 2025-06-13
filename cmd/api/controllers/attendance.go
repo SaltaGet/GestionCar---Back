@@ -388,3 +388,6 @@ func (a *AttendanceController) DeleteAttendance(c *fiber.Ctx) error {
 		Message: "Asistencia eliminada con éxito",
 	})
 }
+
+
+

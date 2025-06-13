@@ -9,7 +9,7 @@ import (
 	"gorm.io/gorm"
 )
 
-func (r *TenantRepository) ExpenseGetByID(id string) (*models.Expense, error) {
+func (r *ExpenseRepository) ExpenseGetByID(id string) (*models.Expense, error) {
 	var expense models.Expense
 	if err := r.DB.Where("id = ?", id).First(&expense).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
@@ -20,7 +20,7 @@ func (r *TenantRepository) ExpenseGetByID(id string) (*models.Expense, error) {
 	return &expense, nil
 }
 
-func (r *TenantRepository) ExpenseGetAll() (*[]models.Expense, error) {
+func (r *ExpenseRepository) ExpenseGetAll() (*[]models.Expense, error) {
 	var expenses []models.Expense
 	if err := r.DB.Limit(100).Order("created_at desc").Find(&expenses).Error; err != nil {
 		return nil, models.ErrorResponse(500, "Error interno al buscar movimientos", err)
@@ -28,7 +28,7 @@ func (r *TenantRepository) ExpenseGetAll() (*[]models.Expense, error) {
 	return &expenses, nil
 }
 
-func (r *TenantRepository) ExpenseGetToday() (*[]models.Expense, error) {
+func (r *ExpenseRepository) ExpenseGetToday() (*[]models.Expense, error) {
 	today := time.Now().Format("2006-01-02")
 	var expenses []models.Expense
 	if err := r.DB.Where("DATE(created_at) = ?", today).Order("created_at desc").Find(&expenses).Error; err != nil {
@@ -37,7 +37,7 @@ func (r *TenantRepository) ExpenseGetToday() (*[]models.Expense, error) {
 	return &expenses, nil
 }
 
-func (r *TenantRepository) ExpenseCreate(expense *models.ExpenseCreate) (string, error) {
+func (r *ExpenseRepository) ExpenseCreate(expense *models.ExpenseCreate) (string, error) {
 	newID := uuid.NewString()
 	if err := r.DB.Create(&models.Expense{
 		ID:             newID,
@@ -51,7 +51,7 @@ func (r *TenantRepository) ExpenseCreate(expense *models.ExpenseCreate) (string,
 	return newID, nil
 }
 
-func (r *TenantRepository) ExpenseUpdate(expense *models.ExpenseUpdate) error {
+func (r *ExpenseRepository) ExpenseUpdate(expense *models.ExpenseUpdate) error {
 	return r.DB.Transaction(func(tx *gorm.DB) error {
 		if err := tx.Where("id = ?", expense.ID).
 			Updates(&models.Expense{
@@ -69,7 +69,7 @@ func (r *TenantRepository) ExpenseUpdate(expense *models.ExpenseUpdate) error {
 	})
 }
 
-func (r *TenantRepository) ExpenseDelete(id string) error {
+func (r *ExpenseRepository) ExpenseDelete(id string) error {
 	if err := r.DB.Where("id = ?", id).Delete(&models.Expense{}).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return models.ErrorResponse(404, "Movimiento no encontrado", err)

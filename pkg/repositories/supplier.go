@@ -8,7 +8,7 @@ import (
 	"gorm.io/gorm"
 )
 
-func (r *TenantRepository) SupplierGetByID(id string) (*models.Supplier, error) {
+func (r *SupplierRepository) SupplierGetByID(id string) (*models.Supplier, error) {
 	var supplier models.Supplier
 	if err := r.DB.Where("id = ?", id).First(&supplier).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
@@ -19,7 +19,7 @@ func (r *TenantRepository) SupplierGetByID(id string) (*models.Supplier, error) 
 	return &supplier, nil
 }
 
-func (r *TenantRepository) SupplierGetAll() (*[]models.Supplier, error) {
+func (r *SupplierRepository) SupplierGetAll() (*[]models.Supplier, error) {
 	var suppliers []models.Supplier
 	if err := r.DB.Find(&suppliers).Error; err != nil {
 		return nil, models.ErrorResponse(500, "Error interno al buscar proveedores", err)
@@ -27,7 +27,7 @@ func (r *TenantRepository) SupplierGetAll() (*[]models.Supplier, error) {
 	return &suppliers, nil
 }
 
-func (r *TenantRepository) SupplierGetByName(name string) (*[]models.Supplier, error) {
+func (r *SupplierRepository) SupplierGetByName(name string) (*[]models.Supplier, error) {
 	var supplier []models.Supplier
 	if err := r.DB.Where("name LIKE ?", "%"+name+"%").Find(&supplier).Error; err != nil {
 		return nil, models.ErrorResponse(500, "Error interno al buscar proveedores", err)
@@ -35,7 +35,7 @@ func (r *TenantRepository) SupplierGetByName(name string) (*[]models.Supplier, e
 	return &supplier, nil
 }
 
-func (r *TenantRepository) SupplierCreate(supplierCreate *models.SupplierCreate) (string, error) {
+func (r *SupplierRepository) SupplierCreate(supplierCreate *models.SupplierCreate) (string, error) {
 	var supplierID string
 	supplier := models.Supplier{
 		ID:      uuid.NewString(),
@@ -51,7 +51,7 @@ func (r *TenantRepository) SupplierCreate(supplierCreate *models.SupplierCreate)
 	return supplierID, nil
 }
 
-func (r *TenantRepository) SupplierUpdate(supplierUpdate *models.SupplierUpdate) error {
+func (r *SupplierRepository) SupplierUpdate(supplierUpdate *models.SupplierUpdate) error {
 	var supplierLaundry models.Supplier
 	if err := r.DB.Where("id = ?", supplierUpdate.ID).First(&supplierLaundry).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound){
@@ -70,7 +70,7 @@ func (r *TenantRepository) SupplierUpdate(supplierUpdate *models.SupplierUpdate)
 	return nil
 }
 
-func (r *TenantRepository) SupplierDelete(id string) error {
+func (r *SupplierRepository) SupplierDelete(id string) error {
 	var supplier models.Supplier
 	if err := r.DB.Where("id = ?", id).Delete(&supplier).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {

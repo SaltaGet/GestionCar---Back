@@ -48,6 +48,10 @@ func main() {
 		database.CloseAllTenantDBs()
 	}()
 
+	database.InitDBCache(100) 
+    
+  go database.StartDBJanitor()
+
 	app := fiber.New()
 
 	app.Use(cors.New(cors.Config{
@@ -58,10 +62,10 @@ func main() {
 	}))
 
 	appDependencies := dependencies.NewApplication(db)
-	tenantDependencies := dependencies.TenantDBRepository(nil)
+	// tenantDependencies := dependencies.TenantDBRepository(nil)
 
 	app.Use(middleware.LoggingMiddleware)
-	app.Use(middleware.InjectApp(appDependencies, tenantDependencies))
+	app.Use(middleware.InjectApp(appDependencies))
 	// app.Use(middleware.AuditMiddleware())
 
 	app.Use(limiter.New(limiter.Config{
@@ -74,7 +78,7 @@ func main() {
 		},
 	}))
 
-	routes.SetupRoutes(app, appDependencies, tenantDependencies)
+	routes.SetupRoutes(app, appDependencies)
 
 	// repositories.Repo = dep.Repository
 

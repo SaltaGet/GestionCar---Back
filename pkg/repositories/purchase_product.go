@@ -8,7 +8,7 @@ import (
 	"gorm.io/gorm"
 )
 
-func (r *TenantRepository) PurchaseProdcutGetByID(id string) (*models.PurchaseProduct, error) {
+func (r *PurchaseProductRepository) PurchaseProdcutGetByID(id string) (*models.PurchaseProduct, error) {
 	var purchaseProduct models.PurchaseProduct
 	if err := r.DB.Where("id = ?", id).First(&purchaseProduct).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
@@ -19,7 +19,7 @@ func (r *TenantRepository) PurchaseProdcutGetByID(id string) (*models.PurchasePr
 	return &purchaseProduct, nil
 }
 
-func (r *TenantRepository) PurchaseProductGetByPurchaseID(purchaseID string) (*[]models.PurchaseProduct, error) {
+func (r *PurchaseProductRepository) PurchaseProductGetByPurchaseID(purchaseID string) (*[]models.PurchaseProduct, error) {
 	var purchaseProduct []models.PurchaseProduct
 	if err := r.DB.Where("purchase_order_id = ?", purchaseID).Find(&purchaseProduct).Error; err != nil {
 		return nil, models.ErrorResponse(500, "Error interno al obtener productos de compra", err)
@@ -27,7 +27,7 @@ func (r *TenantRepository) PurchaseProductGetByPurchaseID(purchaseID string) (*[
 	return &purchaseProduct, nil
 }
 
-func (r *TenantRepository) PurchaseProductGetAll() ([]models.PurchaseProduct, error) {
+func (r *PurchaseProductRepository) PurchaseProductGetAll() ([]models.PurchaseProduct, error) {
 	var purchaseProducts []models.PurchaseProduct
 	if err := r.DB.Find(&purchaseProducts).Error; err != nil {
 		return nil, models.ErrorResponse(500, "Error interno al obtener productos de compra", err)
@@ -35,7 +35,7 @@ func (r *TenantRepository) PurchaseProductGetAll() ([]models.PurchaseProduct, er
 	return purchaseProducts, nil
 }
 
-func (r *TenantRepository) PurchaseProductCreate(element *models.PurchaseProductCreate) (string, error) {
+func (r *PurchaseProductRepository) PurchaseProductCreate(element *models.PurchaseProductCreate) (string, error) {
 	newID := uuid.NewString()
 	if err := r.DB.Create(&models.PurchaseProduct{
 		ID:         newID,
@@ -51,7 +51,7 @@ func (r *TenantRepository) PurchaseProductCreate(element *models.PurchaseProduct
 
 }
 
-func (r *TenantRepository) PurchaseProductUpdate(element *models.PurchaseProductUpdate) error {
+func (r *PurchaseProductRepository) PurchaseProductUpdate(element *models.PurchaseProductUpdate) error {
 	if err := r.DB.Where("id = ?", element.ID).Updates(&models.PurchaseProduct{
 		ProductID:  element.ProductID,
 		ExpiredAt:  element.ExpiredAt,
@@ -68,7 +68,7 @@ func (r *TenantRepository) PurchaseProductUpdate(element *models.PurchaseProduct
 
 }
 
-func (r *TenantRepository) PurchaseProductDelete(id string) error {
+func (r *PurchaseProductRepository) PurchaseProductDelete(id string) error {
 	var purchaseProduct models.PurchaseProduct
 	if err := r.DB.Where("id = ?", id).Delete(&purchaseProduct).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {

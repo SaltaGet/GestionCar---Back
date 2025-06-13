@@ -8,7 +8,7 @@ import (
 	"gorm.io/gorm"
 )
 
-func (r *TenantRepository) PurchaseOrderGetByID(id string) (*models.PurchaseOrder, error) {
+func (r *PurchaseOrderRepository) PurchaseOrderGetByID(id string) (*models.PurchaseOrder, error) {
 	var purchaseOrder models.PurchaseOrder
 	if err := r.DB.Where("id = ?", id).First(&purchaseOrder).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
@@ -20,7 +20,7 @@ func (r *TenantRepository) PurchaseOrderGetByID(id string) (*models.PurchaseOrde
 
 }
 
-func (r *TenantRepository) PurchaseOrderGetAll() (*[]models.PurchaseOrder, error) {
+func (r *PurchaseOrderRepository) PurchaseOrderGetAll() (*[]models.PurchaseOrder, error) {
 	var purchaseOrders []models.PurchaseOrder
 	if err := r.DB.Find(&purchaseOrders).Error; err != nil {
 		return nil, models.ErrorResponse(500, "Error interno al obtener compras", err)
@@ -29,7 +29,7 @@ func (r *TenantRepository) PurchaseOrderGetAll() (*[]models.PurchaseOrder, error
 
 }
 
-func (r *TenantRepository) PurchaseOrderCreate(purchaseOrder *models.PurchaseOrderCreate) (string, error) {
+func (r *PurchaseOrderRepository) PurchaseOrderCreate(purchaseOrder *models.PurchaseOrderCreate) (string, error) {
 	newID := uuid.NewString()
 	err := r.DB.Transaction(func(tx *gorm.DB) error {
 		if err := tx.Create(&models.PurchaseOrder{
@@ -62,7 +62,7 @@ func (r *TenantRepository) PurchaseOrderCreate(purchaseOrder *models.PurchaseOrd
 	return newID, nil
 }
 
-func (r *TenantRepository) PurchaseOrderUpdate(purchaseOrder *models.PurchaseOrderUpdate) error {
+func (r *PurchaseOrderRepository) PurchaseOrderUpdate(purchaseOrder *models.PurchaseOrderUpdate) error {
 	return r.DB.Transaction(func(tx *gorm.DB) error {
 		if err := tx.Where("id = ?", purchaseOrder.ID).Updates(&models.PurchaseOrder{
 			OrderNumber: purchaseOrder.OrderNumber,
@@ -134,7 +134,7 @@ func (r *TenantRepository) PurchaseOrderUpdate(purchaseOrder *models.PurchaseOrd
 	})
 }
 
-func (r *TenantRepository) PurchaseOrderDelete(id string) error {
+func (r *PurchaseOrderRepository) PurchaseOrderDelete(id string) error {
 	return r.DB.Transaction(func(tx *gorm.DB) error {
 		if err := tx.Where("purchase_order_id = ?", id).Delete(&models.PurchaseProduct{}).Error; err != nil {
 			return models.ErrorResponse(500, "Error interno al eliminar productos de compra", err)

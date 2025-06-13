@@ -1,6 +1,7 @@
 package middleware
 
 import (
+	"github.com/DanielChachagua/GestionCar/cmd/api/controllers"
 	"github.com/DanielChachagua/GestionCar/pkg/database"
 	"github.com/DanielChachagua/GestionCar/pkg/dependencies"
 	"github.com/DanielChachagua/GestionCar/pkg/key"
@@ -19,8 +20,15 @@ func AuthMiddleware() fiber.Handler {
 			})
 		}
 
-		ctx := c.UserContext()
-		deps := ctx.Value(key.AppKey).(*dependencies.Application)
+		// ctx := c.UserContext()
+		// deps := ctx.Value(key.AppKey).(*dependencies.Application)
+
+		deps, ok := c.Locals(key.AppKey).(*dependencies.Application)
+		if !ok {
+			return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
+				"error": "Dependencias no proporcionadas",
+			})
+		}
 
 		claims, err := utils.VerifyToken(token)
 
@@ -82,13 +90,31 @@ func AuthMiddleware() fiber.Handler {
 				})
 			}
 
-			ctx := c.UserContext()
-			depsTenant := ctx.Value(key.TenantDBKey).(*dependencies.TenantApplication)
-			depsTenant.SetDBTenantRepository(db)
+			container := dependencies.NewTenantContainer(db)
+			// if attCtrl, ok := c.Locals("AttendanceController").(**controllers.AttendanceController); ok {
+			//           *attCtrl = &controllers.AttendanceController{
+			//               AttendanceService: container.Services.Attendance,
+			//           }
+			//       }
+			// if memCtrl, ok := c.Locals("MemberController").(**controllers.MemberController); ok {
+			// 					*memCtrl = &controllers.MemberController{
+			// 							MemberService: container.Services.Member,
+			// 					}
+			// 			}
+			attendanceCtrl := &controllers.AttendanceController{
+				AttendanceService: container.Services.Attendance,
+			}
+
+			c.Locals("AttendanceController", attendanceCtrl)
+
+			// ctx := c.UserContext()
+			// depsTenant := ctx.Value(key.TenantDBKey).(*dependencies.TenantApplication)
+			// depsTenant.SetDBTenantRepository(db)
 
 			userFromToken := models.AuthenticatedUser{}
 			if !isAdmin {
-				user, err := depsTenant.MemberController.MemberService.MemberGetByID(userId)
+				// user, err := depsTenant.MemberController.MemberService.MemberGetByID(userId)
+				user, err := container.Services.Member.MemberGetByID(userId)
 				if err != nil {
 					return c.Status(fiber.StatusInternalServerError).JSON(models.Response{
 						Status:  false,

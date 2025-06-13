@@ -236,7 +236,7 @@ func (r *MainRepository) TenantUpdate(userID string, tenant *models.TenantUpdate
 	}
 
 	if !userTenant.IsAdmin {
-		return models.ErrorResponse(403, "You do not have permission to update the tenant", nil)
+		return models.ErrorResponse(403, "No tienes permisos para actualizar el tenant", nil)
 	}
 
 	if err := r.DB.Model(&models.Tenant{}).Updates(tenant).Error; err != nil {

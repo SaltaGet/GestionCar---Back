@@ -21,14 +21,17 @@ import (
 	// "gorm.io/driver/mysql"
 
 	"gorm.io/gorm"
+	"github.com/hashicorp/golang-lru"
 )
 
 // SQLITE
 
 var (
 	mainDB    *gorm.DB
-	tenantDBs = make(map[string]*gorm.DB)
+	// tenantDBs = make(map[string]*gorm.DB)
+	tenantDBs *lru.Cache
 	mu        sync.RWMutex
+	dbExpiration = 30 * time.Minute
 )
 
 func ConnectDB(uri string) (*gorm.DB, error) {
@@ -69,7 +72,7 @@ func ConnectDB(uri string) (*gorm.DB, error) {
 		return nil, err
 	}
 
-	db.Create(&models.User{
+	if err := db.Create(&models.User{
 		ID:        newId,
 		FirstName: os.Getenv("FIRSTNAME_ADMIN"),
 		LastName:  os.Getenv("LASTNAME_ADMIN"),
@@ -77,7 +80,9 @@ func ConnectDB(uri string) (*gorm.DB, error) {
 		Email:     os.Getenv("ADMIN_EMAIL"),
 		Password:  pass,
 		IsAdmin:   true,
-	})
+	}).Error; err != nil {
+		return nil, err
+	}
 
 	mainDB = db
 
@@ -88,40 +93,116 @@ func GetMainDB() *gorm.DB {
 	return mainDB
 }
 
+// func GetTenantDB(uri string) (*gorm.DB, error) {
+// 	filePath := filePathFromURI(uri)
+// 	if _, err := os.Stat(filePath); os.IsNotExist(err) {
+// 		return nil, fmt.Errorf("la base de datos del tenant no existe: %s", uri)
+// 	}
+
+// 	mu.RLock()
+// 	db, ok := tenantDBs[uri]
+// 	mu.RUnlock()
+// 	if ok {
+// 		return db, nil
+// 	}
+
+// 	mu.Lock()
+// 	defer mu.Unlock()
+// 	if db, ok := tenantDBs[uri]; ok {
+// 		return db, nil
+// 	}
+
+// 	db, err := gorm.Open(sqlite.Open(uri), &gorm.Config{})
+// 	if err != nil {
+// 		return nil, err
+// 	}
+// 	sqlDB, err := db.DB()
+// 	if err != nil {
+// 		return nil, err
+// 	}
+// 	sqlDB.SetMaxOpenConns(50)
+// 	sqlDB.SetMaxIdleConns(25)
+// 	sqlDB.SetConnMaxLifetime(3 * time.Hour)
+// 	sqlDB.SetConnMaxIdleTime(30 * time.Minute)
+
+// 	tenantDBs[uri] = db
+// 	return db, nil
+// }
+
+func InitDBCache(maxEntries int) {
+	var err error
+    tenantDBs, err  = lru.New(maxEntries)
+		if err != nil {
+				log.Println(err)
+		}
+}
+
 func GetTenantDB(uri string) (*gorm.DB, error) {
-	filePath := filePathFromURI(uri)
-	if _, err := os.Stat(filePath); os.IsNotExist(err) {
-		return nil, fmt.Errorf("la base de datos del tenant no existe: %s", uri)
-	}
+    filePath := filePathFromURI(uri)
+    if _, err := os.Stat(filePath); os.IsNotExist(err) {
+        return nil, fmt.Errorf("la base de datos del tenant no existe: %s", uri)
+    }
 
-	mu.RLock()
-	db, ok := tenantDBs[uri]
-	mu.RUnlock()
-	if ok {
-		return db, nil
-	}
+    mu.RLock()
+    if val, ok := tenantDBs.Get(uri); ok {
+        entry := val.(*tenantDBEntry)
+        entry.lastUsed = time.Now()
+        mu.RUnlock()
+        return entry.db, nil
+    }
+    mu.RUnlock()
 
-	mu.Lock()
-	defer mu.Unlock()
-	if db, ok := tenantDBs[uri]; ok {
-		return db, nil
-	}
+    db, err := gorm.Open(sqlite.Open(uri), &gorm.Config{})
+    if err != nil {
+        return nil, err
+    }
 
-	db, err := gorm.Open(sqlite.Open(uri), &gorm.Config{})
-	if err != nil {
-		return nil, err
-	}
-	sqlDB, err := db.DB()
-	if err != nil {
-		return nil, err
-	}
-	sqlDB.SetMaxOpenConns(50)
-	sqlDB.SetMaxIdleConns(25)
-	sqlDB.SetConnMaxLifetime(3 * time.Hour)
-	sqlDB.SetConnMaxIdleTime(30 * time.Minute)
+    sqlDB, err := db.DB()
+    if err != nil {
+        return nil, err
+    }
 
-	tenantDBs[uri] = db
-	return db, nil
+    sqlDB.SetMaxOpenConns(20)
+    sqlDB.SetMaxIdleConns(5)
+    sqlDB.SetConnMaxLifetime(1 * time.Hour)
+    sqlDB.SetConnMaxIdleTime(15 * time.Minute)
+
+    entry := &tenantDBEntry{
+        db:       db,
+        lastUsed: time.Now(),
+    }
+
+    mu.Lock()
+    tenantDBs.Add(uri, entry)
+    mu.Unlock()
+
+    return db, nil
+}
+
+type tenantDBEntry struct {
+    db       *gorm.DB
+    lastUsed time.Time
+}
+
+func StartDBJanitor() {
+    ticker := time.NewTicker(1 * time.Hour)
+    defer ticker.Stop()
+
+    for range ticker.C {
+        mu.Lock()
+        for _, key := range tenantDBs.Keys() {
+            if val, ok := tenantDBs.Get(key); ok {
+                entry := val.(*tenantDBEntry)
+                if time.Since(entry.lastUsed) > dbExpiration {
+                    if db, err := entry.db.DB(); err == nil {
+                        db.Close()
+                    }
+                    tenantDBs.Remove(key)
+                }
+            }
+        }
+        mu.Unlock()
+    }
 }
 
 func CloseDB(db *gorm.DB) error {
@@ -138,21 +219,34 @@ func CloseDB(db *gorm.DB) error {
 	return nil
 }
 
-func CloseAllTenantDBs() {
-	mu.Lock()
-	defer mu.Unlock()
+// func CloseAllTenantDBs() {
+// 	mu.Lock()
+// 	defer mu.Unlock()
 
-	for tenant, db := range tenantDBs {
-		sqlDB, err := db.DB()
-		if err != nil {
-			log.Printf("No se pudo obtener la conexión de bajo nivel para tenant %s: %v", tenant, err)
-			continue
-		}
-		if err := sqlDB.Close(); err != nil {
-			log.Printf("Error cerrando conexión tenant %s: %v", tenant, err)
-		}
-		delete(tenantDBs, tenant)
-	}
+// 	for tenant, db := range tenantDBs {
+// 		sqlDB, err := db.DB()
+// 		if err != nil {
+// 			log.Printf("No se pudo obtener la conexión de bajo nivel para tenant %s: %v", tenant, err)
+// 			continue
+// 		}
+// 		if err := sqlDB.Close(); err != nil {
+// 			log.Printf("Error cerrando conexión tenant %s: %v", tenant, err)
+// 		}
+// 		delete(tenantDBs, tenant)
+// 	}
+// }
+
+func CloseAllTenantDBs() error {
+    for _, key := range tenantDBs.Keys() {
+        if val, ok := tenantDBs.Get(key); ok {
+            entry := val.(*tenantDBEntry)
+            if db, err := entry.db.DB(); err == nil {
+                db.Close()
+            }
+            tenantDBs.Remove(key)
+        }
+    }
+    return nil
 }
 
 func filePathFromURI(uri string) string {

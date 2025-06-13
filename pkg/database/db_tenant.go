@@ -1,7 +1,6 @@
 package database
 
 import (
-	"fmt"
 	// "log"
 	"os"
 
@@ -17,24 +16,21 @@ import (
 // SQLITE
 
 func PrepareDB(uri string) error {
-	// Si el archivo ya existe, no hacer nada
 	filePath := filePathFromURI(uri)
 	if _, err := os.Stat(filePath); err == nil {
-		return nil // Ya existe, no hacer nada
+		return nil 
 	}
 
-	// Crear la base de datos
 	db, err := gorm.Open(sqlite.Open(uri), &gorm.Config{})
 	if err != nil {
-		return fmt.Errorf("error inicializando db: %w", err)
+		return models.ErrorResponse(500, "Error interno al crear la base de datos", err)
 	}
 	sqlDB, err := db.DB()
 	if err != nil {
-		return fmt.Errorf("no se pudo obtener la conexión de bajo nivel: %w", err)
+		return models.ErrorResponse(500, "Error interno no se pudo obtener la conexión de bajo nivel", err)
 	}
 	defer sqlDB.Close()
 
-	// Migrar las tablas necesarias
 	if err := db.AutoMigrate(
 		&models.Attendance{},
 		&models.Client{},
@@ -53,32 +49,15 @@ func PrepareDB(uri string) error {
 		&models.Service{},
 		&models.Supplier{},
 		&models.Vehicle{},
-		// Agrega aquí tus modelos tenant-específicos
 	); err != nil {
 		_ = os.Remove(filePath)
-		return fmt.Errorf("error al migrar tablas: %w", err)
+		return models.ErrorResponse(500, "Error interno al migrar la base de datos", err)
 	}
 
-	// var count int64
-	// db.Model(&models.Role{}).Count(&count)
-	// var role models.Role
-	// if count == 0 {
-	// 	role = models.Role{ID: uuid.NewString(), Name: "admin"}
-	// 	db.Create(&role)
-	// } else {
-	// 	db.Where("name = ?", "admin").First(&role)
-	// }
-
-	// db.Model(&models.Member{}).Count(&count)
-	// if count == 0 {
-	// 	db.Create(&models.Member{
-	// 		ID: uuid.NewString(),
-	// 		UserID: userID,
-	// 		RoleID: role.ID,
-	// 	})
-	// }
-
-	db.Create(&permissions)
+	if err := db.Create(&permissions).Error; err != nil {
+		_ = os.Remove(filePath)
+		return models.ErrorResponse(500, "Error interno al migrar permisos base de datos", err)
+	}
 
 	return nil
 }

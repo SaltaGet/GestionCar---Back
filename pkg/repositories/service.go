@@ -7,7 +7,7 @@ import (
 	"gorm.io/gorm"
 )
 
-func (r *TenantRepository) ServiceGetByID(id string) (*models.Service, error) {
+func (r *ServiceRepository) ServiceGetByID(id string) (*models.Service, error) {
 	var service models.Service
 	if err := r.DB.Where("id = ?", id).First(&service).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
@@ -18,7 +18,7 @@ func (r *TenantRepository) ServiceGetByID(id string) (*models.Service, error) {
 	return &service, nil
 }
 
-func (r *TenantRepository) ServiceExistByName(name string) (bool, error) {
+func (r *ServiceRepository) ServiceExistByName(name string) (bool, error) {
 	var service models.Service
 	if err := r.DB.Where("name = ?", name).First(&service).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
@@ -29,7 +29,7 @@ func (r *TenantRepository) ServiceExistByName(name string) (bool, error) {
 	return true, nil
 }
 
-func (r *TenantRepository) ServiceGetByName(name string) (*[]models.Service, error) {
+func (r *ServiceRepository) ServiceGetByName(name string) (*[]models.Service, error) {
 	var services []models.Service
 	if err := r.DB.Limit(5).Where("name LIKE ?", "%"+name+"%").Find(&services).Error; err != nil {
 		return nil, models.ErrorResponse(500, "Error interno al buscar servicio", err)
@@ -38,7 +38,7 @@ func (r *TenantRepository) ServiceGetByName(name string) (*[]models.Service, err
 	return &services, nil
 }
 
-func (r *TenantRepository) ServiceGetAll() (*[]models.Service, error) {
+func (r *ServiceRepository) ServiceGetAll() (*[]models.Service, error) {
 	var services []models.Service
 	if err := r.DB.Find(&services).Error; err != nil {
 		return nil, models.ErrorResponse(500, "Error interno al buscar servicios", err)
@@ -46,7 +46,7 @@ func (r *TenantRepository) ServiceGetAll() (*[]models.Service, error) {
 	return &services, nil
 }
 
-func (r *TenantRepository) ServiceCreate(service *models.ServiceCreate) (string, error) {
+func (r *ServiceRepository) ServiceCreate(service *models.ServiceCreate) (string, error) {
 	newID := uuid.NewString()
 	if err := r.DB.Create(&models.Service{
 		ID:   newID,
@@ -57,7 +57,7 @@ func (r *TenantRepository) ServiceCreate(service *models.ServiceCreate) (string,
 	return newID, nil
 }
 
-func (r *TenantRepository) ServiceUpdate(service *models.ServiceUpdate) error {
+func (r *ServiceRepository) ServiceUpdate(service *models.ServiceUpdate) error {
 	if err := r.DB.Where("id = ?", service.ID).First(&models.Service{}).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return models.ErrorResponse(404, "Servicio no encontrado", err)
@@ -74,7 +74,7 @@ func (r *TenantRepository) ServiceUpdate(service *models.ServiceUpdate) error {
 	return nil
 }
 
-func (r *TenantRepository) ServiceDelete(id string) error {
+func (r *ServiceRepository) ServiceDelete(id string) error {
 	if err := r.DB.Where("id = ?", id).Delete(&models.Service{}).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return models.ErrorResponse(404, "Servicio no encontrado", err)

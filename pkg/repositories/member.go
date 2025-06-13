@@ -10,7 +10,7 @@ import (
 	"gorm.io/gorm"
 )
 
-func (t *TenantRepository) MemberGetAll() (*[]models.Member, error) {
+func (t *MemberRepository) MemberGetAll() (*[]models.Member, error) {
 	var members []models.Member
 	if err := t.DB.Preload("Role").Find(&members).Error; err != nil {
 		return nil, models.ErrorResponse(500, "Error interno al buscar miembros", err)
@@ -19,7 +19,7 @@ func (t *TenantRepository) MemberGetAll() (*[]models.Member, error) {
 	return &members, nil
 }
 
-func (t *TenantRepository) MemberGetPermissionByUserID(userID string) (*models.Member, error) {
+func (t *MemberRepository) MemberGetPermissionByUserID(userID string) (*models.Member, error) {
 	var member models.Member
 	if err := t.DB.Preload("Role").Preload("Role.Permissions").Where("user_id = ?", userID).First(&member).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
@@ -30,7 +30,7 @@ func (t *TenantRepository) MemberGetPermissionByUserID(userID string) (*models.M
 	return &member, nil
 }
 
-func (t *TenantRepository) MemberGetByID(id string) (*models.Member, error) {
+func (t *MemberRepository) MemberGetByID(id string) (*models.Member, error) {
 	var member models.Member
 	if err := t.DB.Preload("Role").Preload("Role.Permissions").Where("id = ?", id).First(&member).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
@@ -41,7 +41,7 @@ func (t *TenantRepository) MemberGetByID(id string) (*models.Member, error) {
 	return &member, nil
 }
 
-func (t *TenantRepository) MemberCreate(memeberCreate *models.MemberCreate, user *models.AuthenticatedUser) (id string, err error) {
+func (t *MemberRepository) MemberCreate(memeberCreate *models.MemberCreate, user *models.AuthenticatedUser) (id string, err error) {
 	newID := uuid.NewString()
 
 	// pass, err := utils.GenerateRandomString(10)
@@ -67,7 +67,7 @@ func (t *TenantRepository) MemberCreate(memeberCreate *models.MemberCreate, user
 	return newID, nil
 }
 
-func (t *TenantRepository) MemberDelete(id string) error {
+func (t *MemberRepository) MemberDelete(id string) error {
 	if err := t.DB.Delete(&models.Member{}, "id = ?", id).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return models.ErrorResponse(404, "Miembro no encontrado", err)

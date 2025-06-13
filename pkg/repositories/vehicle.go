@@ -8,7 +8,7 @@ import (
 	"gorm.io/gorm"
 )
 
-func (r *TenantRepository) VehicleGetByID(id string) (*models.Vehicle, error) {
+func (r *VehicleRepository) VehicleGetByID(id string) (*models.Vehicle, error) {
 	var vehicle models.Vehicle
 	if err := r.DB.Where("id = ?", id).First(&vehicle).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
@@ -19,7 +19,7 @@ func (r *TenantRepository) VehicleGetByID(id string) (*models.Vehicle, error) {
 	return &vehicle, nil
 }
 
-func (r *TenantRepository) VehicleGetByDomain(domain string) (*[]models.Vehicle, error) {
+func (r *VehicleRepository) VehicleGetByDomain(domain string) (*[]models.Vehicle, error) {
 	var vehicles []models.Vehicle
 	if err := r.DB.Preload("Client").Where("domain LIKE ?", "%"+domain+"%").Find(&vehicles).Error; err != nil {
 		return nil, models.ErrorResponse(500, "Error interno al buscar vehiculo", err)
@@ -27,7 +27,7 @@ func (r *TenantRepository) VehicleGetByDomain(domain string) (*[]models.Vehicle,
 	return &vehicles, nil
 }
 
-func (r *TenantRepository) VehicleExistByDomain(domain string) (bool, error) {
+func (r *VehicleRepository) VehicleExistByDomain(domain string) (bool, error) {
 	var vehicle models.Vehicle
 	if err := r.DB.Preload("Client").Where("domain = ?", domain).First(&vehicle).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
@@ -38,7 +38,7 @@ func (r *TenantRepository) VehicleExistByDomain(domain string) (bool, error) {
 	return true, nil
 }
 
-func (r *TenantRepository) VehicleGetAll() (*[]models.Vehicle, error) {
+func (r *VehicleRepository) VehicleGetAll() (*[]models.Vehicle, error) {
 	var vehicles []models.Vehicle
 	if err := r.DB.Find(&vehicles).Error; err != nil {
 		return nil, models.ErrorResponse(500, "Error interno al buscar vehiculo", err)
@@ -46,7 +46,7 @@ func (r *TenantRepository) VehicleGetAll() (*[]models.Vehicle, error) {
 	return &vehicles, nil
 }
 
-func (r *TenantRepository) VehicleGetByClientID(clientID string) (*[]models.Vehicle, error) {
+func (r *VehicleRepository) VehicleGetByClientID(clientID string) (*[]models.Vehicle, error) {
 	var vehicles []models.Vehicle
 	if err := r.DB.Where("client_id = ?", clientID).Find(&vehicles).Error; err != nil {
 		return nil, models.ErrorResponse(500, "Error interno al buscar vehiculo", err)
@@ -54,7 +54,7 @@ func (r *TenantRepository) VehicleGetByClientID(clientID string) (*[]models.Vehi
 	return &vehicles, nil
 }
 
-func (r *TenantRepository) VehicleCreate(vehicle *models.VehicleCreate) (string, error) {
+func (r *VehicleRepository) VehicleCreate(vehicle *models.VehicleCreate) (string, error) {
 	newVehicle := models.Vehicle{
 		ID: uuid.NewString(),
 		Brand: vehicle.Brand,
@@ -70,7 +70,7 @@ func (r *TenantRepository) VehicleCreate(vehicle *models.VehicleCreate) (string,
 	return newVehicle.ID, nil
 }
 
-func (r *TenantRepository) VehicleUpdate(vehicle *models.VehicleUpdate) error {
+func (r *VehicleRepository) VehicleUpdate(vehicle *models.VehicleUpdate) error {
 	if err := r.DB.Where("id = ?", vehicle.ID).Updates(&vehicle).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return models.ErrorResponse(404, "Vehiculo no encontrado", err)
@@ -81,7 +81,7 @@ func (r *TenantRepository) VehicleUpdate(vehicle *models.VehicleUpdate) error {
 	return nil
 }
 
-func (r *TenantRepository) VehicleDelete(id string) error {
+func (r *VehicleRepository) VehicleDelete(id string) error {
 	var vehicle models.Vehicle
 	if err := r.DB.Where("id = ?", id).Delete(&vehicle).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {

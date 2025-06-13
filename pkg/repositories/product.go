@@ -8,7 +8,7 @@ import (
 	"gorm.io/gorm"
 )
 
-func (r *TenantRepository) ProductGetByID(id string) (*models.Product, error) {
+func (r *ProductRepository) ProductGetByID(id string) (*models.Product, error) {
 	var product models.Product
 	if err := r.DB.Where("id = ?", id).First(&product).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
@@ -20,7 +20,7 @@ func (r *TenantRepository) ProductGetByID(id string) (*models.Product, error) {
 
 }
 
-func (r *TenantRepository) ProductGetByIdentifier(identifier string) (*[]models.Product, error) {
+func (r *ProductRepository) ProductGetByIdentifier(identifier string) (*[]models.Product, error) {
 	var product []models.Product
 	if err := r.DB.Where("identifier LIKE ?", "%"+identifier+"%").Find(&product).Error; err != nil {
 		return nil, models.ErrorResponse(500, "Error interno al buscar producto", err)
@@ -28,7 +28,7 @@ func (r *TenantRepository) ProductGetByIdentifier(identifier string) (*[]models.
 	return &product, nil
 }
 
-func (r *TenantRepository) ProductGetByName(name string) (*[]models.Product, error) {
+func (r *ProductRepository) ProductGetByName(name string) (*[]models.Product, error) {
 	var products []models.Product
 	if err := r.DB.Where("name LIKE ?", "%"+name+"%").Find(&products).Error; err != nil {
 		return nil, models.ErrorResponse(500, "Error interno al buscar productos", err)
@@ -36,7 +36,7 @@ func (r *TenantRepository) ProductGetByName(name string) (*[]models.Product, err
 	return &products, nil
 }
 
-func (r *TenantRepository) ProductGetAll() (*[]models.Product, error) {
+func (r *ProductRepository) ProductGetAll() (*[]models.Product, error) {
 	var products []models.Product
 	if err := r.DB.Find(&products).Error; err != nil {
 		return nil, models.ErrorResponse(500, "Error interno al buscar productos", err)
@@ -45,7 +45,7 @@ func (r *TenantRepository) ProductGetAll() (*[]models.Product, error) {
 
 }
 
-func (r *TenantRepository) ProductCreate(element *models.ProductCreate) (string, error) {
+func (r *ProductRepository) ProductCreate(element *models.ProductCreate) (string, error) {
 	newID := uuid.NewString()
 	if err := r.DB.Create(&models.Product{
 		ID:         newID,
@@ -59,7 +59,7 @@ func (r *TenantRepository) ProductCreate(element *models.ProductCreate) (string,
 
 }
 
-func (r *TenantRepository) ProductUpdate(element *models.ProductUpdate) error {
+func (r *ProductRepository) ProductUpdate(element *models.ProductUpdate) error {
 	if err := r.DB.Model(&models.Product{}).Where("id = ?", element.ID).Updates(&models.Product{
 		Identifier: element.Identifier,
 		Name:       element.Name,
@@ -73,7 +73,7 @@ func (r *TenantRepository) ProductUpdate(element *models.ProductUpdate) error {
 
 }
 
-func (r *TenantRepository) UpdateStock(stockUpdate *models.StockUpdate) error {
+func (r *ProductRepository) UpdateStock(stockUpdate *models.StockUpdate) error {
 	if err := r.DB.Model(&models.Product{}).
 		Where("id = ?", stockUpdate.ID).
 		Update("stock", stockUpdate.Stock).Error; err != nil {
@@ -86,7 +86,7 @@ func (r *TenantRepository) UpdateStock(stockUpdate *models.StockUpdate) error {
 
 }
 
-func (r *TenantRepository) AddToStock(stockUpdate *models.StockUpdate) error {
+func (r *ProductRepository) AddToStock(stockUpdate *models.StockUpdate) error {
 	if err := r.DB.Model(&models.Product{}).
 		Where("id = ?", stockUpdate.ID).
 		UpdateColumn("stock", gorm.Expr("stock + ?", stockUpdate.Stock)).Error; err != nil {
@@ -99,7 +99,7 @@ func (r *TenantRepository) AddToStock(stockUpdate *models.StockUpdate) error {
 	return nil
 }
 
-func (r *TenantRepository) SubtractFromStockToStock(stockUpdate *models.StockUpdate) error {
+func (r *ProductRepository) SubtractFromStockToStock(stockUpdate *models.StockUpdate) error {
 	if err := r.DB.Model(&models.Product{}).
 		Where("id = ?", stockUpdate.ID).
 		UpdateColumn("stock", gorm.Expr("stock - ?", stockUpdate.Stock)).Error; err != nil {
@@ -112,7 +112,7 @@ func (r *TenantRepository) SubtractFromStockToStock(stockUpdate *models.StockUpd
 	return nil
 }
 
-func (r *TenantRepository) ProductDelete(id string) error {
+func (r *ProductRepository) ProductDelete(id string) error {
 	if err := r.DB.Where("id = ?", id).Delete(&models.Product{}).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return models.ErrorResponse(404, "Producto no encontrado", err)
