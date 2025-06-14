@@ -1,26 +1,36 @@
 package routes
 
 import (
-	// "github.com/DanielChachagua/GestionCar/cmd/api/controllers"
-	// "github.com/DanielChachagua/GestionCar/cmd/api/middleware"
+	"github.com/DanielChachagua/GestionCar/cmd/api/controllers"
+	"github.com/DanielChachagua/GestionCar/cmd/api/middleware"
 	"github.com/gofiber/fiber/v2"
 )
 
 func ExpenseRoutes(app *fiber.App){
-	// att := app.Group("/expense", middleware.AuthMiddleware(), middleware.TenantMiddleware())
-	// att.Get("/get_all", controllers.GetAllExpenses)
-	// att.Get("/get_today", controllers.GetExpenseToday)
-	// att.Post("/create", controllers.CreateExpense)
-	// att.Put("/update", controllers.UpdateExpense)
-	// att.Delete("/delete/:id", controllers.DeleteExpense)
-	// att.Get("/:id", controllers.GetExpenseByID)
+	exp := app.Group("/expense", middleware.AuthMiddleware(), middleware.TenantMiddleware())
+
+	exp.Get("/get_all", GetController("ExpenseController", func(c *fiber.Ctx, ctrl *controllers.ExpenseController) error {
+		return ctrl.GetAllExpenses(c)
+	}))
+
+	exp.Get("/get_today", GetController("ExpenseController", func(c *fiber.Ctx, ctrl *controllers.ExpenseController) error {
+		return ctrl.GetExpenseToday(c)
+	}))
+
+	exp.Post("/create", GetController("ExpenseController", func(c *fiber.Ctx, ctrl *controllers.ExpenseController) error {
+		return ctrl.CreateExpense(c)
+	}))
+
+	exp.Put("/update", GetController("ExpenseController", func(c *fiber.Ctx, ctrl *controllers.ExpenseController) error {
+		return ctrl.UpdateExpense(c)
+	}))
+
+	exp.Delete("/delete/:id", GetController("ExpenseController", func(c *fiber.Ctx, ctrl *controllers.ExpenseController) error {
+		return ctrl.DeleteExpense(c)
+	}))
+
+	exp.Get("/:id", GetController("ExpenseController", func(c *fiber.Ctx, ctrl *controllers.ExpenseController) error {
+		return ctrl.GetExpenseByID(c)
+	}))
+
 }
-// func ExpenseRoutes(app *fiber.App, controllers *controllers.ExpenseController){
-// 	att := app.Group("/expense", middleware.AuthMiddleware(), middleware.TenantMiddleware())
-// 	att.Get("/get_all", controllers.GetAllExpenses)
-// 	att.Get("/get_today", controllers.GetExpenseToday)
-// 	att.Post("/create", controllers.CreateExpense)
-// 	att.Put("/update", controllers.UpdateExpense)
-// 	att.Delete("/delete/:id", controllers.DeleteExpense)
-// 	att.Get("/:id", controllers.GetExpenseByID)
-// }

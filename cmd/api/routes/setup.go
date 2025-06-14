@@ -7,13 +7,6 @@ import (
 )
 
 func SetupRoutes(app *fiber.App, appDependencies *dependencies.Application) {
-	// app.Use(func(c *fiber.Ctx) error {
-  //       c.Locals("AttendanceController", new(*controllers.AttendanceController))
-  //       c.Locals("MemberController", new(*controllers.MemberController))
-  //       return c.Next()
-  //   })
-
-
 	AttendanceRoutes(app)
 	AuthRoutes(app, appDependencies.AuthController)
 	ClientRoutes(app)

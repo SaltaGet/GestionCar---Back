@@ -38,25 +38,3 @@ func AttendanceRoutes(app *fiber.App) {
 	}))
 }
 
-// func GetController(handler func(c *fiber.Ctx, ctrl *controllers.AttendanceController) error) fiber.Handler {
-// 	return func(c *fiber.Ctx) error {
-// 		ctrl, ok := c.Locals("AttendanceController").(*controllers.AttendanceController)
-// 		if !ok || ctrl == nil {
-// 			return c.Status(fiber.StatusInternalServerError).SendString("AttendanceController no inicializado correctamente")
-// 		}
-// 		return handler(c, ctrl)
-// 	}
-// }
-
-
-
-// func AttendanceRoutes(app *fiber.App, controllers *controllers.AttendanceController){
-// 	att := app.Group("/attendance", middleware.AuthMiddleware(), middleware.TenantMiddleware())
-// 	att.Get("/get_all", controllers.GetAllAttendances)
-// 	att.Post("/get_by_date", controllers.GetAllAttendancesByDate)
-// 	att.Post("/create", controllers.CreateAttendance)
-// 	att.Put("/update", controllers.UpdateAttendance)
-// 	att.Get("/get_by_employee/:employee_id", controllers.GetAttendanceByEmployeeID)
-// 	att.Delete("/delete/:id", controllers.DeleteAttendance)
-// 	att.Get("/:id", controllers.GetAttendanceByID)
-// }

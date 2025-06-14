@@ -1,24 +1,32 @@
 package routes
 
 import (
-	// "github.com/DanielChachagua/GestionCar/cmd/api/controllers"
-	// "github.com/DanielChachagua/GestionCar/cmd/api/middleware"
+	"github.com/DanielChachagua/GestionCar/cmd/api/controllers"
+	"github.com/DanielChachagua/GestionCar/cmd/api/middleware"
 	"github.com/gofiber/fiber/v2"
 )
 
 func ServiceRoutes(app *fiber.App){
-	// att := app.Group("/service", middleware.AuthMiddleware(), middleware.TenantMiddleware())
-	// att.Get("/get_all", controllers.ServiceGetAll)
-	// att.Post("/create", controllers.ServiceCreate)
-	// att.Put("/update", controllers.ServiceUpdate)
-	// att.Delete("/delete/:id", controllers.ServiceDeleteByID)
-	// att.Get("/:id", controllers.ServiceGetByID)
+	service := app.Group("/service", middleware.AuthMiddleware(), middleware.TenantMiddleware())
+
+	service.Get("/get_all", GetController("ServiceController", func(c *fiber.Ctx, ctrl *controllers.ServiceController) error {
+		return ctrl.ServiceGetAll(c)
+	}))
+
+	service.Post("/create", GetController("ServiceController", func(c *fiber.Ctx, ctrl *controllers.ServiceController) error {
+		return ctrl.ServiceCreate(c)
+	}))
+
+	service.Put("/update", GetController("ServiceController", func(c *fiber.Ctx, ctrl *controllers.ServiceController) error {
+		return ctrl.ServiceUpdate(c)
+	}))
+
+	service.Delete("/delete/:id", GetController("ServiceController", func(c *fiber.Ctx, ctrl *controllers.ServiceController) error {
+		return ctrl.ServiceDeleteByID(c)
+	}))
+
+	service.Get("/:id", GetController("ServiceController", func(c *fiber.Ctx, ctrl *controllers.ServiceController) error {
+		return ctrl.ServiceGetByID(c)
+	}))
+
 }
-// func ServiceRoutes(app *fiber.App, controllers *controllers.ServiceController){
-// 	att := app.Group("/service", middleware.AuthMiddleware(), middleware.TenantMiddleware())
-// 	att.Get("/get_all", controllers.ServiceGetAll)
-// 	att.Post("/create", controllers.ServiceCreate)
-// 	att.Put("/update", controllers.ServiceUpdate)
-// 	att.Delete("/delete/:id", controllers.ServiceDeleteByID)
-// 	att.Get("/:id", controllers.ServiceGetByID)
-// }
