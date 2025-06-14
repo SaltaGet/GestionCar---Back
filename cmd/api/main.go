@@ -62,14 +62,13 @@ func main() {
 	}))
 
 	appDependencies := dependencies.NewApplication(db)
-	// tenantDependencies := dependencies.TenantDBRepository(nil)
 
 	app.Use(middleware.LoggingMiddleware)
 	app.Use(middleware.InjectApp(appDependencies))
 	// app.Use(middleware.AuditMiddleware())
 
 	app.Use(limiter.New(limiter.Config{
-		Max:        120,
+		Max:        500,
 		Expiration: 1 * time.Minute,
 		LimitReached: func(c *fiber.Ctx) error {
 			return c.Status(fiber.StatusTooManyRequests).JSON(fiber.Map{
@@ -79,8 +78,6 @@ func main() {
 	}))
 
 	routes.SetupRoutes(app, appDependencies)
-
-	// repositories.Repo = dep.Repository
 
 	app.Get("/swagger/*", swagger.HandlerDefault)
 

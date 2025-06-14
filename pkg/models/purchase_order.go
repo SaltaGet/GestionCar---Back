@@ -16,7 +16,7 @@ type PurchaseOrder struct {
 	CreatedAt               time.Time         `gorm:"autoCreateTime" json:"created_at"`
 	UpdatedAt               time.Time         `gorm:"autoUpdateTime" json:"updated_at"`
 	Supplier                Supplier          `gorm:"foreignKey:SupplierID;references:ID" json:"supplier"`
-	PurchaseProductLaundrys []PurchaseProduct `gorm:"foreignKey:PurchaseOrderID;references:ID" json:"purchase_products"`
+	PurchaseProducts []PurchaseProduct `gorm:"foreignKey:PurchaseOrderID;references:ID" json:"purchase_products"`
 }
 
 type PurchaseOrderCreate struct {

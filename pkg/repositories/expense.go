@@ -56,7 +56,7 @@ func (r *ExpenseRepository) ExpenseUpdate(expense *models.ExpenseUpdate) error {
 		if err := tx.Where("id = ?", expense.ID).
 			Updates(&models.Expense{
 				Details:        expense.Details,
-				SupplierID:     expense.SupplierID,
+				// SupplierID:     expense.SupplierID,
 				MovementTypeID: expense.MovementTypeID,
 				Amount:         expense.Amount,
 			}).Error; err != nil {

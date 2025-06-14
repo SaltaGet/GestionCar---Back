@@ -16,7 +16,7 @@ type Expense struct {
 	CreatedAt           time.Time    `gorm:"autoCreateTime" json:"created_at"`
 	UpdatedAt           time.Time    `gorm:"autoUpdateTime" json:"updated_at"`
 	Supplier            Supplier     `gorm:"foreignKey:SupplierID" json:"supplier"`
-	MovementTypeLaundry MovementType `gorm:"foreignKey:MovementTypeID;references:ID" json:"movement_type_laundry"`
+	MovementType MovementType `gorm:"foreignKey:MovementTypeID;references:ID" json:"movement_type"`
 }
 
 type ExpenseCreate struct {
@@ -44,7 +44,7 @@ func (e *ExpenseCreate) Validate() error {
 type ExpenseUpdate struct {
 	ID             string  `json:"id"`
 	Details        string  `json:"details" validate:"required"`
-	SupplierID     string  `json:"supplier_id"`
+	// SupplierID     string  `json:"supplier_id"` sacar
 	MovementTypeID string  `json:"movement_type_id" validate:"required"`
 	Amount         float32 `json:"amount" validate:"required"`
 }
