@@ -94,8 +94,69 @@ func AuthMiddleware() fiber.Handler {
 			attendanceCtrl := &controllers.AttendanceController{
 				AttendanceService: container.Services.Attendance,
 			}
+			clientCtrl := &controllers.ClientController{
+				ClientService: container.Services.Client,
+			}
+			employeeCtrl := &controllers.EmployeeController{
+				EmployeeService: container.Services.Employee,
+			}
+			expenseCtrl := &controllers.ExpenseController{
+				ExpenseService: container.Services.Expense,
+			}
+			incomeCtrl := &controllers.IncomeController{
+				IncomeService: container.Services.Income,
+			}
+			memberCtrl := &controllers.MemberController{
+				MemberService: container.Services.Member,
+			}
+			movementCtrl := &controllers.MovementTypeController{
+				MovementTypeService: container.Services.Movement,
+			}
+			permissionCtrl := &controllers.PermissionController{
+				PermissionService: container.Services.Permission,
+			}
+			productCtrl := &controllers.ProductController{
+				ProductService: container.Services.Product,
+			}
+			purchaseCtrl := &controllers.PurchaseOrderController{
+				PurchaseOrderService: container.Services.Purchase,
+			}
+			purchaseProductCtrl := &controllers.PurchaseProductController{
+				PurchaseProductService: container.Services.PurchaseProduct,
+			}
+			resumeCtrl := &controllers.ResumeController{
+				ResumeExpenseService: container.Services.Resume,
+				ResumeIncomeService: container.Services.Resume,
+			}
+			roleCtrl := &controllers.RoleController{
+				RoleService: container.Services.Role,
+			}
+			serviceCtrl := &controllers.ServiceController{
+				ServiceService: container.Services.Service,
+			}
+			supplierCtrl := &controllers.SupplierController{
+				SupplierService: container.Services.Supplier,
+			}
+			vehicleCtrl := &controllers.VehicleController{
+				VehicleService: container.Services.Vehicle,
+			}
 
 			c.Locals("AttendanceController", attendanceCtrl)
+			c.Locals("ClientController", clientCtrl)
+			c.Locals("EmployeeController", employeeCtrl)
+			c.Locals("ExpenseController", expenseCtrl)
+			c.Locals("IncomeController", incomeCtrl)
+			c.Locals("MemberController", memberCtrl)
+			c.Locals("MovementTypeController", movementCtrl)
+			c.Locals("PermissionController", permissionCtrl)
+			c.Locals("ProductController", productCtrl)
+			c.Locals("PurchaseOrderController", purchaseCtrl)
+			c.Locals("PurchaseProductController", purchaseProductCtrl)
+			c.Locals("ResumeController", resumeCtrl)
+			c.Locals("RoleController", roleCtrl)
+			c.Locals("ServiceController", serviceCtrl)
+			c.Locals("SupplierController", supplierCtrl)
+			c.Locals("VehicleController", vehicleCtrl)
 
 			userFromToken := models.AuthenticatedUser{}
 			if !isAdmin {
