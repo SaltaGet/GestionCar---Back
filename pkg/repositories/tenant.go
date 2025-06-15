@@ -44,7 +44,7 @@ func (r *MainRepository) TenantGetByID(tenantID string) (*models.Tenant, error) 
     }
 
     if !tenant.IsActive {
-        return nil, models.ErrorResponse(403, "Tenant is inactive", nil)
+        return nil, models.ErrorResponse(403, "Tenant is inactive", fmt.Errorf("tenant is inactive"))
     }
 
     return &tenant, nil
@@ -64,7 +64,7 @@ func (r *MainRepository) TenantGetByIdentifier(identifier string) (*models.Tenan
 	}
 
 	if !tenant.IsActive {
-		return nil, models.ErrorResponse(403, "Tenant is inactive", nil)
+		return nil, models.ErrorResponse(403, "Tenant is inactive", fmt.Errorf("tenant is inactive"))
 	}
 
 	return &tenant, nil
@@ -99,7 +99,8 @@ func (r *MainRepository) TenantCreateByUserID(tenantCreate *models.TenantCreate,
 	}()
 
 	tenantName := strings.ReplaceAll(tenantCreate.Name, " ", "_")
-	uri := fmt.Sprintf("%s%s_%s.db%s", os.Getenv("URI_PATH"), tenantName, uuid.NewString(), os.Getenv("URI_CONFIG"))
+	identifier := strings.ReplaceAll(tenantCreate.Identifier, " ", "_")
+	uri := fmt.Sprintf("%s%s_%s.db%s", os.Getenv("URI_PATH"), tenantName, identifier, os.Getenv("URI_CONFIG"))
 	connection, err := utils.Encrypt(uri)
 	if err != nil {
 		return "", models.ErrorResponse(500, "Error interno al obtener connection", err)
@@ -113,7 +114,7 @@ func (r *MainRepository) TenantCreateByUserID(tenantCreate *models.TenantCreate,
 		Email:      tenantCreate.Email,
 		CuitPdv:    tenantCreate.CuitPdv,
 		Connection: connection,
-		Identifier: tenantCreate.Identifier,
+		Identifier: identifier,
 	}
 
 	if err := tx.Create(tenant).Error; err != nil {
@@ -164,7 +165,8 @@ func (r *MainRepository) TenantUserCreate(tenantUserCreate *models.TenantUserCre
 	}()
 
 	tenantName := strings.ReplaceAll(tenantUserCreate.TenantCreate.Name, " ", "_")
-	uri := fmt.Sprintf("%s%s_%s.db%s", os.Getenv("URI_PATH"), tenantName, uuid.NewString(), os.Getenv("URI_CONFIG"))
+	identifier := strings.ReplaceAll(tenantUserCreate.TenantCreate.Identifier, " ", "_")
+	uri := fmt.Sprintf("%s%s_%s.db%s", os.Getenv("URI_PATH"), tenantName, identifier, os.Getenv("URI_CONFIG"))
 	connection, err := utils.Encrypt(uri)
 	if err != nil {
 		return "", err
@@ -178,11 +180,14 @@ func (r *MainRepository) TenantUserCreate(tenantUserCreate *models.TenantUserCre
 		Email:      tenantUserCreate.TenantCreate.Email,
 		CuitPdv:    tenantUserCreate.TenantCreate.CuitPdv,
 		Connection: connection,
-		Identifier: tenantUserCreate.TenantCreate.Identifier,
+		Identifier: identifier,
 	}
 
 	if err := tx.Create(tenant).Error; err != nil {
 		tx.Rollback()
+		if errors.Is(err, gorm.ErrInvalidData){
+			return "", models.ErrorResponse(400, "Los campos email, cuit_pdv y identifier deben ser únicos, algun campo ya existe", err)
+		}
 		return "", models.ErrorResponse(500, "Error interno creating tenant", err)
 	}
 
@@ -236,7 +241,7 @@ func (r *MainRepository) TenantUpdate(userID string, tenant *models.TenantUpdate
 	}
 
 	if !userTenant.IsAdmin {
-		return models.ErrorResponse(403, "No tienes permisos para actualizar el tenant", nil)
+		return models.ErrorResponse(403, "No tienes permisos para actualizar el tenant", fmt.Errorf("no tienes permisos para actualizar el tenant"))
 	}
 
 	if err := r.DB.Model(&models.Tenant{}).Updates(tenant).Error; err != nil {

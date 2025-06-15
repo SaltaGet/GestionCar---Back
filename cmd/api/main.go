@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"os"
 	"time"
@@ -10,7 +11,7 @@ import (
 	"github.com/DanielChachagua/GestionCar/pkg/database"
 	"github.com/DanielChachagua/GestionCar/pkg/dependencies"
 
-	// "github.com/DanielChachagua/GestionCar/cmd/api/jobs"
+	"github.com/DanielChachagua/GestionCar/cmd/api/jobs"
 	"github.com/DanielChachagua/GestionCar/cmd/api/middleware"
 	"github.com/DanielChachagua/GestionCar/cmd/api/routes"
 	"github.com/gofiber/fiber/v2"
@@ -18,7 +19,7 @@ import (
 	"github.com/gofiber/fiber/v2/middleware/limiter"
 	"github.com/gofiber/swagger"
 	"github.com/joho/godotenv"
-	// "github.com/robfig/cron/v3"
+	"github.com/robfig/cron/v3"
 )
 
 //	@title						APP GESTIONCAR
@@ -38,7 +39,6 @@ func main() {
 		log.Fatalf("Error loading .env file: %v", err)
 	}
 
-
 	db, err := database.ConnectDB(os.Getenv("URI_DB"))
 	if err != nil {
 		log.Fatalf("Error al conectar con la base de datos: %v", err)
@@ -48,11 +48,13 @@ func main() {
 		database.CloseAllTenantDBs()
 	}()
 
-	database.InitDBCache(100) 
-    
-  go database.StartDBJanitor()
+	database.InitDBCache(100)
 
-	app := fiber.New()
+	go database.StartDBJanitor()
+
+	app := fiber.New(fiber.Config{
+		ProxyHeader: "X-Forwarded-For",
+	})
 
 	app.Use(cors.New(cors.Config{
 		AllowOrigins:     "*",
@@ -68,8 +70,11 @@ func main() {
 	// app.Use(middleware.AuditMiddleware())
 
 	app.Use(limiter.New(limiter.Config{
-		Max:        500,
+		Max:        120,
 		Expiration: 1 * time.Minute,
+		KeyGenerator: func(c *fiber.Ctx) string {
+			return c.IP() // Usa la IP del cliente como clave
+		},
 		LimitReached: func(c *fiber.Ctx) error {
 			return c.Status(fiber.StatusTooManyRequests).JSON(fiber.Map{
 				"error": "Demasiadas peticiones. Intentá más tarde.",
@@ -80,6 +85,24 @@ func main() {
 	routes.SetupRoutes(app, appDependencies)
 
 	app.Get("/swagger/*", swagger.HandlerDefault)
+
+	// Cron job -- BACKUP
+	cfg, err := jobs.LoadConfig(appDependencies)
+	if err != nil {
+		panic("Error leyendo config: " + err.Error())
+	}
+
+	c := cron.New()
+	// Ejecutar todos los días a las 3 AM
+	_, err = c.AddFunc("0 3 * * *", func() {
+		fmt.Println("⏰ Iniciando backup:", cfg.Databases)
+		jobs.RunBackup(cfg)
+	})
+	if err != nil {
+		panic(err)
+	}
+
+	c.Start()
 
 	// c := cron.New()
 

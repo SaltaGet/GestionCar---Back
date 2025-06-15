@@ -1,6 +1,8 @@
 package services
 
 import (
+	"fmt"
+
 	"github.com/DanielChachagua/GestionCar/pkg/models"
 )
 
@@ -60,20 +62,20 @@ func (p *ProductService) ProductUpdateStock(stock *models.StockUpdate) error {
 	switch stock.Method {
 	case "update":
 		if stock.Stock < 0 {
-			return models.ErrorResponse(400, "El stock no puede ser negativo", nil)
+			return models.ErrorResponse(400, "El stock no puede ser negativo", fmt.Errorf("el stock no puede ser negativo"))
 		}
 		return p.ProductRepository.UpdateStock(stock)
 	case "add":
 		if stock.Stock <= 0{
-			return models.ErrorResponse(400, "El stock debe ser mayor a 0", nil)
+			return models.ErrorResponse(400, "El stock debe ser mayor a 0", fmt.Errorf("el stock debe ser mayor a 0"))
 		}
 		return p.ProductRepository.AddToStock(stock)
 	case "subtract":
 		if stock.Stock <= 0{
-			return models.ErrorResponse(400, "El stock debe ser mayor a 0", nil)
+			return models.ErrorResponse(400, "El stock debe ser mayor a 0", fmt.Errorf("el stock debe ser mayor a 0"))
 		}
 		if product != nil && product.Stock < stock.Stock {
-			return models.ErrorResponse(400, "El stock no puede ser negativo", nil)
+			return models.ErrorResponse(400, "El stock no puede ser negativo", fmt.Errorf("el stock no puede ser negativo"))
 		}
 		return p.ProductRepository.SubtractFromStockToStock(stock)
 	

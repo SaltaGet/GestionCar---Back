@@ -2,6 +2,7 @@ package repositories
 
 import (
 	"errors"
+	"fmt"
 
 	"github.com/DanielChachagua/GestionCar/pkg/database"
 	"github.com/DanielChachagua/GestionCar/pkg/models"
@@ -25,7 +26,7 @@ func (r *MainRepository) AuthLogin(username, password string, connection string)
 		}
 
 		if !utils.CheckPasswordHash(password, member.Password) {
-			return nil, models.ErrorResponse(401, "Credenciales incorrectas", nil)
+			return nil, models.ErrorResponse(401, "Credenciales incorrectas", fmt.Errorf("credenciales incorrectas"))
 		}
 
 		var permissions []string
@@ -54,7 +55,7 @@ func (r *MainRepository) AuthLogin(username, password string, connection string)
 		}
 
 		if !utils.CheckPasswordHash(password, user.Password) {
-			return nil, models.ErrorResponse(401, "Credenciales incorrectas", nil)
+			return nil, models.ErrorResponse(401, "Credenciales incorrectas", fmt.Errorf("credenciales incorrectas"))
 		}
 
 		return &models.AuthResult{
@@ -116,15 +117,15 @@ func (r *MainRepository) AuthGetTenant(userID string, tenantID string) (*models.
 	}
 
 	if !tenant.IsActive {
-		return nil, models.ErrorResponse(403, "Tenant is inactive", nil)
+		return nil, models.ErrorResponse(403, "Tenant esta inactivo", fmt.Errorf("credenciales incorrectas"))
 	}
 
 	if len(tenant.UserTenants) == 0 {
-		return nil, models.ErrorResponse(403, "You do not have permission to access this tenant", nil)
+		return nil, models.ErrorResponse(403, "No tienes permiso para acceder al tenant", fmt.Errorf("sin permiso para acceder al tenant"))
 	}
 
 	if !tenant.UserTenants[0].IsActive {
-		return nil, models.ErrorResponse(403, "You do not have permission to access this tenant", nil)
+		return nil, models.ErrorResponse(403, "No tienes permiso para acceder al tenant", fmt.Errorf("sin permiso para acceder al tenant"))
 
 	}
 
@@ -135,7 +136,7 @@ func (r *MainRepository) CurrentUser(userID string) (*models.User, error) {
 	var user models.User
 	if err := r.DB.Preload("UserTenants").Where("id = ?", userID).First(&user).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, models.ErrorResponse(404, "User not found", err)
+			return nil, models.ErrorResponse(401, "No autenticado", err)
 		}
 		return nil, models.ErrorResponse(500, "Error retrieving user", err)
 	}

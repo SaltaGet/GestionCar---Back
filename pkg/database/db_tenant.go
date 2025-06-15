@@ -2,80 +2,37 @@ package database
 
 import (
 	// "log"
-	"os"
+	"database/sql"
+	// "os"
+	"strings"
+
+	"fmt"
 
 	"github.com/DanielChachagua/GestionCar/pkg/models"
 	"github.com/google/uuid"
+
 	// "github.com/google/uuid"
 
-	"gorm.io/driver/sqlite"
-	// "gorm.io/driver/mysql"
+	// "gorm.io/driver/sqlite"
+	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 )
 
 // SQLITE
 
-func PrepareDB(uri string) error {
-	filePath := filePathFromURI(uri)
-	if _, err := os.Stat(filePath); err == nil {
-		return nil 
-	}
-
-	db, err := gorm.Open(sqlite.Open(uri), &gorm.Config{})
-	if err != nil {
-		return models.ErrorResponse(500, "Error interno al crear la base de datos", err)
-	}
-	sqlDB, err := db.DB()
-	if err != nil {
-		return models.ErrorResponse(500, "Error interno no se pudo obtener la conexión de bajo nivel", err)
-	}
-	defer sqlDB.Close()
-
-	if err := db.AutoMigrate(
-		&models.Attendance{},
-		&models.Client{},
-		&models.Employee{},
-		&models.Expense{},
-		&models.Income{},
-		&models.Member{},
-		&models.MovementType{},
-		&models.Permission{},
-		&models.Product{},
-		&models.PurchaseOrder{},
-		&models.PurchaseProduct{},
-		&models.ResumeExpense{},
-		&models.ResumeIncome{},
-		&models.Role{},
-		&models.Service{},
-		&models.Supplier{},
-		&models.Vehicle{},
-	); err != nil {
-		_ = os.Remove(filePath)
-		return models.ErrorResponse(500, "Error interno al migrar la base de datos", err)
-	}
-
-	if err := db.Create(&permissions).Error; err != nil {
-		_ = os.Remove(filePath)
-		return models.ErrorResponse(500, "Error interno al migrar permisos base de datos", err)
-	}
-
-	return nil
-}
-
-// // MYSQL
-// func PrepareDB(dsn string, userID string) error {
-// 	err := EnsureDatabaseExists(dsn)
-// 	if err != nil {
-// 		return fmt.Errorf("error al crear la db: %w", err)
+// func PrepareDB(uri string) error {
+// 	filePath := filePathFromURI(uri)
+// 	if _, err := os.Stat(filePath); err == nil {
+// 		return nil
 // 	}
 
-// 	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
+// 	db, err := gorm.Open(sqlite.Open(uri), &gorm.Config{})
 // 	if err != nil {
-// 		return fmt.Errorf("error inicializando db: %w", err)
+// 		return models.ErrorResponse(500, "Error interno al crear la base de datos", err)
 // 	}
 // 	sqlDB, err := db.DB()
 // 	if err != nil {
-// 		return fmt.Errorf("no se pudo obtener la conexión de bajo nivel: %w", err)
+// 		return models.ErrorResponse(500, "Error interno no se pudo obtener la conexión de bajo nivel", err)
 // 	}
 // 	defer sqlDB.Close()
 
@@ -98,32 +55,121 @@ func PrepareDB(uri string) error {
 // 		&models.Supplier{},
 // 		&models.Vehicle{},
 // 	); err != nil {
-// 		return fmt.Errorf("error al migrar tablas: %w", err)
+// 		_ = os.Remove(filePath)
+// 		return models.ErrorResponse(500, "Error interno al migrar la base de datos", err)
 // 	}
 
-// 	var count int64
-// 	db.Model(&models.Role{}).Count(&count)
-
-// 	var role models.Role
-// 	if count == 0 {
-// 		role = models.Role{ID: uuid.NewString(), Name: "admin"}
-// 		db.Create(&role)
-// 	} else {
-// 		db.Where("name = ?", "admin").First(&role)
-// 	}
-
-// 	db.Model(&models.Member{}).Count(&count)
-// 	if count == 0 {
-// 		db.Create(&models.Member{
-// 			ID:     uuid.NewString(),
-// 			UserID: userID,
-// 			RoleID: role.ID,
-// 		})
+// 	if err := db.Create(&permissions).Error; err != nil {
+// 		_ = os.Remove(filePath)
+// 		return models.ErrorResponse(500, "Error interno al migrar permisos base de datos", err)
 // 	}
 
 // 	return nil
 // }
 
+// MYSQL
+func PrepareDB(dsn string) error {
+	err := EnsureDatabaseExists(dsn)
+	if err != nil {
+		return fmt.Errorf("error al crear la db: %w", err)
+	}
+
+	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
+	if err != nil {
+		dropErr := dropDatabase(dsn)
+		if dropErr != nil {
+			return fmt.Errorf("error al crear permisos: %v; además falló al borrar la base: %v", err, dropErr)
+		}
+		return fmt.Errorf("error inicializando db: %w", err)
+	}
+	sqlDB, err := db.DB()
+	if err != nil {
+		dropErr := dropDatabase(dsn)
+		if dropErr != nil {
+			return fmt.Errorf("error al crear permisos: %v; además falló al borrar la base: %v", err, dropErr)
+		}
+		return fmt.Errorf("no se pudo obtener la conexión de bajo nivel: %w", err)
+	}
+	defer sqlDB.Close()
+
+	if err := db.AutoMigrate(
+		&models.Attendance{},
+		&models.Client{},
+		&models.Employee{},
+		&models.Expense{},
+		&models.Income{},
+		&models.Member{},
+		&models.MovementType{},
+		&models.Permission{},
+		&models.Product{},
+		&models.PurchaseOrder{},
+		&models.PurchaseProduct{},
+		&models.ResumeExpense{},
+		&models.ResumeIncome{},
+		&models.Role{},
+		&models.Service{},
+		&models.Supplier{},
+		&models.Vehicle{},
+	); err != nil {
+		dropErr := dropDatabase(dsn)
+		if dropErr != nil {
+			return fmt.Errorf("error al crear permisos: %v; además falló al borrar la base: %v", err, dropErr)
+		}
+		return fmt.Errorf("error al migrar tablas: %w", err)
+	}
+
+	if err := db.Create(&permissions).Error; err != nil {
+		dropErr := dropDatabase(dsn)
+		if dropErr != nil {
+			return fmt.Errorf("error al crear permisos: %v; además falló al borrar la base: %v", err, dropErr)
+		}
+		return models.ErrorResponse(500, "Error interno al migrar permisos base de datos", err)
+	}
+	
+	return nil
+}
+
+func dropDatabase(dsn string) error {
+	dbName, err := extractDBName(dsn)
+	if err != nil {
+		return fmt.Errorf("no se pudo extraer el nombre de la base: %w", err)
+	}
+
+	baseDSN := removeDBFromDSN(dsn)
+	sqlDB, err := sql.Open("mysql", baseDSN)
+	if err != nil {
+		return fmt.Errorf("no se pudo conectar al servidor MySQL: %w", err)
+	}
+	defer sqlDB.Close()
+
+	_, err = sqlDB.Exec(fmt.Sprintf("DROP DATABASE IF EXISTS `%s`", dbName))
+	if err != nil {
+		return fmt.Errorf("error al ejecutar DROP DATABASE: %w", err)
+	}
+	return nil
+}
+
+func extractDBName(dsn string) (string, error) {
+	beforeParams := strings.SplitN(dsn, "?", 2)[0]
+	parts := strings.Split(beforeParams, "/")
+	if len(parts) < 2 {
+		return "", fmt.Errorf("formato de DSN inválido (no se encontró la base)")
+	}
+	return parts[1], nil
+}
+
+func removeDBFromDSN(dsn string) string {
+	i := strings.Index(dsn, "/")
+	if i == -1 {
+		return dsn
+	}
+
+	paramStart := strings.Index(dsn[i:], "?")
+	if paramStart != -1 {
+		return dsn[:i+1] + dsn[i+paramStart:]
+	}
+	return dsn[:i+1]
+}
 
 var permissions = []models.Permission{
 	{ID: uuid.NewString(), Code: "VEV", Details: "Ver ventas", Group: "Ventas"},

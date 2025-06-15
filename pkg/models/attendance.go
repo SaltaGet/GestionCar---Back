@@ -10,7 +10,7 @@ import (
 // Asistencia empleados
 type Attendance struct {
 	ID         string    `gorm:"primaryKey;size:36" json:"id"`
-	EmployeeID string    `gorm:"not null;size:36" json:"employee_id"`
+	EmployeeID string    `gorm:"size:36" json:"employee_id"`
 	Attendance string    `gorm:"not null" json:"role" validate:"oneof=presente tarde parcial ausente"`
 	Hours      int       `gorm:"not null;" json:"hours" validate:"max=24"`
 	Date       string    `gorm:"not null" json:"date"`
@@ -19,7 +19,7 @@ type Attendance struct {
 	CreatedAt  time.Time `gorm:"autoCreateTime" json:"created_at"`
 	UpdatedAt  time.Time `gorm:"autoUpdateTime" json:"updated_at"`
 
-	Employee Employee `gorm:"foreignKey:EmployeeID;references:ID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"employee,omitzero"`
+	Employee Employee `gorm:"foreignKey:EmployeeID;references:ID;constraint:OnUpdate:CASCADE,OnDelete:NO ACTION;" json:"employee,omitzero"`
 }
 
 type AttendanceCreate struct {
