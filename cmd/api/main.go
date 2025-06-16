@@ -87,14 +87,15 @@ func main() {
 	app.Get("/swagger/*", swagger.HandlerDefault)
 
 	// Cron job -- BACKUP
-	cfg, err := jobs.LoadConfig(appDependencies)
-	if err != nil {
-		panic("Error leyendo config: " + err.Error())
-	}
-
+	
 	c := cron.New()
+
 	// Ejecutar todos los días a las 3 AM
-	_, err = c.AddFunc("0 3 * * *", func() {
+	_, err = c.AddFunc("* * * * *", func() {
+		cfg, err := jobs.LoadConfig(appDependencies)
+		if err != nil {
+			panic("Error leyendo config: " + err.Error())
+		}
 		fmt.Println("⏰ Iniciando backup:", cfg.Databases)
 		jobs.RunBackup(cfg)
 	})

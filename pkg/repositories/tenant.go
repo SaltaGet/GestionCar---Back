@@ -90,6 +90,28 @@ func (r *MainRepository) TenantGetAll(userID string) (*[]models.TenantResponse, 
 	return &tenants, nil
 }
 
+func (r *MainRepository) TenantGetConections() (*[]string, error) {
+	var connections []string
+	if err := r.DB.Debug().
+	Model(&models.Tenant{}).
+	Select("connection").
+	Scan(&connections).Error; err != nil {
+		return nil, models.ErrorResponse(500, "Error interno al obtener las connections", err)
+	}
+
+	var connectionsDecrypted []string
+
+	for _, connection := range connections {
+		connectionDecrypted, err := utils.Decrypt(connection)
+		if err != nil {
+			return nil, models.ErrorResponse(500, "Error interno al obtener las connections", err)
+		}
+		connectionsDecrypted = append(connectionsDecrypted, connectionDecrypted)
+	}
+
+	return &connectionsDecrypted, nil
+}
+
 func (r *MainRepository) TenantCreateByUserID(tenantCreate *models.TenantCreate, userID string) (string, error) {
 	tx := r.DB.Begin()
 	defer func() {
