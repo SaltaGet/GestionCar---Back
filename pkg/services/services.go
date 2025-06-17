@@ -32,7 +32,7 @@ type IncomeService struct {
 
 type MemberService struct {
 	MemberRepository ports.MemberRepository
-	UserRepository ports.UserRepository
+	// UserRepository ports.UserRepository
 }
 
 type MovementTypeService struct {

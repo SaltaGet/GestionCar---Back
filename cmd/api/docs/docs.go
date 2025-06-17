@@ -1735,6 +1735,22 @@ const docTemplate = `{
                     "Expense"
                 ],
                 "summary": "Get all expenses",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "default": 1,
+                        "description": "Page number",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "default": 20,
+                        "description": "Number of items per page",
+                        "name": "limit",
+                        "in": "query"
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "List of expenses",
@@ -1749,7 +1765,7 @@ const docTemplate = `{
                                         "body": {
                                             "type": "array",
                                             "items": {
-                                                "$ref": "#/definitions/models.Expense"
+                                                "$ref": "#/definitions/models.ExpenseDTO"
                                             }
                                         }
                                     }
@@ -1802,6 +1818,22 @@ const docTemplate = `{
                     "Expense"
                 ],
                 "summary": "Get expense today",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "default": 1,
+                        "description": "Page number",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "default": 20,
+                        "description": "Number of items per page",
+                        "name": "limit",
+                        "in": "query"
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "List of expenses",
@@ -1816,7 +1848,7 @@ const docTemplate = `{
                                         "body": {
                                             "type": "array",
                                             "items": {
-                                                "$ref": "#/definitions/models.Expense"
+                                                "$ref": "#/definitions/models.ExpenseDTO"
                                             }
                                         }
                                     }
@@ -1959,7 +1991,7 @@ const docTemplate = `{
                                     "type": "object",
                                     "properties": {
                                         "body": {
-                                            "$ref": "#/definitions/models.Expense"
+                                            "$ref": "#/definitions/models.ExpenseResponse"
                                         }
                                     }
                                 }
@@ -2171,6 +2203,22 @@ const docTemplate = `{
                     "Income"
                 ],
                 "summary": "Get all incomes",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "default": 1,
+                        "description": "Page number",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "default": 20,
+                        "description": "Number of items per page",
+                        "name": "limit",
+                        "in": "query"
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "List of incomes",
@@ -2185,7 +2233,7 @@ const docTemplate = `{
                                         "body": {
                                             "type": "array",
                                             "items": {
-                                                "$ref": "#/definitions/models.Income"
+                                                "$ref": "#/definitions/models.IncomeDTO"
                                             }
                                         }
                                     }
@@ -2258,7 +2306,7 @@ const docTemplate = `{
                                         "body": {
                                             "type": "array",
                                             "items": {
-                                                "$ref": "#/definitions/models.Income"
+                                                "$ref": "#/definitions/models.IncomeDTO"
                                             }
                                         }
                                     }
@@ -2413,7 +2461,7 @@ const docTemplate = `{
                                     "type": "object",
                                     "properties": {
                                         "body": {
-                                            "$ref": "#/definitions/models.Income"
+                                            "$ref": "#/definitions/models.IncomeResponse"
                                         }
                                     }
                                 }
@@ -2460,7 +2508,7 @@ const docTemplate = `{
                         "BearerAuth": []
                     }
                 ],
-                "description": "Memeber GetAll required auth token",
+                "description": "Memeber Create required auth token",
                 "consumes": [
                     "application/json"
                 ],
@@ -2470,7 +2518,7 @@ const docTemplate = `{
                 "tags": [
                     "Member"
                 ],
-                "summary": "Memeber GetAll",
+                "summary": "Memeber Create",
                 "parameters": [
                     {
                         "description": "MemberCreate",
@@ -2487,6 +2535,82 @@ const docTemplate = `{
                         "description": "Members obtenidos con éxito",
                         "schema": {
                             "$ref": "#/definitions/models.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/models.Response"
+                        }
+                    },
+                    "401": {
+                        "description": "Auth is required",
+                        "schema": {
+                            "$ref": "#/definitions/models.Response"
+                        }
+                    },
+                    "403": {
+                        "description": "Not Authorized",
+                        "schema": {
+                            "$ref": "#/definitions/models.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/models.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/member/get/{id}": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Memeber GetAll required auth token",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Member"
+                ],
+                "summary": "Memeber GetAll",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Member ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Members obtenidos con éxito",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/models.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "body": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/models.MemberResponse"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     },
                     "400": {
@@ -2548,7 +2672,7 @@ const docTemplate = `{
                                         "body": {
                                             "type": "array",
                                             "items": {
-                                                "$ref": "#/definitions/models.Member"
+                                                "$ref": "#/definitions/models.MemberDTO"
                                             }
                                         }
                                     }
@@ -3869,75 +3993,6 @@ const docTemplate = `{
                     },
                     "403": {
                         "description": "Not Authorized",
-                        "schema": {
-                            "$ref": "#/definitions/models.Response"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal server error",
-                        "schema": {
-                            "$ref": "#/definitions/models.Response"
-                        }
-                    }
-                }
-            }
-        },
-        "/purchase_order/update": {
-            "put": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "description": "Updates an existing purchase order with new details.",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Purchase Order"
-                ],
-                "summary": "Update Purchase Order",
-                "parameters": [
-                    {
-                        "description": "Purchase order update data",
-                        "name": "purchaseOrderUpdate",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/models.PurchaseOrderUpdate"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Purchase order updated successfully",
-                        "schema": {
-                            "$ref": "#/definitions/models.Response"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/models.Response"
-                        }
-                    },
-                    "401": {
-                        "description": "Auth is required",
-                        "schema": {
-                            "$ref": "#/definitions/models.Response"
-                        }
-                    },
-                    "403": {
-                        "description": "Not Authorized",
-                        "schema": {
-                            "$ref": "#/definitions/models.Response"
-                        }
-                    },
-                    "422": {
-                        "description": "Model invalid",
                         "schema": {
                             "$ref": "#/definitions/models.Response"
                         }
@@ -5861,6 +5916,43 @@ const docTemplate = `{
                 }
             }
         },
+        "models.ClientDTO": {
+            "type": "object",
+            "properties": {
+                "first_name": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "last_name": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.ClientResponse": {
+            "type": "object",
+            "properties": {
+                "cuil": {
+                    "type": "string"
+                },
+                "dni": {
+                    "type": "string"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "first_name": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "last_name": {
+                    "type": "string"
+                }
+            }
+        },
         "models.ClientUpdate": {
             "type": "object",
             "required": [
@@ -5914,6 +6006,12 @@ const docTemplate = `{
                 "address": {
                     "type": "string"
                 },
+                "attendances": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.Attendance"
+                    }
+                },
                 "created_at": {
                     "type": "string"
                 },
@@ -5957,6 +6055,34 @@ const docTemplate = `{
                 }
             }
         },
+        "models.EmployeeDTO": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.EmployeeResponse": {
+            "type": "object",
+            "properties": {
+                "email": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "phone": {
+                    "type": "string"
+                }
+            }
+        },
         "models.EmployeeUpdate": {
             "type": "object",
             "required": [
@@ -5984,38 +6110,6 @@ const docTemplate = `{
                 }
             }
         },
-        "models.Expense": {
-            "type": "object",
-            "properties": {
-                "amount": {
-                    "type": "number"
-                },
-                "created_at": {
-                    "type": "string"
-                },
-                "details": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "string"
-                },
-                "movement_type_id": {
-                    "type": "string"
-                },
-                "movement_type_laundry": {
-                    "$ref": "#/definitions/models.MovementType"
-                },
-                "supplier": {
-                    "$ref": "#/definitions/models.Supplier"
-                },
-                "supplier_id": {
-                    "type": "string"
-                },
-                "updated_at": {
-                    "type": "string"
-                }
-            }
-        },
         "models.ExpenseCreate": {
             "type": "object",
             "required": [
@@ -6033,8 +6127,51 @@ const docTemplate = `{
                 "movement_type_id": {
                     "type": "string"
                 },
-                "supplier_id": {
+                "purchase_order_id": {
                     "type": "string"
+                }
+            }
+        },
+        "models.ExpenseDTO": {
+            "type": "object",
+            "properties": {
+                "amount": {
+                    "type": "number"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "movement_type": {
+                    "$ref": "#/definitions/models.MovementTypeDTO"
+                },
+                "purchase_order": {
+                    "$ref": "#/definitions/models.PurchaseOrderDTO"
+                }
+            }
+        },
+        "models.ExpenseResponse": {
+            "type": "object",
+            "properties": {
+                "amount": {
+                    "type": "number"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "details": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "movement_type": {
+                    "$ref": "#/definitions/models.MovementTypeDTO"
+                },
+                "purchase_order": {
+                    "$ref": "#/definitions/models.PurchaseOrderResponse"
                 }
             }
         },
@@ -6056,9 +6193,10 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "movement_type_id": {
+                    "description": "SupplierID     string  ` + "`" + `json:\"supplier_id\"` + "`" + ` sacar",
                     "type": "string"
                 },
-                "supplier_id": {
+                "purchase_order_id": {
                     "type": "string"
                 }
             }
@@ -6155,6 +6293,79 @@ const docTemplate = `{
                 }
             }
         },
+        "models.IncomeDTO": {
+            "type": "object",
+            "properties": {
+                "amount": {
+                    "type": "number"
+                },
+                "client": {
+                    "$ref": "#/definitions/models.ClientDTO"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "employee": {
+                    "$ref": "#/definitions/models.EmployeeDTO"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "movement_type": {
+                    "$ref": "#/definitions/models.MovementTypeDTO"
+                },
+                "services": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.ServiceDTO"
+                    }
+                },
+                "ticket": {
+                    "type": "string"
+                },
+                "vehicle": {
+                    "$ref": "#/definitions/models.VehicleDTO"
+                }
+            }
+        },
+        "models.IncomeResponse": {
+            "type": "object",
+            "properties": {
+                "amount": {
+                    "type": "number"
+                },
+                "client": {
+                    "$ref": "#/definitions/models.ClientResponse"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "details": {
+                    "type": "string"
+                },
+                "employee": {
+                    "$ref": "#/definitions/models.EmployeeResponse"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "movement_type": {
+                    "$ref": "#/definitions/models.MovementTypeDTO"
+                },
+                "services": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.ServiceDTO"
+                    }
+                },
+                "ticket": {
+                    "type": "string"
+                },
+                "vehicle": {
+                    "$ref": "#/definitions/models.VehicleResponse"
+                }
+            }
+        },
         "models.IncomeUpdate": {
             "type": "object",
             "required": [
@@ -6198,50 +6409,6 @@ const docTemplate = `{
                 }
             }
         },
-        "models.Member": {
-            "type": "object",
-            "properties": {
-                "created_at": {
-                    "type": "string"
-                },
-                "deleted_at": {
-                    "type": "string"
-                },
-                "email": {
-                    "type": "string"
-                },
-                "first_name": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "string"
-                },
-                "is_active": {
-                    "type": "boolean"
-                },
-                "is_deleted": {
-                    "type": "boolean"
-                },
-                "last_name": {
-                    "type": "string"
-                },
-                "password": {
-                    "type": "string"
-                },
-                "role": {
-                    "$ref": "#/definitions/models.Role"
-                },
-                "role_id": {
-                    "type": "string"
-                },
-                "updated_at": {
-                    "type": "string"
-                },
-                "username": {
-                    "type": "string"
-                }
-            }
-        },
         "models.MemberCreate": {
             "type": "object",
             "required": [
@@ -6263,6 +6430,64 @@ const docTemplate = `{
                 },
                 "role_id": {
                     "type": "string"
+                },
+                "username": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.MemberDTO": {
+            "type": "object",
+            "properties": {
+                "createdAt": {
+                    "type": "string"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "first_name": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "is_active": {
+                    "type": "boolean"
+                },
+                "last_name": {
+                    "type": "string"
+                },
+                "role_id": {
+                    "$ref": "#/definitions/models.RoleDTO"
+                },
+                "username": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.MemberResponse": {
+            "type": "object",
+            "properties": {
+                "createdAt": {
+                    "type": "string"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "first_name": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "is_active": {
+                    "type": "boolean"
+                },
+                "last_name": {
+                    "type": "string"
+                },
+                "role_id": {
+                    "$ref": "#/definitions/models.Role"
                 },
                 "username": {
                     "type": "string"
@@ -6300,6 +6525,20 @@ const docTemplate = `{
                 }
             }
         },
+        "models.MovementTypeDTO": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "is_income": {
+                    "type": "boolean"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
         "models.MovementTypeUpdate": {
             "type": "object",
             "properties": {
@@ -6317,25 +6556,16 @@ const docTemplate = `{
         "models.Permission": {
             "type": "object",
             "properties": {
+                "code": {
+                    "type": "string"
+                },
+                "details": {
+                    "type": "string"
+                },
                 "group": {
-                    "type": "string",
-                    "enum": [
-                        "income",
-                        "expense",
-                        "user",
-                        "supplier",
-                        "product",
-                        "purchase",
-                        "attendance",
-                        "client",
-                        "vehicle",
-                        "resume"
-                    ]
+                    "type": "string"
                 },
                 "id": {
-                    "type": "integer"
-                },
-                "name": {
                     "type": "string"
                 },
                 "roles": {
@@ -6376,6 +6606,23 @@ const docTemplate = `{
                 "name"
             ],
             "properties": {
+                "identifier": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.ProductDTO": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
                 "identifier": {
                     "type": "string"
                 },
@@ -6466,18 +6713,34 @@ const docTemplate = `{
                 }
             }
         },
-        "models.PurchaseOrderUpdate": {
+        "models.PurchaseOrderDTO": {
             "type": "object",
-            "required": [
-                "amount",
-                "id",
-                "order_date",
-                "order_number",
-                "purchase_products"
-            ],
             "properties": {
                 "amount": {
                     "type": "number"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "order_date": {
+                    "type": "string"
+                },
+                "order_number": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.PurchaseOrderResponse": {
+            "type": "object",
+            "properties": {
+                "amount": {
+                    "type": "number"
+                },
+                "created_at": {
+                    "type": "string"
                 },
                 "id": {
                     "type": "string"
@@ -6491,10 +6754,13 @@ const docTemplate = `{
                 "purchase_products": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/models.PurchaseProductUpdate"
+                        "$ref": "#/definitions/models.PurchaseProductResponse"
                     }
                 },
-                "supplier_id": {
+                "supplier": {
+                    "$ref": "#/definitions/models.SupplierResponse"
+                },
+                "updated_at": {
                     "type": "string"
                 }
             }
@@ -6559,26 +6825,32 @@ const docTemplate = `{
                 }
             }
         },
-        "models.PurchaseProductUpdate": {
+        "models.PurchaseProductResponse": {
             "type": "object",
-            "required": [
-                "id",
-                "product_id",
-                "quantity",
-                "unit_price"
-            ],
             "properties": {
+                "created_at": {
+                    "type": "string"
+                },
                 "expired_at": {
                     "type": "string"
                 },
                 "id": {
                     "type": "string"
                 },
+                "product": {
+                    "$ref": "#/definitions/models.ProductDTO"
+                },
                 "product_id": {
+                    "type": "string"
+                },
+                "purchase_order_id": {
                     "type": "string"
                 },
                 "quantity": {
                     "type": "integer"
+                },
+                "total_price": {
+                    "type": "number"
                 },
                 "unit_price": {
                     "type": "number"
@@ -6625,6 +6897,17 @@ const docTemplate = `{
                 }
             }
         },
+        "models.RoleDTO": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
         "models.Service": {
             "type": "object",
             "properties": {
@@ -6654,6 +6937,17 @@ const docTemplate = `{
                 "name"
             ],
             "properties": {
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.ServiceDTO": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
                 "name": {
                     "type": "string"
                 }
@@ -6733,6 +7027,26 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "email": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "phone": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.SupplierResponse": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "id": {
                     "type": "string"
                 },
                 "name": {
@@ -6939,6 +7253,40 @@ const docTemplate = `{
                 "year": {
                     "type": "string",
                     "example": "2020"
+                }
+            }
+        },
+        "models.VehicleDTO": {
+            "type": "object",
+            "properties": {
+                "domain": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.VehicleResponse": {
+            "type": "object",
+            "properties": {
+                "brand": {
+                    "type": "string"
+                },
+                "color": {
+                    "type": "string"
+                },
+                "domain": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "model": {
+                    "type": "string"
+                },
+                "year": {
+                    "type": "string"
                 }
             }
         },

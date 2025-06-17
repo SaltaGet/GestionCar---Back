@@ -30,3 +30,8 @@ func (r *RoleCreate) Validate() error {
 
 	return fmt.Errorf("campo %s es invalido, revisar: (%s) (%s)", field, tag, param)
 }
+
+type RoleDTO struct {
+	ID   string `json:"id"`
+	Name string `json:"name"`
+}

@@ -7,7 +7,7 @@ import (
 	"github.com/DanielChachagua/GestionCar/pkg/models"
 )
 
-func (m *MemberService) MemberGetAll() (*[]models.MemberResponse, error) {
+func (m *MemberService) MemberGetAll() (*[]models.MemberDTO, error) {
 	defer func() {
 		if r := recover(); r != nil {
 			log.Printf("Panic atrapado en MemberGetAll: %v", r)
@@ -19,37 +19,7 @@ func (m *MemberService) MemberGetAll() (*[]models.MemberResponse, error) {
 		return nil, err
 	}
 
-	ids := make([]string, 0, len(*members))
-	for _, member := range *members {
-		ids = append(ids, member.ID)
-	}
-
-	users, err := m.UserRepository.UserGetByListID(ids)
-	if err != nil {
-		return nil, err
-	}
-
-	userMap := make(map[string]models.UserDTO)
-	for _, user := range *users {
-		userMap[user.ID] = user
-	}
-
-	membersResponse := make([]models.MemberResponse, 0, len(*members))
-	for _, member := range *members {
-		user, exists := userMap[member.ID]
-		if !exists {
-			continue 
-		}
-		membersResponse = append(membersResponse, models.MemberResponse{
-			ID:       member.ID,
-			RoleID:   member.RoleID,
-			IsActive: member.IsActive,
-			Role:     member.Role,
-			UserData: user,
-		})
-	}
-
-	return &membersResponse, nil
+	return members, nil
 }
 
 
@@ -62,7 +32,7 @@ func (m *MemberService) MemberGetPermissionByUserID(userID string) (*models.Memb
 	return member, nil
 }
 
-func (m *MemberService) MemberGetByID(id string) (*models.Member, error) {
+func (m *MemberService) MemberGetByID(id string) (*models.MemberResponse, error) {
 	member, err := m.MemberRepository.MemberGetByID(id)
 	if err != nil {
 		return nil, err

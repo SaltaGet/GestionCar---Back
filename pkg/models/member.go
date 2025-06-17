@@ -48,10 +48,23 @@ func (m *MemberCreate) Validate() error {
 }
 
 type MemberResponse struct {
-	ID       string  `json:"id"`
-	UserID   string  `json:"user_id"`
-	RoleID   string  `json:"role_id"`
-	IsActive bool    `json:"is_active"`
-	Role     Role    `json:"role"`
-	UserData UserDTO `json:"user_data"`
+	ID        string `json:"id"`
+	FirstName string `json:"first_name"`
+	LastName  string `json:"last_name"`
+	Username  string `json:"username"`
+	Email     string `json:"email" validate:"email"`
+	IsActive  bool   `json:"is_active"`
+	CreatedAt time.Time `son:"created_at"`
+	Role    Role `json:"role_id"`
+}
+
+type MemberDTO struct {
+	ID        string `json:"id"`
+	FirstName string `json:"first_name"`
+	LastName  string `json:"last_name"`
+	Username  string `json:"username"`
+	Email     string `json:"email" validate:"email"`
+	IsActive  bool   `json:"is_active"`
+	CreatedAt time.Time `son:"created_at"`
+	Role    RoleDTO `json:"role_id"`
 }

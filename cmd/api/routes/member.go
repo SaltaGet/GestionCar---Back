@@ -17,4 +17,7 @@ func MemberRoutes(app *fiber.App){
 		return ctrl.MemberCreate(c)
 	}))
 
+	member.Get("/get/:id", GetController("MemberController", func(c *fiber.Ctx, ctrl *controllers.MemberController) error {
+		return ctrl.MemberGetByID(c)
+	}))
 }

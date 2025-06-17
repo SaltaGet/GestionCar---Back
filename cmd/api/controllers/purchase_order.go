@@ -163,68 +163,68 @@ func (p *PurchaseOrderController) PurchaseOrderCreate(c *fiber.Ctx) error {
 	})
 }
 
-// PurchaseOrderUpdate godoc
-//	@Summary		Update Purchase Order
-//	@Description	Updates an existing purchase order with new details.
-//              Validates the request body and workplace context.
-//              Returns a success message if the update is successful.
-//	@Tags			Purchase Order
-//	@Accept			json
-//	@Produce		json
-//	@Security		BearerAuth
-//	@Param			purchaseOrderUpdate	body		models.PurchaseOrderUpdate	true	"Purchase order update data"
-//	@Success		200					{object}	models.Response				"Purchase order updated successfully"
-//	@Failure		400					{object}	models.Response				"Bad Request"
-//	@Failure		401					{object}	models.Response				"Auth is required"
-//	@Failure		403					{object}	models.Response				"Not Authorized"
-//	@Failure		422					{object}	models.Response				"Model invalid"
-//	@Failure		500					{object}	models.Response				"Internal server error"
-//	@Router			/purchase_order/update [put]
-func (p *PurchaseOrderController) PurchaseOrderUpdate(c *fiber.Ctx) error {
-	logging.INFO("Actualizar orden de compra")
-	var purchaseOrderUpdate models.PurchaseOrderUpdate
-	if err := c.BodyParser(&purchaseOrderUpdate); err != nil {
-		logging.ERROR("Error: %s", err.Error())
-		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
-			Status:  false,
-			Body:    nil,
-			Message: "Invalid request" + err.Error(),
-		})
-	}
-	if err := purchaseOrderUpdate.Validate(); err != nil {
-		logging.ERROR("Error: %s", err.Error())
-		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
-			Status:  false,
-			Body:    nil,
-			Message: err.Error(),
-		})
-	}
+// // PurchaseOrderUpdate godoc
+// //	@Summary		Update Purchase Order
+// //	@Description	Updates an existing purchase order with new details.
+// //              Validates the request body and workplace context.
+// //              Returns a success message if the update is successful.
+// //	@Tags			Purchase Order
+// //	@Accept			json
+// //	@Produce		json
+// //	@Security		BearerAuth
+// //	@Param			purchaseOrderUpdate	body		models.PurchaseOrderUpdate	true	"Purchase order update data"
+// //	@Success		200					{object}	models.Response				"Purchase order updated successfully"
+// //	@Failure		400					{object}	models.Response				"Bad Request"
+// //	@Failure		401					{object}	models.Response				"Auth is required"
+// //	@Failure		403					{object}	models.Response				"Not Authorized"
+// //	@Failure		422					{object}	models.Response				"Model invalid"
+// //	@Failure		500					{object}	models.Response				"Internal server error"
+// //	@Router			/purchase_order/update [put]
+// func (p *PurchaseOrderController) PurchaseOrderUpdate(c *fiber.Ctx) error {
+// 	logging.INFO("Actualizar orden de compra")
+// 	var purchaseOrderUpdate models.PurchaseOrderUpdate
+// 	if err := c.BodyParser(&purchaseOrderUpdate); err != nil {
+// 		logging.ERROR("Error: %s", err.Error())
+// 		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
+// 			Status:  false,
+// 			Body:    nil,
+// 			Message: "Invalid request" + err.Error(),
+// 		})
+// 	}
+// 	if err := purchaseOrderUpdate.Validate(); err != nil {
+// 		logging.ERROR("Error: %s", err.Error())
+// 		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
+// 			Status:  false,
+// 			Body:    nil,
+// 			Message: err.Error(),
+// 		})
+// 	}
 
-	err := p.PurchaseOrderService.PurchaseOrderUpdate(&purchaseOrderUpdate)
-	if err != nil {
-		if errResp, ok := err.(*models.ErrorStruc); ok {
-			logging.ERROR("Error: %s", errResp.Err.Error())
-			return c.Status(errResp.StatusCode).JSON(models.Response{
-				Status:  false,
-				Body:    nil,
-				Message: errResp.Message,
-			})
-		}
-		logging.ERROR("Error: %s", err.Error())
-		return c.Status(fiber.StatusInternalServerError).JSON(models.Response{
-			Status:  false,
-			Body:    nil,
-			Message: "Error interno",
-		})
-	}
+// 	err := p.PurchaseOrderService.PurchaseOrderUpdate(&purchaseOrderUpdate)
+// 	if err != nil {
+// 		if errResp, ok := err.(*models.ErrorStruc); ok {
+// 			logging.ERROR("Error: %s", errResp.Err.Error())
+// 			return c.Status(errResp.StatusCode).JSON(models.Response{
+// 				Status:  false,
+// 				Body:    nil,
+// 				Message: errResp.Message,
+// 			})
+// 		}
+// 		logging.ERROR("Error: %s", err.Error())
+// 		return c.Status(fiber.StatusInternalServerError).JSON(models.Response{
+// 			Status:  false,
+// 			Body:    nil,
+// 			Message: "Error interno",
+// 		})
+// 	}
 
-	logging.INFO("Orden de compra editada con éxito")
-	return c.Status(200).JSON(models.Response{
-		Status:  true,
-		Body:    nil,
-		Message: "Orden de compra editada con éxito",
-	})
-}
+// 	logging.INFO("Orden de compra editada con éxito")
+// 	return c.Status(200).JSON(models.Response{
+// 		Status:  true,
+// 		Body:    nil,
+// 		Message: "Orden de compra editada con éxito",
+// 	})
+// }
 
 // PurchaseOrderDelete godoc
 //	@Summary		Delete Purchase Order

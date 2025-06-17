@@ -14,7 +14,7 @@ import (
 // @Accept			json
 // @Produce		json
 // @Security		BearerAuth
-// @Success		200	{object}	models.Response{body=[]models.Member}	"Members obtenidos con éxito"
+// @Success		200	{object}	models.Response{body=[]models.MemberDTO}	"Members obtenidos con éxito"
 // @Failure		400	{object}	models.Response							"Bad Request"
 // @Failure		401	{object}	models.Response							"Auth is required"
 // @Failure		403	{object}	models.Response							"Not Authorized"
@@ -23,6 +23,59 @@ import (
 func (m *MemberController) MemberGetAll(c *fiber.Ctx) error {
 	logging.INFO("Obtener todos los miembros")
 	memebers, err := m.MemberService.MemberGetAll()
+	if err != nil {
+		if errResp, ok := err.(*models.ErrorStruc); ok {
+			logging.ERROR("Error: %s", errResp.Err.Error())
+			return c.Status(errResp.StatusCode).JSON(models.Response{
+				Status:  false,
+				Body:    nil,
+				Message: errResp.Message,
+			})
+		}
+		logging.ERROR("Error: %s", err.Error())
+		return c.Status(fiber.StatusInternalServerError).JSON(models.Response{
+			Status:  false,
+			Body:    nil,
+			Message: "Error interno",
+		})
+	}
+
+	logging.INFO("Miembros obtenidos con éxito")
+	return c.Status(fiber.StatusOK).JSON(models.Response{
+		Status:  true,
+		Body:    memebers,
+		Message: "Miembros obtenidos con éxito",
+	})
+}
+
+//	Member godoc
+//
+// @Summary		Memeber GetAll
+// @Description	Memeber GetAll required auth token
+// @Tags			Member
+// @Accept			json
+// @Produce		json
+// @Security		BearerAuth
+// @Param			id	path	string	true	"Member ID"
+// @Success		200	{object}	models.Response{body=[]models.MemberResponse}	"Members obtenidos con éxito"
+// @Failure		400	{object}	models.Response							"Bad Request"
+// @Failure		401	{object}	models.Response							"Auth is required"
+// @Failure		403	{object}	models.Response							"Not Authorized"
+// @Failure		500	{object}	models.Response
+// @Router			/member/get/{id} [get]
+func (m *MemberController) MemberGetByID(c *fiber.Ctx) error {
+	logging.INFO("Obtener todos los miembros")
+	id := c.Params("id")
+	if id == "" {
+		logging.ERROR("Error: ID is required")
+		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
+			Status:  false,
+			Body:    nil,
+			Message: "ID is required",
+		})
+	}
+
+	memebers, err := m.MemberService.MemberGetByID(id)
 	if err != nil {
 		if errResp, ok := err.(*models.ErrorStruc); ok {
 			logging.ERROR("Error: %s", errResp.Err.Error())

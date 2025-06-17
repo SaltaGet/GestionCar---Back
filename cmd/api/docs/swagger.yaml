@@ -143,6 +143,30 @@ definitions:
     - first_name
     - last_name
     type: object
+  models.ClientDTO:
+    properties:
+      first_name:
+        type: string
+      id:
+        type: string
+      last_name:
+        type: string
+    type: object
+  models.ClientResponse:
+    properties:
+      cuil:
+        type: string
+      dni:
+        type: string
+      email:
+        type: string
+      first_name:
+        type: string
+      id:
+        type: string
+      last_name:
+        type: string
+    type: object
   models.ClientUpdate:
     properties:
       cuil:
@@ -180,6 +204,10 @@ definitions:
     properties:
       address:
         type: string
+      attendances:
+        items:
+          $ref: '#/definitions/models.Attendance'
+        type: array
       created_at:
         type: string
       email:
@@ -209,6 +237,24 @@ definitions:
     - name
     - phone
     type: object
+  models.EmployeeDTO:
+    properties:
+      id:
+        type: string
+      name:
+        type: string
+    type: object
+  models.EmployeeResponse:
+    properties:
+      email:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+      phone:
+        type: string
+    type: object
   models.EmployeeUpdate:
     properties:
       address:
@@ -228,7 +274,35 @@ definitions:
     - name
     - phone
     type: object
-  models.Expense:
+  models.ExpenseCreate:
+    properties:
+      amount:
+        type: number
+      details:
+        type: string
+      movement_type_id:
+        type: string
+      purchase_order_id:
+        type: string
+    required:
+    - amount
+    - details
+    - movement_type_id
+    type: object
+  models.ExpenseDTO:
+    properties:
+      amount:
+        type: number
+      created_at:
+        type: string
+      id:
+        type: string
+      movement_type:
+        $ref: '#/definitions/models.MovementTypeDTO'
+      purchase_order:
+        $ref: '#/definitions/models.PurchaseOrderDTO'
+    type: object
+  models.ExpenseResponse:
     properties:
       amount:
         type: number
@@ -238,31 +312,10 @@ definitions:
         type: string
       id:
         type: string
-      movement_type_id:
-        type: string
-      movement_type_laundry:
-        $ref: '#/definitions/models.MovementType'
-      supplier:
-        $ref: '#/definitions/models.Supplier'
-      supplier_id:
-        type: string
-      updated_at:
-        type: string
-    type: object
-  models.ExpenseCreate:
-    properties:
-      amount:
-        type: number
-      details:
-        type: string
-      movement_type_id:
-        type: string
-      supplier_id:
-        type: string
-    required:
-    - amount
-    - details
-    - movement_type_id
+      movement_type:
+        $ref: '#/definitions/models.MovementTypeDTO'
+      purchase_order:
+        $ref: '#/definitions/models.PurchaseOrderResponse'
     type: object
   models.ExpenseUpdate:
     properties:
@@ -273,8 +326,9 @@ definitions:
       id:
         type: string
       movement_type_id:
+        description: SupplierID     string  `json:"supplier_id"` sacar
         type: string
-      supplier_id:
+      purchase_order_id:
         type: string
     required:
     - amount
@@ -343,6 +397,54 @@ definitions:
     - services_id
     - vehicle_id
     type: object
+  models.IncomeDTO:
+    properties:
+      amount:
+        type: number
+      client:
+        $ref: '#/definitions/models.ClientDTO'
+      created_at:
+        type: string
+      employee:
+        $ref: '#/definitions/models.EmployeeDTO'
+      id:
+        type: string
+      movement_type:
+        $ref: '#/definitions/models.MovementTypeDTO'
+      services:
+        items:
+          $ref: '#/definitions/models.ServiceDTO'
+        type: array
+      ticket:
+        type: string
+      vehicle:
+        $ref: '#/definitions/models.VehicleDTO'
+    type: object
+  models.IncomeResponse:
+    properties:
+      amount:
+        type: number
+      client:
+        $ref: '#/definitions/models.ClientResponse'
+      created_at:
+        type: string
+      details:
+        type: string
+      employee:
+        $ref: '#/definitions/models.EmployeeResponse'
+      id:
+        type: string
+      movement_type:
+        $ref: '#/definitions/models.MovementTypeDTO'
+      services:
+        items:
+          $ref: '#/definitions/models.ServiceDTO'
+        type: array
+      ticket:
+        type: string
+      vehicle:
+        $ref: '#/definitions/models.VehicleResponse'
+    type: object
   models.IncomeUpdate:
     properties:
       amount:
@@ -373,35 +475,6 @@ definitions:
     - ticket
     - vehicle_id
     type: object
-  models.Member:
-    properties:
-      created_at:
-        type: string
-      deleted_at:
-        type: string
-      email:
-        type: string
-      first_name:
-        type: string
-      id:
-        type: string
-      is_active:
-        type: boolean
-      is_deleted:
-        type: boolean
-      last_name:
-        type: string
-      password:
-        type: string
-      role:
-        $ref: '#/definitions/models.Role'
-      role_id:
-        type: string
-      updated_at:
-        type: string
-      username:
-        type: string
-    type: object
   models.MemberCreate:
     properties:
       email:
@@ -420,6 +493,44 @@ definitions:
     - last_name
     - role_id
     - username
+    type: object
+  models.MemberDTO:
+    properties:
+      createdAt:
+        type: string
+      email:
+        type: string
+      first_name:
+        type: string
+      id:
+        type: string
+      is_active:
+        type: boolean
+      last_name:
+        type: string
+      role_id:
+        $ref: '#/definitions/models.RoleDTO'
+      username:
+        type: string
+    type: object
+  models.MemberResponse:
+    properties:
+      createdAt:
+        type: string
+      email:
+        type: string
+      first_name:
+        type: string
+      id:
+        type: string
+      is_active:
+        type: boolean
+      last_name:
+        type: string
+      role_id:
+        $ref: '#/definitions/models.Role'
+      username:
+        type: string
     type: object
   models.MovementType:
     properties:
@@ -441,6 +552,15 @@ definitions:
       name:
         type: string
     type: object
+  models.MovementTypeDTO:
+    properties:
+      id:
+        type: string
+      is_income:
+        type: boolean
+      name:
+        type: string
+    type: object
   models.MovementTypeUpdate:
     properties:
       id:
@@ -452,22 +572,13 @@ definitions:
     type: object
   models.Permission:
     properties:
+      code:
+        type: string
+      details:
+        type: string
       group:
-        enum:
-        - income
-        - expense
-        - user
-        - supplier
-        - product
-        - purchase
-        - attendance
-        - client
-        - vehicle
-        - resume
         type: string
       id:
-        type: integer
-      name:
         type: string
       roles:
         items:
@@ -498,6 +609,17 @@ definitions:
     required:
     - identifier
     - name
+    type: object
+  models.ProductDTO:
+    properties:
+      created_at:
+        type: string
+      id:
+        type: string
+      identifier:
+        type: string
+      name:
+        type: string
     type: object
   models.ProductUpdate:
     properties:
@@ -554,10 +676,25 @@ definitions:
     - order_number
     - purchase_products
     type: object
-  models.PurchaseOrderUpdate:
+  models.PurchaseOrderDTO:
     properties:
       amount:
         type: number
+      created_at:
+        type: string
+      id:
+        type: string
+      order_date:
+        type: string
+      order_number:
+        type: string
+    type: object
+  models.PurchaseOrderResponse:
+    properties:
+      amount:
+        type: number
+      created_at:
+        type: string
       id:
         type: string
       order_date:
@@ -566,16 +703,12 @@ definitions:
         type: string
       purchase_products:
         items:
-          $ref: '#/definitions/models.PurchaseProductUpdate'
+          $ref: '#/definitions/models.PurchaseProductResponse'
         type: array
-      supplier_id:
+      supplier:
+        $ref: '#/definitions/models.SupplierResponse'
+      updated_at:
         type: string
-    required:
-    - amount
-    - id
-    - order_date
-    - order_number
-    - purchase_products
     type: object
   models.PurchaseProduct:
     properties:
@@ -617,23 +750,26 @@ definitions:
     - quantity
     - unit_price
     type: object
-  models.PurchaseProductUpdate:
+  models.PurchaseProductResponse:
     properties:
+      created_at:
+        type: string
       expired_at:
         type: string
       id:
         type: string
+      product:
+        $ref: '#/definitions/models.ProductDTO'
       product_id:
+        type: string
+      purchase_order_id:
         type: string
       quantity:
         type: integer
+      total_price:
+        type: number
       unit_price:
         type: number
-    required:
-    - id
-    - product_id
-    - quantity
-    - unit_price
     type: object
   models.Response:
     properties:
@@ -661,6 +797,13 @@ definitions:
     required:
     - name
     type: object
+  models.RoleDTO:
+    properties:
+      id:
+        type: string
+      name:
+        type: string
+    type: object
   models.Service:
     properties:
       created_at:
@@ -682,6 +825,13 @@ definitions:
         type: string
     required:
     - name
+    type: object
+  models.ServiceDTO:
+    properties:
+      id:
+        type: string
+      name:
+        type: string
     type: object
   models.ServiceUpdate:
     properties:
@@ -738,6 +888,19 @@ definitions:
         type: string
     required:
     - name
+    type: object
+  models.SupplierResponse:
+    properties:
+      created_at:
+        type: string
+      email:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+      phone:
+        type: string
     type: object
   models.SupplierUpdate:
     properties:
@@ -875,6 +1038,28 @@ definitions:
     - client_id
     - color
     - domain
+    type: object
+  models.VehicleDTO:
+    properties:
+      domain:
+        type: string
+      id:
+        type: string
+    type: object
+  models.VehicleResponse:
+    properties:
+      brand:
+        type: string
+      color:
+        type: string
+      domain:
+        type: string
+      id:
+        type: string
+      model:
+        type: string
+      year:
+        type: string
     type: object
   models.VehicleUpdate:
     properties:
@@ -1905,7 +2090,7 @@ paths:
             - $ref: '#/definitions/models.Response'
             - properties:
                 body:
-                  $ref: '#/definitions/models.Expense'
+                  $ref: '#/definitions/models.ExpenseResponse'
               type: object
         "400":
           description: Bad Request
@@ -2025,6 +2210,17 @@ paths:
       consumes:
       - application/json
       description: Fetches all expenses from the specified tenant.
+      parameters:
+      - default: 1
+        description: Page number
+        in: query
+        name: page
+        type: integer
+      - default: 20
+        description: Number of items per page
+        in: query
+        name: limit
+        type: integer
       produces:
       - application/json
       responses:
@@ -2036,7 +2232,7 @@ paths:
             - properties:
                 body:
                   items:
-                    $ref: '#/definitions/models.Expense'
+                    $ref: '#/definitions/models.ExpenseDTO'
                   type: array
               type: object
         "400":
@@ -2066,6 +2262,17 @@ paths:
       - application/json
       description: Fetches all expenses from the specified tenant, on the current
         day.
+      parameters:
+      - default: 1
+        description: Page number
+        in: query
+        name: page
+        type: integer
+      - default: 20
+        description: Number of items per page
+        in: query
+        name: limit
+        type: integer
       produces:
       - application/json
       responses:
@@ -2077,7 +2284,7 @@ paths:
             - properties:
                 body:
                   items:
-                    $ref: '#/definitions/models.Expense'
+                    $ref: '#/definitions/models.ExpenseDTO'
                   type: array
               type: object
         "400":
@@ -2167,7 +2374,7 @@ paths:
             - $ref: '#/definitions/models.Response'
             - properties:
                 body:
-                  $ref: '#/definitions/models.Income'
+                  $ref: '#/definitions/models.IncomeResponse'
               type: object
         "400":
           description: Bad Request
@@ -2297,6 +2504,17 @@ paths:
       consumes:
       - application/json
       description: Fetches all incomes from the specified tenant.
+      parameters:
+      - default: 1
+        description: Page number
+        in: query
+        name: page
+        type: integer
+      - default: 20
+        description: Number of items per page
+        in: query
+        name: limit
+        type: integer
       produces:
       - application/json
       responses:
@@ -2308,7 +2526,7 @@ paths:
             - properties:
                 body:
                   items:
-                    $ref: '#/definitions/models.Income'
+                    $ref: '#/definitions/models.IncomeDTO'
                   type: array
               type: object
         "400":
@@ -2352,7 +2570,7 @@ paths:
             - properties:
                 body:
                   items:
-                    $ref: '#/definitions/models.Income'
+                    $ref: '#/definitions/models.IncomeDTO'
                   type: array
               type: object
         "400":
@@ -2432,7 +2650,7 @@ paths:
     post:
       consumes:
       - application/json
-      description: Memeber GetAll required auth token
+      description: Memeber Create required auth token
       parameters:
       - description: MemberCreate
         in: body
@@ -2447,6 +2665,52 @@ paths:
           description: Members obtenidos con éxito
           schema:
             $ref: '#/definitions/models.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.Response'
+        "401":
+          description: Auth is required
+          schema:
+            $ref: '#/definitions/models.Response'
+        "403":
+          description: Not Authorized
+          schema:
+            $ref: '#/definitions/models.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.Response'
+      security:
+      - BearerAuth: []
+      summary: Memeber Create
+      tags:
+      - Member
+  /member/get/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Memeber GetAll required auth token
+      parameters:
+      - description: Member ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Members obtenidos con éxito
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.Response'
+            - properties:
+                body:
+                  items:
+                    $ref: '#/definitions/models.MemberResponse'
+                  type: array
+              type: object
         "400":
           description: Bad Request
           schema:
@@ -2484,7 +2748,7 @@ paths:
             - properties:
                 body:
                   items:
-                    $ref: '#/definitions/models.Member'
+                    $ref: '#/definitions/models.MemberDTO'
                   type: array
               type: object
         "400":
@@ -3365,50 +3629,6 @@ paths:
       - BearerAuth: []
       - BearerAuth: []
       summary: Get All Purchase Orders
-      tags:
-      - Purchase Order
-  /purchase_order/update:
-    put:
-      consumes:
-      - application/json
-      description: Updates an existing purchase order with new details.
-      parameters:
-      - description: Purchase order update data
-        in: body
-        name: purchaseOrderUpdate
-        required: true
-        schema:
-          $ref: '#/definitions/models.PurchaseOrderUpdate'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: Purchase order updated successfully
-          schema:
-            $ref: '#/definitions/models.Response'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/models.Response'
-        "401":
-          description: Auth is required
-          schema:
-            $ref: '#/definitions/models.Response'
-        "403":
-          description: Not Authorized
-          schema:
-            $ref: '#/definitions/models.Response'
-        "422":
-          description: Model invalid
-          schema:
-            $ref: '#/definitions/models.Response'
-        "500":
-          description: Internal server error
-          schema:
-            $ref: '#/definitions/models.Response'
-      security:
-      - BearerAuth: []
-      summary: Update Purchase Order
       tags:
       - Purchase Order
   /role/create:

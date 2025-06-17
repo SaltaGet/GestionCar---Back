@@ -17,9 +17,9 @@ func PurchaseOrderRoutes(app *fiber.App){
 		return ctrl.PurchaseOrderCreate(c)
 	}))
 
-	order.Put("/update", GetController("PurchaseOrderController", func(c *fiber.Ctx, ctrl *controllers.PurchaseOrderController) error {
-		return ctrl.PurchaseOrderUpdate(c)
-	}))
+	// order.Put("/update", GetController("PurchaseOrderController", func(c *fiber.Ctx, ctrl *controllers.PurchaseOrderController) error {
+	// 	return ctrl.PurchaseOrderUpdate(c)
+	// }))
 
 	order.Delete("/delete/:id", GetController("PurchaseOrderController", func(c *fiber.Ctx, ctrl *controllers.PurchaseOrderController) error {
 		return ctrl.PurchaseOrderDelete(c)

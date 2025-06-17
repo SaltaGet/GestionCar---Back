@@ -10,13 +10,27 @@ import (
 	"gorm.io/gorm"
 )
 
-func (t *MemberRepository) MemberGetAll() (*[]models.Member, error) {
+func (t *MemberRepository) MemberGetAll() (*[]models.MemberDTO, error) {
 	var members []models.Member
 	if err := t.DB.Preload("Role").Find(&members).Error; err != nil {
 		return nil, models.ErrorResponse(500, "Error interno al buscar miembros", err)
 	}
 
-	return &members, nil
+	var memberDtos []models.MemberDTO
+	for _, member := range members {
+		memberDtos = append(memberDtos, models.MemberDTO{
+			ID:        member.ID,
+			FirstName: member.FirstName,
+			LastName:  member.LastName,
+			Username:  member.Username,
+			Email:     member.Email,
+			IsActive:  member.IsActive,
+			CreatedAt: member.CreatedAt,
+			Role:      models.RoleDTO{ID: member.Role.ID, Name: member.Role.Name},			
+		})
+	}
+
+	return &memberDtos, nil
 }
 
 func (t *MemberRepository) MemberGetPermissionByUserID(userID string) (*models.Member, error) {
@@ -30,7 +44,7 @@ func (t *MemberRepository) MemberGetPermissionByUserID(userID string) (*models.M
 	return &member, nil
 }
 
-func (t *MemberRepository) MemberGetByID(id string) (*models.Member, error) {
+func (t *MemberRepository) MemberGetByID(id string) (*models.MemberResponse, error) {
 	var member models.Member
 	if err := t.DB.Preload("Role").Preload("Role.Permissions").Where("id = ?", id).First(&member).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
@@ -38,7 +52,19 @@ func (t *MemberRepository) MemberGetByID(id string) (*models.Member, error) {
 		}
 		return nil, models.ErrorResponse(500, "Error interno al buscar miembro", err)
 	}
-	return &member, nil
+
+	response := models.MemberResponse{
+		ID:        member.ID,
+		FirstName: member.FirstName,
+		LastName:  member.LastName,
+		Username:  member.Username,
+		Email:     member.Email,
+		IsActive:  member.IsActive,
+		CreatedAt: member.CreatedAt,
+		Role:      member.Role,
+	}
+
+	return &response, nil
 }
 
 func (t *MemberRepository) MemberCreate(memeberCreate *models.MemberCreate, user *models.AuthenticatedUser) (id string, err error) {
