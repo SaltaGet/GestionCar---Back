@@ -45,7 +45,6 @@ type ExpenseUpdate struct {
 	ID      string `json:"id"`
 	Details string `json:"details" validate:"required"`
 	PurchaseOrderID *string `json:"purchase_order_id"`
-	// SupplierID     string  `json:"supplier_id"` sacar
 	MovementTypeID string  `json:"movement_type_id" validate:"required"`
 	Amount         float32 `json:"amount" validate:"required"`
 }
