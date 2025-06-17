@@ -4,7 +4,7 @@ import (
 	"github.com/DanielChachagua/GestionCar/pkg/models"
 )
 
-func (e *ExpenseService) ExpenseGetByID(id string) (*models.Expense, error) {
+func (e *ExpenseService) ExpenseGetByID(id string) (*models.ExpenseResponse, error) {
 	expense, err := e.ExpenseRepository.ExpenseGetByID(id)
 	if err != nil {
 		return nil, err
@@ -13,8 +13,8 @@ func (e *ExpenseService) ExpenseGetByID(id string) (*models.Expense, error) {
 	return expense, nil
 }
 
-func (e *ExpenseService) ExpenseGetAll() (*[]models.Expense, error) {
-	expenses, err := e.ExpenseRepository.ExpenseGetAll()
+func (e *ExpenseService) ExpenseGetAll(page, limit int) (*[]models.ExpenseDTO, error) {
+	expenses, err := e.ExpenseRepository.ExpenseGetAll(page, limit)
 	
 	if err != nil {
 		return nil, err
@@ -23,8 +23,8 @@ func (e *ExpenseService) ExpenseGetAll() (*[]models.Expense, error) {
 	return expenses, nil
 }
 
-func (e *ExpenseService) ExpenseGetToday() (*[]models.Expense, error) {
-	expenses, err := e.ExpenseRepository.ExpenseGetToday()
+func (e *ExpenseService) ExpenseGetToday(page, limit int) (*[]models.ExpenseDTO, error) {
+	expenses, err := e.ExpenseRepository.ExpenseGetToday(page, limit)
 	
 	if err != nil {
 		return nil, err

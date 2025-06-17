@@ -53,3 +53,8 @@ func (s *ServiceUpdate) Validate() error {
 
 	return fmt.Errorf("campo %s es invalido, revisar: (%s) (%s)", field, tag, param)
 }
+
+type ServiceDTO struct {
+	ID   string `json:"id"`
+	Name string `json:"name"`
+}

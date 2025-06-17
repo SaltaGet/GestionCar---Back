@@ -77,3 +77,10 @@ func (p *StockUpdate) Validate() error {
 
 	return fmt.Errorf("campo %s es invalido, revisar: (%s) (%s)", field, tag, param)
 }
+
+type ProductDTO struct {
+	ID         string    `json:"id"`
+	Identifier string    `json:"identifier"`
+	Name       string    `json:"name"`
+	CreatedAt  time.Time `json:"created_at"`
+}

@@ -71,11 +71,14 @@ func (v *VehicleUpdate) Validate() error {
 
 type VehicleDTO struct {
 	ID        string    `json:"id"`
+	Domain    string    `json:"domain"`
+}
+
+type VehicleResponse struct {
+	ID        string    `json:"id"`
 	Brand     string    `json:"brand"`
 	Model     string    `json:"model"`
 	Color     string    `json:"color"`
 	Year      string    `json:"year"`
 	Domain    string    `json:"domain"`
-	CreatedAt time.Time `json:"created_at"`
-	UpdatedAt time.Time `json:"updated_at"`
 }

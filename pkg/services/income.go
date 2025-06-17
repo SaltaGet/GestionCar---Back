@@ -4,7 +4,7 @@ import (
 	"github.com/DanielChachagua/GestionCar/pkg/models"
 )
 
-func (i *IncomeService) IncomeGetByID(id string) (*models.Income, error) {
+func (i *IncomeService) IncomeGetByID(id string) (*models.IncomeResponse, error) {
 	income, err := i.IncomeRepository.IncomeGetByID(id)
 	if err != nil {
 		return nil, err
@@ -13,8 +13,8 @@ func (i *IncomeService) IncomeGetByID(id string) (*models.Income, error) {
 	return income, nil
 }
 
-func (i *IncomeService) IncomeGetAll() (*[]models.Income, error) {
-	incomes, err := i.IncomeRepository.IncomeGetAll()
+func (i *IncomeService) IncomeGetAll(page, limit int) (*[]models.IncomeDTO, error) {
+	incomes, err := i.IncomeRepository.IncomeGetAll(page, limit)
 	
 	if err != nil {
 		return nil, err
@@ -23,8 +23,8 @@ func (i *IncomeService) IncomeGetAll() (*[]models.Income, error) {
 	return incomes, nil
 }
 
-func (i *IncomeService) IncomeGetToday() (*[]models.Income, error) {
-	incomes, err := i.IncomeRepository.IncomeGetToday()
+func (i *IncomeService) IncomeGetToday(page, limit int) (*[]models.IncomeDTO, error) {
+	incomes, err := i.IncomeRepository.IncomeGetToday(page, limit)
 	
 	if err != nil {
 		return nil, err

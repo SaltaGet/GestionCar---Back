@@ -65,3 +65,15 @@ func (p *PurchaseProductUpdate) Validate() error {
 
 	return fmt.Errorf("campo %s es invalido, revisar: (%s) (%s)", field, tag, param)
 }
+
+type PurchaseProductResponse struct {
+	ID              string        `json:"id"`
+	ProductID       string        `json:"product_id"`
+	PurchaseOrderID string        `json:"purchase_order_id"`
+	ExpiredAt       string        `json:"expired_at"`
+	UnitPrice       float32       `json:"unit_price"`
+	Quantity        int           `json:"quantity"`
+	TotalPrice      float32       `json:"total_price"`
+	CreatedAt       time.Time     `json:"created_at"`
+	Product         ProductDTO       `json:"product"`
+}

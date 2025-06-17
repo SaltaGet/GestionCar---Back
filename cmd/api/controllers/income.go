@@ -1,6 +1,8 @@
 package controllers
 
 import (
+	"strconv"
+
 	"github.com/DanielChachagua/GestionCar/cmd/api/logging"
 	"github.com/DanielChachagua/GestionCar/pkg/models"
 	"github.com/gofiber/fiber/v2"
@@ -14,7 +16,7 @@ import (
 //	@Produce		json
 //	@Security		BearerAuth
 //	@Param			id	path		string								true	"ID of the income"
-//	@Success		200	{object}	models.Response{body=models.Income}	"Income details fetched successfully"
+//	@Success		200	{object}	models.Response{body=models.IncomeResponse}	"Income details fetched successfully"
 //	@Failure		400	{object}	models.Response						"Bad Request"
 //	@Failure		401	{object}	models.Response						"Auth is required"
 //	@Failure		403	{object}	models.Response						"Not Authorized"
@@ -66,7 +68,9 @@ func (i *IncomeController) GetIncomeByID(c *fiber.Ctx) error {
 //	@Accept			json
 //	@Produce		json
 //	@Security		BearerAuth
-//	@Success		200	{object}	models.Response{body=[]models.Income}	"List of incomes"
+//	@Param			page	query		int	false	"Page number"	default(1)
+//	@Param			limit	query		int	false	"Number of items per page"	default(20)
+//	@Success		200	{object}	models.Response{body=[]models.IncomeDTO}	"List of incomes"
 //	@Failure		400	{object}	models.Response							"Bad Request"
 //	@Failure		401	{object}	models.Response							"Auth is required"
 //	@Failure		403	{object}	models.Response							"Not Authorized"
@@ -75,7 +79,19 @@ func (i *IncomeController) GetIncomeByID(c *fiber.Ctx) error {
 //	@Router			/income/get_all [get]
 func (i *IncomeController) GetAllIncomes(c *fiber.Ctx) error {
 	logging.INFO("Obtener todos los ingresos")
-	incomes, err := i.IncomeService.IncomeGetAll()
+	pageParam := c.Query("page", "1")
+	limitParam := c.Query("limit", "20")
+
+	page, err := strconv.Atoi(pageParam)
+	if err != nil || page < 1 {
+		page = 1
+	}
+	limit, err := strconv.Atoi(limitParam)
+	if err != nil || limit < 1 {
+		limit = 20
+	}
+
+	incomes, err := i.IncomeService.IncomeGetAll(page, limit)
 	if err != nil {
 		if errResp, ok := err.(*models.ErrorStruc); ok {
 			return c.Status(errResp.StatusCode).JSON(models.Response{
@@ -106,7 +122,7 @@ func (i *IncomeController) GetAllIncomes(c *fiber.Ctx) error {
 //	@Accept			json
 //	@Produce		json
 //	@Security		BearerAuth
-//	@Success		200	{object}	models.Response{body=[]models.Income}	"List of all incomes"
+//	@Success		200	{object}	models.Response{body=[]models.IncomeDTO}	"List of all incomes"
 //	@Failure		400	{object}	models.Response							"Bad Request"
 //	@Failure		401	{object}	models.Response							"Auth is required"
 //	@Failure		403	{object}	models.Response							"Not Authorized"
@@ -115,7 +131,19 @@ func (i *IncomeController) GetAllIncomes(c *fiber.Ctx) error {
 //	@Router			/income/get_today [get]
 func (i *IncomeController) GetIncomeToday(c *fiber.Ctx) error {
 	logging.INFO("Obtener todos los ingresos de hoy")
-	incomes, err := i.IncomeService.IncomeGetToday()
+	pageParam := c.Query("page", "1")
+	limitParam := c.Query("limit", "20")
+
+	page, err := strconv.Atoi(pageParam)
+	if err != nil || page < 1 {
+		page = 1
+	}
+	limit, err := strconv.Atoi(limitParam)
+	if err != nil || limit < 1 {
+		limit = 20
+	}
+
+	incomes, err := i.IncomeService.IncomeGetToday(page, limit)
 	if err != nil {
 		if errResp, ok := err.(*models.ErrorStruc); ok {
 			logging.ERROR("Error: %s", errResp.Err.Error())

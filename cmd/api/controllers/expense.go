@@ -1,6 +1,8 @@
 package controllers
 
 import (
+	"strconv"
+
 	"github.com/DanielChachagua/GestionCar/cmd/api/logging"
 	"github.com/DanielChachagua/GestionCar/pkg/models"
 	"github.com/gofiber/fiber/v2"
@@ -14,7 +16,7 @@ import (
 //	@Produce		json
 //	@Security		BearerAuth
 //	@Param			id	path		string									true	"ID of Expense"
-//	@Success		200	{object}	models.Response{body=models.Expense}	"Expense obtained successfully"
+//	@Success		200	{object}	models.Response{body=models.ExpenseResponse}	"Expense obtained successfully"
 //	@Failure		400	{object}	models.Response							"Bad Request"
 //	@Failure		401	{object}	models.Response							"Auth is required"
 //	@Failure		403	{object}	models.Response							"Not Authorized"
@@ -66,7 +68,9 @@ func (e *ExpenseController) GetExpenseByID(c *fiber.Ctx) error {
 //	@Accept			json
 //	@Produce		json
 //	@Security		BearerAuth
-//	@Success		200	{object}	models.Response{body=[]models.Expense}	"List of expenses"
+//	@Param			page	query		int	false	"Page number"	default(1)
+//	@Param			limit	query		int	false	"Number of items per page"	default(20)
+//	@Success		200	{object}	models.Response{body=[]models.ExpenseDTO}	"List of expenses"
 //	@Failure		400	{object}	models.Response							"Bad Request"
 //	@Failure		401	{object}	models.Response							"Auth is required"
 //	@Failure		403	{object}	models.Response							"Not Authorized"
@@ -74,7 +78,19 @@ func (e *ExpenseController) GetExpenseByID(c *fiber.Ctx) error {
 //	@Router			/expense/get_all [get]
 func (e *ExpenseController) GetAllExpenses(c *fiber.Ctx) error {
 	logging.INFO("Obtener todos los egresos")
-	expenses, err := e.ExpenseService.ExpenseGetAll()
+	pageParam := c.Query("page", "1")
+	limitParam := c.Query("limit", "20")
+
+	page, err := strconv.Atoi(pageParam)
+	if err != nil || page < 1 {
+		page = 1
+	}
+	limit, err := strconv.Atoi(limitParam)
+	if err != nil || limit < 1 {
+		limit = 20
+	}
+
+	expenses, err := e.ExpenseService.ExpenseGetAll(page, limit)
 	if err != nil {
 		if errResp, ok := err.(*models.ErrorStruc); ok {
 			logging.ERROR("Error: %s", errResp.Err.Error())
@@ -107,7 +123,9 @@ func (e *ExpenseController) GetAllExpenses(c *fiber.Ctx) error {
 //	@Accept			json
 //	@Produce		json
 //	@Security		BearerAuth
-//	@Success		200	{object}	models.Response{body=[]models.Expense}	"List of expenses"
+//	@Param			page	query		int	false	"Page number"	default(1)
+//	@Param			limit	query		int	false	"Number of items per page"	default(20)
+//	@Success		200	{object}	models.Response{body=[]models.ExpenseDTO}	"List of expenses"
 //	@Failure		400	{object}	models.Response							"Bad Request"
 //	@Failure		401	{object}	models.Response							"Auth is required"
 //	@Failure		403	{object}	models.Response							"Not Authorized"
@@ -115,7 +133,19 @@ func (e *ExpenseController) GetAllExpenses(c *fiber.Ctx) error {
 //	@Router			/expense/get_today [get]
 func (e *ExpenseController) GetExpenseToday(c *fiber.Ctx) error {
 	logging.INFO("Obtener todos los egresos de hoy")
-	expenses, err := e.ExpenseService.ExpenseGetToday()
+	pageParam := c.Query("page", "1")
+	limitParam := c.Query("limit", "20")
+
+	page, err := strconv.Atoi(pageParam)
+	if err != nil || page < 1 {
+		page = 1
+	}
+	limit, err := strconv.Atoi(limitParam)
+	if err != nil || limit < 1 {
+		limit = 20
+	}
+	
+	expenses, err := e.ExpenseService.ExpenseGetToday(page, limit)
 	if err != nil {
 		if errResp, ok := err.(*models.ErrorStruc); ok {
 			logging.ERROR("Error: %s", errResp.Err.Error())

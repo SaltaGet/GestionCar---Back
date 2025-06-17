@@ -77,3 +77,28 @@ func (i *IncomeUpdate) Validate() error {
 
 	return fmt.Errorf("campo %s es invalido, revisar: (%s) (%s)", field, tag, param)
 }
+
+type IncomeDTO struct {
+	ID             string       `json:"id"`
+	Ticket         string       `json:"ticket"`
+	Amount         float32      `json:"amount"`
+	CreatedAt      time.Time    `json:"created_at"`
+	Client         ClientDTO       `json:"client"`
+	Vehicle        VehicleDTO      `json:"vehicle"`
+	Employee       EmployeeDTO     `json:"employee"`
+	MovementType   MovementTypeDTO `json:"movement_type"`
+	Services       []ServiceDTO    `json:"services"`
+}
+
+type IncomeResponse struct {
+	ID             string       `json:"id"`
+	Ticket         string       `json:"ticket"`
+	Details        string       `json:"details"`
+	Amount         float32      `json:"amount"`
+	CreatedAt      time.Time    `json:"created_at"`
+	Client         ClientResponse       `json:"client"`
+	Vehicle        VehicleResponse      `json:"vehicle"`
+	Employee       EmployeeResponse     `json:"employee"`
+	MovementType   MovementTypeDTO `json:"movement_type"`
+	Services       []ServiceDTO    `json:"services"`
+}

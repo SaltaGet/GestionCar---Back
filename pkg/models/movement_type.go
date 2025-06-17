@@ -55,3 +55,9 @@ func (m *MovementTypeUpdate) Validate() error {
 
 	return fmt.Errorf("campo %s es invalido, revisar: (%s) (%s)", field, tag, param)
 }
+
+type MovementTypeDTO struct {
+	ID        string    `json:"id"`
+	Name      string    `json:"name"`
+	IsIncome  bool      `json:"is_income"`
+}

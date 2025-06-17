@@ -73,7 +73,7 @@ func main() {
 		Max:        120,
 		Expiration: 1 * time.Minute,
 		KeyGenerator: func(c *fiber.Ctx) string {
-			return c.IP() // Usa la IP del cliente como clave
+			return c.IP()
 		},
 		LimitReached: func(c *fiber.Ctx) error {
 			return c.Status(fiber.StatusTooManyRequests).JSON(fiber.Map{
@@ -86,50 +86,37 @@ func main() {
 
 	app.Get("/swagger/*", swagger.HandlerDefault)
 
-	// Cron job -- BACKUP
-	
 	c := cron.New()
 
-	// Ejecutar todos los días a las 3 AM
-	_, err = c.AddFunc("* * * * *", func() {
+	_, err = c.AddFunc("0 4 * * *", func() {
+		logging.INFO("⏰ [CRON] Iniciando backup diario...")
 		cfg, err := jobs.LoadConfig(appDependencies)
 		if err != nil {
-			panic("Error leyendo config: " + err.Error())
+			logging.ERROR("❌ [CRON] error leyendo config: %s", err.Error())
 		}
 		fmt.Println("⏰ Iniciando backup:", cfg.Databases)
 		jobs.RunBackup(cfg)
+		log.Println("✅ [CRON] Backup generado con éxito.")
 	})
 	if err != nil {
+		logging.ERROR("❌ Error al crear cron job: %s", err.Error())
+		panic(err)
+	}
+	
+	_, err = c.AddFunc("0 3 1 * *", func() {
+		logging.INFO("⏰ [CRON] Iniciando resumen mensual...")
+		err := jobs.GenetateResume(appDependencies)
+		if err != nil {
+			logging.ERROR("❌ Error al generar resumenes: %s", err.Error())
+		}
+		log.Println("✅ [CRON] Resumen generado con éxito.")
+	})
+	if err != nil {
+		logging.ERROR("❌ Error al crear cron job: %s", err.Error())
 		panic(err)
 	}
 
 	c.Start()
-
-	// c := cron.New()
-
-	// c.AddFunc("0 2 * * *", func() {
-	// 	today := time.Now().Format("2006-01-02")
-	// 	day := time.Now().Weekday()
-
-	// 	if day == time.Sunday {
-	// 		if err := jobs.FullBackup(today); err != nil {
-	// 			log.Printf("❌ Error en backup completo: %v", err)
-	// 		} else {
-	// 			log.Println("✅ Backup completo exitoso.")
-	// 		}
-	// 	} else {
-	// 		lastFull := jobs.GetLastFullBackupDir()
-	// 		if err := jobs.IncrementalBackup(today, lastFull); err != nil {
-	// 			log.Printf("❌ Error en backup incremental: %v", err)
-	// 		} else {
-	// 			log.Println("✅ Backup incremental exitoso.")
-	// 		}
-	// 	}
-	// })
-	// // c.AddFunc("0 0 1 * *", jobs.Backup)
-	// // c.AddFunc("0 0 * * 0", jobs.GenerateResume)
-
-	// c.Start()
 
 	log.Fatal(app.Listen(":3000"))
 }

@@ -65,3 +65,18 @@ func (c *ClientUpdate) Validate() error {
 
 	return fmt.Errorf("campo %s es invalido, revisar: (%s) (%s)", field, tag, param)
 }
+
+type ClientDTO struct {
+	ID        string `json:"id"`
+	FirstName string `json:"first_name"`
+	LastName  string `json:"last_name"`
+}
+
+type ClientResponse struct {
+	ID        string `json:"id"`
+	FirstName string `json:"first_name"`
+	LastName  string `json:"last_name"`
+	Cuil      string `json:"cuil"`
+	Dni       string `json:"dni"`
+	Email     string `json:"email"`
+}

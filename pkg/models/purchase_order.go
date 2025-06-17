@@ -8,14 +8,14 @@ import (
 )
 
 type PurchaseOrder struct {
-	ID                      string            `gorm:"not null;primaryKey;size:36" json:"id"`
-	OrderNumber             string            `gorm:"not null" json:"order_number"`
-	OrderDate               string            `gorm:"not null" json:"order_date"`
-	Amount                  float32           `gorm:"not null" json:"amount"`
-	SupplierID              string            `gorm:"not null;size:36" json:"supplier_id"`
-	CreatedAt               time.Time         `gorm:"autoCreateTime" json:"created_at"`
-	UpdatedAt               time.Time         `gorm:"autoUpdateTime" json:"updated_at"`
-	Supplier                Supplier          `gorm:"foreignKey:SupplierID;references:ID" json:"supplier"`
+	ID               string            `gorm:"not null;primaryKey;size:36" json:"id"`
+	OrderNumber      string            `gorm:"not null" json:"order_number"`
+	OrderDate        string            `gorm:"not null" json:"order_date"`
+	Amount           float32           `gorm:"not null" json:"amount"`
+	SupplierID       string            `gorm:"not null;size:36" json:"supplier_id"`
+	CreatedAt        time.Time         `gorm:"autoCreateTime" json:"created_at"`
+	UpdatedAt        time.Time         `gorm:"autoUpdateTime" json:"updated_at"`
+	Supplier         Supplier          `gorm:"foreignKey:SupplierID;references:ID" json:"supplier"`
 	PurchaseProducts []PurchaseProduct `gorm:"foreignKey:PurchaseOrderID;references:ID" json:"purchase_products"`
 }
 
@@ -64,4 +64,23 @@ func (p *PurchaseOrderUpdate) Validate() error {
 	param := validationErr.Param()
 
 	return fmt.Errorf("campo %s es invalido, revisar: (%s) (%s)", field, tag, param)
+}
+
+type PurchaseOrderResponse struct {
+	ID               string                    `json:"id"`
+	OrderNumber      string                    `json:"order_number"`
+	OrderDate        string                    `json:"order_date"`
+	Amount           float32                   `json:"amount"`
+	CreatedAt        time.Time                 `json:"created_at"`
+	UpdatedAt        time.Time                 `json:"updated_at"`
+	Supplier         SupplierResponse                  `json:"supplier"`
+	PurchaseProducts []PurchaseProductResponse `json:"purchase_products"`
+}
+
+type PurchaseOrderDTO struct {
+	ID          string  `json:"id"`
+	OrderNumber string  `json:"order_number"`
+	OrderDate   string  `json:"order_date"`
+	Amount      float32 `json:"amount"`
+	CreatedAt   time.Time `json:"created_at"`
 }
