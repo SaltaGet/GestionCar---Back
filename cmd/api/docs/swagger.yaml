@@ -326,7 +326,6 @@ definitions:
       id:
         type: string
       movement_type_id:
-        description: SupplierID     string  `json:"supplier_id"` sacar
         type: string
       purchase_order_id:
         type: string
@@ -585,6 +584,17 @@ definitions:
           $ref: '#/definitions/models.Role'
         type: array
     type: object
+  models.PermissionResponse:
+    properties:
+      code:
+        type: string
+      details:
+        type: string
+      group:
+        type: string
+      id:
+        type: string
+    type: object
   models.Product:
     properties:
       created_at:
@@ -794,8 +804,13 @@ definitions:
     properties:
       name:
         type: string
+      permissions_id:
+        items:
+          type: string
+        type: array
     required:
     - name
+    - permissions_id
     type: object
   models.RoleDTO:
     properties:
@@ -803,6 +818,17 @@ definitions:
         type: string
       name:
         type: string
+    type: object
+  models.RoleResponse:
+    properties:
+      id:
+        type: string
+      name:
+        type: string
+      permissions:
+        items:
+          $ref: '#/definitions/models.PermissionResponse'
+        type: array
     type: object
   models.Service:
     properties:
@@ -3018,7 +3044,7 @@ paths:
       tags:
       - Movement
   /permission/get_all:
-    post:
+    get:
       consumes:
       - application/json
       description: Permissions GetAll required auth token
@@ -3028,7 +3054,14 @@ paths:
         "200":
           description: Members obtenidos con éxito
           schema:
-            $ref: '#/definitions/models.Response'
+            allOf:
+            - $ref: '#/definitions/models.Response'
+            - properties:
+                body:
+                  items:
+                    $ref: '#/definitions/models.PermissionResponse'
+                  type: array
+              type: object
         "400":
           description: Bad Request
           schema:
@@ -3049,9 +3082,9 @@ paths:
       - BearerAuth: []
       summary: Permissions GetAll
       tags:
-      - Member
+      - Permission
   /permission/get_to_me:
-    post:
+    get:
       consumes:
       - application/json
       description: Permissions GetAllToMe required auth token
@@ -3061,7 +3094,14 @@ paths:
         "200":
           description: Members obtenidos con éxito
           schema:
-            $ref: '#/definitions/models.Response'
+            allOf:
+            - $ref: '#/definitions/models.Response'
+            - properties:
+                body:
+                  items:
+                    $ref: '#/definitions/models.PermissionResponse'
+                  type: array
+              type: object
         "400":
           description: Bad Request
           schema:
@@ -3082,7 +3122,7 @@ paths:
       - BearerAuth: []
       summary: Permissions GetAlltoME
       tags:
-      - Member
+      - Permission
   /product/{id}:
     get:
       consumes:
@@ -3676,7 +3716,14 @@ paths:
         "200":
           description: Roles retrieved successfully
           schema:
-            $ref: '#/definitions/models.Response'
+            allOf:
+            - $ref: '#/definitions/models.Response'
+            - properties:
+                body:
+                  items:
+                    $ref: '#/definitions/models.RoleResponse'
+                  type: array
+              type: object
         "400":
           description: Bad request if user or workplace is missing
           schema:

@@ -217,14 +217,14 @@ func runIncrementalBackup(cfg *Config, db string, cp Checkpoint) (Checkpoint, st
 func hasRealChanges(content string) bool {
 	log.Println(content)
 	keywords := []string{
-		"Write_rows",   // INSERT
-		"Update_rows",  // UPDATE
-		"Delete_rows",  // DELETE
-		"Create_table", // solo si procesás eventos binarios decodificados
-		"ALTER TABLE",  // Esto aparece como parte de Query
+		"Write_rows",   
+		"Update_rows",
+		"Delete_rows", 
+		"Create_table",
+		"ALTER TABLE",
 		"DROP TABLE",
 		"CREATE TABLE",
-		"Query: CREATE", // en modo row, CREATE/DROP/ALTER aparecen como "Query"
+		"Query: CREATE", 
 		"Query: DROP",
 		"Query: ALTER",
 	}

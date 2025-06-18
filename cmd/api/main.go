@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	// "os/exec"
 	"time"
 
 	_ "github.com/DanielChachagua/GestionCar/cmd/api/docs"
@@ -33,6 +34,28 @@ import (
 
 func main() {
 	logging.INFO("Iniciando el servidor...")
+
+	// swagPath := "/home/daniel/go/bin/swag"
+
+	// cmd := exec.Command(swagPath,
+	// 	"init",
+	// 	"--generalInfo", "main.go",
+	// 	"--output", "docs",
+	// 	"--parseDependency",
+	// 	"--parseInternal",
+	// )
+
+	// // Para ver la salida del comando en la consola
+	// cmd.Stdout = os.Stdout
+	// cmd.Stderr = os.Stderr
+
+	// log.Println("Ejecutando swag init...")
+
+	// if err := cmd.Run(); err != nil {
+	// 	log.Fatalf("Error ejecutando swag init: %v", err)
+	// }
+
+	// log.Printf("Comando ejecutado correctamente:")
 
 	err := godotenv.Load()
 	if err != nil {
@@ -88,21 +111,24 @@ func main() {
 
 	c := cron.New()
 
-	_, err = c.AddFunc("0 4 * * *", func() {
-		logging.INFO("⏰ [CRON] Iniciando backup diario...")
-		cfg, err := jobs.LoadConfig(appDependencies)
+	env := os.Getenv("ENV")
+	if env == "prod" {
+		_, err = c.AddFunc("0 4 * * *", func() {
+			logging.INFO("⏰ [CRON] Iniciando backup diario...")
+			cfg, err := jobs.LoadConfig(appDependencies)
+			if err != nil {
+				logging.ERROR("❌ [CRON] error leyendo config: %s", err.Error())
+			}
+			fmt.Println("⏰ Iniciando backup:", cfg.Databases)
+			jobs.RunBackup(cfg)
+			log.Println("✅ [CRON] Backup generado con éxito.")
+		})
 		if err != nil {
-			logging.ERROR("❌ [CRON] error leyendo config: %s", err.Error())
+			logging.ERROR("❌ Error al crear cron job: %s", err.Error())
+			panic(err)
 		}
-		fmt.Println("⏰ Iniciando backup:", cfg.Databases)
-		jobs.RunBackup(cfg)
-		log.Println("✅ [CRON] Backup generado con éxito.")
-	})
-	if err != nil {
-		logging.ERROR("❌ Error al crear cron job: %s", err.Error())
-		panic(err)
 	}
-	
+
 	_, err = c.AddFunc("0 3 1 * *", func() {
 		logging.INFO("⏰ [CRON] Iniciando resumen mensual...")
 		err := jobs.GenetateResume(appDependencies)

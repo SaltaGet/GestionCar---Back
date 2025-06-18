@@ -7,19 +7,18 @@ import (
 )
 
 //	Permissions GetAll godoc
-//
 // @Summary		Permissions GetAll
 // @Description	Permissions GetAll required auth token
-// @Tags			Member
+// @Tags			Permission
 // @Accept			json
 // @Produce		json
 // @Security		BearerAuth
-// @Success		200				{object}	models.Response		"Members obtenidos con éxito"
+// @Success		200				{object}	models.Response{body=[]models.PermissionResponse}		"Members obtenidos con éxito"
 // @Failure		400				{object}	models.Response		"Bad Request"
 // @Failure		401				{object}	models.Response		"Auth is required"
 // @Failure		403				{object}	models.Response		"Not Authorized"
 // @Failure		500				{object}	models.Response
-// @Router			/permission/get_all [post]
+// @Router			/permission/get_all [get]
 func (p *PermissionController) PermissionGetAll(c *fiber.Ctx) error {
 	logging.INFO("Obtener todos los permisos")
 	permissions, err := p.PermissionService.PermissionGetAll()
@@ -52,16 +51,16 @@ func (p *PermissionController) PermissionGetAll(c *fiber.Ctx) error {
 //
 // @Summary		Permissions GetAlltoME
 // @Description	Permissions GetAllToMe required auth token
-// @Tags			Member
+// @Tags			Permission
 // @Accept			json
 // @Produce		json
 // @Security		BearerAuth
-// @Success		200				{object}	models.Response		"Members obtenidos con éxito"
+// @Success		200				{object}	models.Response{body=[]models.PermissionResponse}		"Members obtenidos con éxito"
 // @Failure		400				{object}	models.Response		"Bad Request"
 // @Failure		401				{object}	models.Response		"Auth is required"
 // @Failure		403				{object}	models.Response		"Not Authorized"
 // @Failure		500				{object}	models.Response
-// @Router			/permission/get_to_me [post]
+// @Router			/permission/get_to_me [get]
 func (p *PermissionController) PermissionGetToMe(c *fiber.Ctx) error {
 	logging.INFO("Obtener todos mis permisos")
 	user := c.Locals("user").(*models.AuthenticatedUser)

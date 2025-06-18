@@ -15,6 +15,7 @@ func SetupRoutes(app *fiber.App, appDependencies *dependencies.Application) {
 	IncomeRoutes(app)
 	MemberRoutes(app)
 	MovementRoutes(app)
+	PermissionRoutes(app)
 	ProductRoutes(app)
 	PurchaseOrderRoutes(app)
 	// PurchaseProductRoutes(app, tenantDependencies.PurchaseProductController)

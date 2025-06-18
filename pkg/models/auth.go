@@ -42,6 +42,7 @@ type AuthenticatedUser struct {
 	FirstName     string   `json:"first_name"`
 	LastName      string   `json:"last_name"`
 	Username      string   `json:"username"`
+	IsAdmin       bool     `json:"is_admin"`
 	IsAdminTenant bool     `json:"is_admin_tenant"`
 	RoleID        *string  `json:"role_id"`
 	RoleName      *string  `json:"role_name"`

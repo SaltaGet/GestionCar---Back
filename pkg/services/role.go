@@ -4,7 +4,7 @@ import (
 	"github.com/DanielChachagua/GestionCar/pkg/models"
 )
 
-func (r *RoleService) RoleGetAll() (*[]models.Role, error) {
+func (r *RoleService) RoleGetAll() (*[]models.RoleResponse, error) {
 	roles, err := r.RoleRepository.RoleGetAll()
 	if err != nil {
 		return nil, err

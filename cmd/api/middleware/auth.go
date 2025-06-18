@@ -384,6 +384,7 @@ func getAdminUser(c *fiber.Ctx, deps *dependencies.Application, tenantID string,
 				FirstName:     user.FirstName,
 				LastName:      user.LastName,
 				Username:      user.Username,
+				IsAdmin: user.IsAdmin,
 				IsAdminTenant: t.IsAdmin,
 				TenantID:      &tenantID,
 				TenantName:    &tenant.Name,
@@ -447,6 +448,7 @@ func handleSuperAdmin(c *fiber.Ctx, deps *dependencies.Application, userId strin
 		FirstName:     user.FirstName,
 		LastName:      user.LastName,
 		Username:      user.Username,
+		IsAdmin:       user.IsAdmin,
 		IsAdminTenant: true,
 	}
 

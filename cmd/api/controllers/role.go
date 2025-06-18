@@ -16,7 +16,7 @@ import (
 //	@Accept			json
 //	@Produce		json
 //	@Security		BearerAuth
-//	@Success		200	{object}	models.Response	"Roles retrieved successfully"
+//	@Success		200	{object}	models.Response{body=[]models.RoleResponse}	"Roles retrieved successfully"
 //	@Failure		400	{object}	models.Response	"Bad request if user or workplace is missing"
 //	@Failure		500	{object}	models.Response	"Internal server error on failure"
 //	@Router			/role/get_all [get]

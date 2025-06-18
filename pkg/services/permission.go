@@ -10,7 +10,7 @@ func (p *PermissionService) PermissionByRoleID(roleID string) (*[]string, error)
 	return permissions, nil
 }
 
-func (p *PermissionService) PermissionGetAll() (*[]models.Permission, error) {
+func (p *PermissionService) PermissionGetAll() (*[]models.PermissionResponse, error) {
 	permissions, err := p.PermissionRepository.PermissionGetAll()
 	if err != nil {
 		return nil, err
@@ -18,7 +18,7 @@ func (p *PermissionService) PermissionGetAll() (*[]models.Permission, error) {
 	return permissions, nil
 }
 
-func (p *PermissionService) PermissionGetToMe(roleID string) (*[]models.Permission, error) {
+func (p *PermissionService) PermissionGetToMe(roleID string) (*[]models.PermissionResponse, error) {
 	permissions, err := p.PermissionRepository.PermissionGetToMe(roleID)
 	if err != nil {
 		return nil, err

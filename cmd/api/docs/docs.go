@@ -3098,7 +3098,7 @@ const docTemplate = `{
             }
         },
         "/permission/get_all": {
-            "post": {
+            "get": {
                 "security": [
                     {
                         "BearerAuth": []
@@ -3112,14 +3112,29 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Member"
+                    "Permission"
                 ],
                 "summary": "Permissions GetAll",
                 "responses": {
                     "200": {
                         "description": "Members obtenidos con éxito",
                         "schema": {
-                            "$ref": "#/definitions/models.Response"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/models.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "body": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/models.PermissionResponse"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     },
                     "400": {
@@ -3150,7 +3165,7 @@ const docTemplate = `{
             }
         },
         "/permission/get_to_me": {
-            "post": {
+            "get": {
                 "security": [
                     {
                         "BearerAuth": []
@@ -3164,14 +3179,29 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Member"
+                    "Permission"
                 ],
                 "summary": "Permissions GetAlltoME",
                 "responses": {
                     "200": {
                         "description": "Members obtenidos con éxito",
                         "schema": {
-                            "$ref": "#/definitions/models.Response"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/models.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "body": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/models.PermissionResponse"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     },
                     "400": {
@@ -4158,7 +4188,22 @@ const docTemplate = `{
                     "200": {
                         "description": "Roles retrieved successfully",
                         "schema": {
-                            "$ref": "#/definitions/models.Response"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/models.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "body": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/models.RoleResponse"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     },
                     "400": {
@@ -6193,7 +6238,6 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "movement_type_id": {
-                    "description": "SupplierID     string  ` + "`" + `json:\"supplier_id\"` + "`" + ` sacar",
                     "type": "string"
                 },
                 "purchase_order_id": {
@@ -6576,6 +6620,23 @@ const docTemplate = `{
                 }
             }
         },
+        "models.PermissionResponse": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "string"
+                },
+                "details": {
+                    "type": "string"
+                },
+                "group": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                }
+            }
+        },
         "models.Product": {
             "type": "object",
             "properties": {
@@ -6889,11 +6950,18 @@ const docTemplate = `{
         "models.RoleCreate": {
             "type": "object",
             "required": [
-                "name"
+                "name",
+                "permissions_id"
             ],
             "properties": {
                 "name": {
                     "type": "string"
+                },
+                "permissions_id": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
                 }
             }
         },
@@ -6905,6 +6973,23 @@ const docTemplate = `{
                 },
                 "name": {
                     "type": "string"
+                }
+            }
+        },
+        "models.RoleResponse": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "permissions": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.PermissionResponse"
+                    }
                 }
             }
         },
