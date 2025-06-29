@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"path/filepath"
+
 	// "os/exec"
 	"time"
 
@@ -35,34 +37,34 @@ import (
 func main() {
 	logging.INFO("Iniciando el servidor...")
 
-	// swagPath := "/home/daniel/go/bin/swag"
-
-	// cmd := exec.Command(swagPath,
-	// 	"init",
-	// 	"--generalInfo", "main.go",
-	// 	"--output", "docs",
-	// 	"--parseDependency",
-	// 	"--parseInternal",
-	// )
-
-	// // Para ver la salida del comando en la consola
-	// cmd.Stdout = os.Stdout
-	// cmd.Stderr = os.Stderr
-
-	// log.Println("Ejecutando swag init...")
-
-	// if err := cmd.Run(); err != nil {
-	// 	log.Fatalf("Error ejecutando swag init: %v", err)
-	// }
-
-	// log.Printf("Comando ejecutado correctamente:")
-
 	err := godotenv.Load()
 	if err != nil {
 		log.Fatalf("Error loading .env file: %v", err)
 	}
 
-	db, err := database.ConnectDB(os.Getenv("URI_DB"))
+	dbURI := os.Getenv("URI_DB")
+	if dbURI == "" {
+		log.Fatal("DATABASE_URI no está configurada en el archivo .env")
+	}
+
+	// Ruta absoluta a tu directorio de migraciones
+	// Asegúrate de que esta ruta sea correcta en tu entorno de despliegue
+	currentDir, err := os.Getwd()
+	if err != nil {
+		log.Fatalf("Error al obtener el directorio de trabajo actual: %v", err)
+	}
+	projectRoot := filepath.Dir(filepath.Dir(currentDir))
+
+	migrationPath := filepath.Join(projectRoot, "pkg", "migrations")
+
+	// 1. Aplicar migraciones primero
+	// err = database.ApplyMigrations(dbURI, migrationPath)
+	// if err != nil {
+	// 	log.Fatalf("Fallo al aplicar migraciones: %v", err)
+	// }
+
+	// 2. Luego, inicializar GORM
+	db, err := database.ConnectDB(dbURI)
 	if err != nil {
 		log.Fatalf("Error al conectar con la base de datos: %v", err)
 	}
@@ -87,6 +89,11 @@ func main() {
 	}))
 
 	appDependencies := dependencies.NewApplication(db)
+
+	err = jobs.Migrations(appDependencies, migrationPath)
+	if err != nil {
+		log.Fatalf("Error al aplicar migraciones: %v", err)
+	}
 
 	app.Use(middleware.LoggingMiddleware)
 	app.Use(middleware.InjectApp(appDependencies))

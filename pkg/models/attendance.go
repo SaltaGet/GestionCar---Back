@@ -16,6 +16,7 @@ type Attendance struct {
 	Date       string    `gorm:"not null" json:"date"`
 	Amount     float32   `gorm:"not null" json:"amount"`
 	IsHoliday  bool      `gorm:"not null;default:false" json:"is_holiday"`
+	IsPaid     bool      `gorm:"not null;default:false" json:"is_paid"`
 	CreatedAt  time.Time `gorm:"autoCreateTime" json:"created_at"`
 	UpdatedAt  time.Time `gorm:"autoUpdateTime" json:"updated_at"`
 
@@ -25,7 +26,7 @@ type Attendance struct {
 type AttendanceCreate struct {
 	EmployeeID string  `json:"employee_id" validate:"required" example:"123e4567-e89b-12d3-a456-426614174000"`
 	Attendance string  `json:"role" validate:"oneof=presente tarde parcial ausente"`
-	Hours      int     `gjson:"hours" validate:"max=24"`
+	Hours      int     `json:"hours" validate:"max=24"`
 	Date       string  `json:"date" validate:"required" example:"2022-01-01"`
 	Amount     float32 `json:"amount" validate:"required" example:"1234.56"`
 	IsHoliday  bool    `json:"is_holiday" default:"false" example:"false"`
@@ -50,7 +51,7 @@ type AttendanceUpdate struct {
 	ID         string  `json:"id" example:"123e4567-e89b-12d3-a456-426614174000" validate:"required"`
 	EmployeeID string  `json:"employee_id" validate:"required" example:"123e4567-e89b-12d3-a456-426614174000"`
 	Attendance string  `json:"role" validate:"oneof=presente tarde parcial ausente"`
-	Hours      int     `gjson:"hours" validate:"max=24"`
+	Hours      int     `json:"hours" validate:"max=24"`
 	Date       string  `json:"date" validate:"required" example:"2022-01-01"`
 	Amount     float32 `json:"amount" validate:"required" example:"1234.56"`
 	IsHoliday  bool    `json:"is_holiday" default:"false" example:"false"`

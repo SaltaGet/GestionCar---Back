@@ -43,8 +43,8 @@ require (
 	github.com/mailru/easyjson v0.7.6 // indirect
 	github.com/swaggo/files/v2 v2.0.2 // indirect
 	github.com/swaggo/swag v1.16.4
-	golang.org/x/net v0.34.0 // indirect
-	golang.org/x/tools v0.22.0 // indirect
+	golang.org/x/net v0.38.0 // indirect
+	golang.org/x/tools v0.24.0 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 )
 
@@ -67,4 +67,12 @@ require (
 	filippo.io/edwards25519 v1.1.0 // indirect
 	github.com/hashicorp/golang-lru v1.0.2
 	gorm.io/driver/mysql v1.6.0
+)
+
+require github.com/golang-migrate/migrate/v4 v4.18.3
+
+require (
+	github.com/hashicorp/errwrap v1.1.0 // indirect
+	github.com/hashicorp/go-multierror v1.1.1 // indirect
+	go.uber.org/atomic v1.7.0 // indirect
 )
