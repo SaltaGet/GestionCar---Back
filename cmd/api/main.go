@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"log"
 	"os"
-	"path/filepath"
+	// "path/filepath"
 
 	// "os/exec"
 	"time"
@@ -47,10 +47,10 @@ func main() {
 		log.Fatal("DATABASE_URI no está configurada en el archivo .env")
 	}
 
-	currentDir, err := os.Getwd()
-	if err != nil {
-		log.Fatalf("Error al obtener el directorio de trabajo actual: %v", err)
-	}
+	// currentDir, err := os.Getwd()
+	// if err != nil {
+	// 	log.Fatalf("Error al obtener el directorio de trabajo actual: %v", err)
+	// }
 
 	local := os.Getenv("LOCAL")
 	if local == "true" {
@@ -59,9 +59,9 @@ func main() {
 		}
 	}
 
-	projectRoot := filepath.Dir(filepath.Dir(currentDir))
+	// projectRoot := filepath.Dir(filepath.Dir(currentDir))
 
-	migrationPath := filepath.Join(projectRoot, "pkg", "migrations")
+	// migrationPath := filepath.Join(projectRoot, "pkg", "migrations")
 
 	db, err := database.ConnectDB(dbURI)
 	if err != nil {
@@ -89,7 +89,7 @@ func main() {
 
 	appDependencies := dependencies.NewApplication(db)
 
-	err = jobs.Migrations(appDependencies, migrationPath)
+	err = jobs.Migrations(appDependencies)
 	if err != nil {
 		log.Fatalf("Error al aplicar migraciones: %v", err)
 	}
