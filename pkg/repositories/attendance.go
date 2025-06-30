@@ -8,29 +8,39 @@ import (
 	"gorm.io/gorm"
 )
 
-func (r *AttendanceRepository) AttendanceGetByID(id string) (*models.Attendance, error) {
-	var attendance models.Attendance
-	if err := r.DB.Where("id = ?", id).First(&attendance).Error; err != nil {
+func (r *AttendanceRepository) AttendanceGetByID(id string) (*models.AttendanceDTO, error) {
+	var attendanceDTO models.AttendanceDTO
+	if err := r.DB.Model(&models.Attendance{}).
+		Select("id, employee_id, attendance, hours, date, amount, is_holiday, is_paid, created_at, updated_at").
+		Where("id = ?", id).
+		First(&attendanceDTO).
+		Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, models.ErrorResponse(404, "Asistencia no encontrada", err)
 		}
 		return nil, models.ErrorResponse(500, "Error interno al buscar la asistencia", err)
 	}
-	return &attendance, nil
+	return &attendanceDTO, nil
 }
 
-func (r *AttendanceRepository) AttendanceGetAll() (*[]models.Attendance, error) {
-	var attendances []models.Attendance
-	if err := r.DB.Find(&attendances).Error; err != nil {
+func (r *AttendanceRepository) AttendanceGetAll() (*[]models.AttendanceDTO, error) {
+	var attendancesDTO []models.AttendanceDTO
+	if err := r.DB.Model(&models.Attendance{}).
+		Select("id, employee_id, attendance, hours, date, amount, is_holiday, is_paid, created_at, updated_at").
+		Find(&attendancesDTO).
+		Error; err != nil {
 		return nil, models.ErrorResponse(500, "Error al buscar las asistencias", err)
 	}
-	return &attendances, nil
+	return &attendancesDTO, nil
 
 }
 
-func (r *AttendanceRepository) AttendanceGetByEmployeeID(userID string) (*[]models.Attendance, error) {
-	var attendances []models.Attendance
-	if err := r.DB.Where("employee_id = ?", userID).Find(&attendances).Error; err != nil {
+func (r *AttendanceRepository) AttendanceGetByEmployeeID(userID string) (*[]models.AttendanceDTO, error) {
+	var attendances []models.AttendanceDTO
+	if err := r.DB.Model(&models.Attendance{}).
+		Select("id, employee_id, attendance, hours, date, amount, is_holiday, is_paid, created_at, updated_at").
+		Where("employee_id = ?", userID).
+		Find(&attendances).Error; err != nil {
 		return nil, models.ErrorResponse(500, "Error interno al buscar asistencias", err)
 	}
 	return &attendances, nil
@@ -67,7 +77,6 @@ func (r *AttendanceRepository) AttendanceUpdate(attendance *models.AttendanceUpd
 		return models.ErrorResponse(500, "Error interno al actualizar la asistencia", err)
 	}
 	return nil
-
 }
 
 func (r *AttendanceRepository) AttendanceDelete(id string) error {
@@ -81,11 +90,25 @@ func (r *AttendanceRepository) AttendanceDelete(id string) error {
 	return nil
 }
 
-func (r *AttendanceRepository) AttendanceGetByDate(date_start string, date_end string) (*[]models.Attendance, error) {
-	var attendances []models.Attendance
-	if err := r.DB.Where("DATE(date) >= ? AND DATE(date) <= ?", date_start, date_end).Find(&attendances).Error; err != nil {
+func (r *AttendanceRepository) AttendanceGetByDate(date_start string, date_end string) (*[]models.AttendanceDTO, error) {
+	var attendances []models.AttendanceDTO
+	if err := r.DB.Model(&models.Attendance{}).
+		Select("id, employee_id, attendance, hours, date, amount, is_holiday, is_paid, created_at, updated_at").
+		Where("DATE(date) >= ? AND DATE(date) <= ?", date_start, date_end).
+		Find(&attendances).Error; err != nil {
 		return nil, models.ErrorResponse(500, "Error interno al buscar las asistencias", err)
 	}
 	return &attendances, nil
 }
 
+func (r *AttendanceRepository) AttendanceUpdatePay(listIDs []string) error {
+	if err := r.DB.
+		Model(&models.Attendance{}).
+		Where("id IN (?)", listIDs).
+		Update("is_paid", gorm.Expr("NOT is_paid")).
+		Error; err != nil {
+		return models.ErrorResponse(500, "Error interno al marcar las asistencias como pagadas", err)
+	}
+
+	return nil
+}

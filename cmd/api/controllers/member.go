@@ -8,18 +8,18 @@ import (
 
 //	Member godoc
 //
-// @Summary		Memeber GetAll
-// @Description	Memeber GetAll required auth token
-// @Tags			Member
-// @Accept			json
-// @Produce		json
-// @Security		BearerAuth
-// @Success		200	{object}	models.Response{body=[]models.MemberDTO}	"Members obtenidos con éxito"
-// @Failure		400	{object}	models.Response							"Bad Request"
-// @Failure		401	{object}	models.Response							"Auth is required"
-// @Failure		403	{object}	models.Response							"Not Authorized"
-// @Failure		500	{object}	models.Response
-// @Router			/member/get_all [get]
+//	@Summary		Memeber GetAll
+//	@Description	Memeber GetAll required auth token
+//	@Tags			Member
+//	@Accept			json
+//	@Produce		json
+//	@Security		BearerAuth
+//	@Success		200	{object}	models.Response{body=[]models.MemberDTO}	"Members obtenidos con éxito"
+//	@Failure		400	{object}	models.Response								"Bad Request"
+//	@Failure		401	{object}	models.Response								"Auth is required"
+//	@Failure		403	{object}	models.Response								"Not Authorized"
+//	@Failure		500	{object}	models.Response
+//	@Router			/member/get_all [get]
 func (m *MemberController) MemberGetAll(c *fiber.Ctx) error {
 	logging.INFO("Obtener todos los miembros")
 	memebers, err := m.MemberService.MemberGetAll()
@@ -50,19 +50,19 @@ func (m *MemberController) MemberGetAll(c *fiber.Ctx) error {
 
 //	Member godoc
 //
-// @Summary		Memeber GetAll
-// @Description	Memeber GetAll required auth token
-// @Tags			Member
-// @Accept			json
-// @Produce		json
-// @Security		BearerAuth
-// @Param			id	path	string	true	"Member ID"
-// @Success		200	{object}	models.Response{body=[]models.MemberResponse}	"Members obtenidos con éxito"
-// @Failure		400	{object}	models.Response							"Bad Request"
-// @Failure		401	{object}	models.Response							"Auth is required"
-// @Failure		403	{object}	models.Response							"Not Authorized"
-// @Failure		500	{object}	models.Response
-// @Router			/member/get/{id} [get]
+//	@Summary		Memeber GetAll
+//	@Description	Memeber GetAll required auth token
+//	@Tags			Member
+//	@Accept			json
+//	@Produce		json
+//	@Security		BearerAuth
+//	@Param			id	path		string											true	"Member ID"
+//	@Success		200	{object}	models.Response{body=[]models.MemberResponse}	"Members obtenidos con éxito"
+//	@Failure		400	{object}	models.Response									"Bad Request"
+//	@Failure		401	{object}	models.Response									"Auth is required"
+//	@Failure		403	{object}	models.Response									"Not Authorized"
+//	@Failure		500	{object}	models.Response
+//	@Router			/member/get/{id} [get]
 func (m *MemberController) MemberGetByID(c *fiber.Ctx) error {
 	logging.INFO("Obtener todos los miembros")
 	id := c.Params("id")
@@ -103,19 +103,19 @@ func (m *MemberController) MemberGetByID(c *fiber.Ctx) error {
 
 //	Member godoc
 //
-// @Summary		Memeber Create
-// @Description	Memeber Create required auth token
-// @Tags			Member
-// @Accept			json
-// @Produce		json
-// @Security		BearerAuth
-// @Param			member_create	body		models.MemberCreate	true	"MemberCreate"
-// @Success		200				{object}	models.Response		"Members obtenidos con éxito"
-// @Failure		400				{object}	models.Response		"Bad Request"
-// @Failure		401				{object}	models.Response		"Auth is required"
-// @Failure		403				{object}	models.Response		"Not Authorized"
-// @Failure		500				{object}	models.Response
-// @Router			/member/create [post]
+//	@Summary		Memeber Create
+//	@Description	Memeber Create required auth token
+//	@Tags			Member
+//	@Accept			json
+//	@Produce		json
+//	@Security		BearerAuth
+//	@Param			member_create	body		models.MemberCreate	true	"MemberCreate"
+//	@Success		200				{object}	models.Response		"Members obtenidos con éxito"
+//	@Failure		400				{object}	models.Response		"Bad Request"
+//	@Failure		401				{object}	models.Response		"Auth is required"
+//	@Failure		403				{object}	models.Response		"Not Authorized"
+//	@Failure		500				{object}	models.Response
+//	@Router			/member/create [post]
 func (m *MemberController) MemberCreate(c *fiber.Ctx) error {
 	logging.INFO("Crear miembro")
 	user := c.Locals("user").(*models.AuthenticatedUser)

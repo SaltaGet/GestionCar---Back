@@ -17,8 +17,8 @@ import (
 //	@Produce		json
 //	@Security		BearerAuth
 //	@Success		200	{object}	models.Response{body=[]models.RoleResponse}	"Roles retrieved successfully"
-//	@Failure		400	{object}	models.Response	"Bad request if user or workplace is missing"
-//	@Failure		500	{object}	models.Response	"Internal server error on failure"
+//	@Failure		400	{object}	models.Response								"Bad request if user or workplace is missing"
+//	@Failure		500	{object}	models.Response								"Internal server error on failure"
 //	@Router			/role/get_all [get]
 func (r *RoleController) RoleGetAll(c *fiber.Ctx) error {
 	logging.INFO("Obtener todos los roles")
@@ -55,10 +55,10 @@ func (r *RoleController) RoleGetAll(c *fiber.Ctx) error {
 //	@Accept			json
 //	@Produce		json
 //	@Security		BearerAuth
-//	@Param			role	body		models.RoleCreate		true	"Role object"
-//	@Success		200		{object}	models.Response	"Roles retrieved successfully"
-//	@Failure		400		{object}	models.Response	"Bad request if user or workplace is missing"
-//	@Failure		500		{object}	models.Response	"Internal server error on failure"
+//	@Param			role	body		models.RoleCreate	true	"Role object"
+//	@Success		200		{object}	models.Response		"Roles retrieved successfully"
+//	@Failure		400		{object}	models.Response		"Bad request if user or workplace is missing"
+//	@Failure		500		{object}	models.Response		"Internal server error on failure"
 //	@Router			/role/create [post]
 func (r *RoleController) RoleCreate(c *fiber.Ctx) error {
 	logging.INFO("Crear rol")

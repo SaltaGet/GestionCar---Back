@@ -196,7 +196,7 @@ const docTemplate = `{
                                         "body": {
                                             "type": "array",
                                             "items": {
-                                                "$ref": "#/definitions/models.Attendance"
+                                                "$ref": "#/definitions/models.AttendanceDTO"
                                             }
                                         }
                                     }
@@ -280,7 +280,7 @@ const docTemplate = `{
                                         "body": {
                                             "type": "array",
                                             "items": {
-                                                "$ref": "#/definitions/models.Attendance"
+                                                "$ref": "#/definitions/models.AttendanceDTO"
                                             }
                                         }
                                     }
@@ -352,7 +352,22 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.Response"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/models.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "body": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/models.AttendanceDTO"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     },
                     "400": {
@@ -463,6 +478,81 @@ const docTemplate = `{
                 }
             }
         },
+        "/attendance/update_pay": {
+            "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Update Pay Attendance by listID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Attendance"
+                ],
+                "summary": "Update Pay Attendance",
+                "parameters": [
+                    {
+                        "description": "listID of Attendance",
+                        "name": "listIds",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.UpdatePay"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/models.Response"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/models.Response"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/models.Response"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/models.Response"
+                        }
+                    },
+                    "422": {
+                        "description": "Unprocessable Entity",
+                        "schema": {
+                            "$ref": "#/definitions/models.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/models.Response"
+                        }
+                    }
+                }
+            }
+        },
         "/attendance/{id}": {
             "get": {
                 "security": [
@@ -502,7 +592,7 @@ const docTemplate = `{
                                     "type": "object",
                                     "properties": {
                                         "body": {
-                                            "$ref": "#/definitions/models.Attendance"
+                                            "$ref": "#/definitions/models.AttendanceDTO"
                                         }
                                     }
                                 }
@@ -5764,6 +5854,15 @@ const docTemplate = `{
                 "amount": {
                     "type": "number"
                 },
+                "attendance": {
+                    "type": "string",
+                    "enum": [
+                        "presente",
+                        "tarde",
+                        "parcial",
+                        "ausente"
+                    ]
+                },
                 "created_at": {
                     "type": "string"
                 },
@@ -5786,14 +5885,8 @@ const docTemplate = `{
                 "is_holiday": {
                     "type": "boolean"
                 },
-                "role": {
-                    "type": "string",
-                    "enum": [
-                        "presente",
-                        "tarde",
-                        "parcial",
-                        "ausente"
-                    ]
+                "is_paid": {
+                    "type": "boolean"
                 },
                 "updated_at": {
                     "type": "string"
@@ -5812,6 +5905,15 @@ const docTemplate = `{
                     "type": "number",
                     "example": 1234.56
                 },
+                "attendance": {
+                    "type": "string",
+                    "enum": [
+                        "presente",
+                        "tarde",
+                        "parcial",
+                        "ausente"
+                    ]
+                },
                 "date": {
                     "type": "string",
                     "example": "2022-01-01"
@@ -5828,15 +5930,41 @@ const docTemplate = `{
                     "type": "boolean",
                     "default": false,
                     "example": false
+                }
+            }
+        },
+        "models.AttendanceDTO": {
+            "type": "object",
+            "properties": {
+                "amount": {
+                    "type": "number"
                 },
-                "role": {
-                    "type": "string",
-                    "enum": [
-                        "presente",
-                        "tarde",
-                        "parcial",
-                        "ausente"
-                    ]
+                "attendance": {
+                    "type": "string"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "date": {
+                    "type": "string"
+                },
+                "employee_id": {
+                    "type": "string"
+                },
+                "hours": {
+                    "type": "integer"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "is_holiday": {
+                    "type": "boolean"
+                },
+                "is_paid": {
+                    "type": "boolean"
+                },
+                "updated_at": {
+                    "type": "string"
                 }
             }
         },
@@ -5852,6 +5980,15 @@ const docTemplate = `{
                 "amount": {
                     "type": "number",
                     "example": 1234.56
+                },
+                "attendance": {
+                    "type": "string",
+                    "enum": [
+                        "presente",
+                        "tarde",
+                        "parcial",
+                        "ausente"
+                    ]
                 },
                 "date": {
                     "type": "string",
@@ -5873,15 +6010,6 @@ const docTemplate = `{
                     "type": "boolean",
                     "default": false,
                     "example": false
-                },
-                "role": {
-                    "type": "string",
-                    "enum": [
-                        "presente",
-                        "tarde",
-                        "parcial",
-                        "ausente"
-                    ]
                 }
             }
         },
@@ -7241,6 +7369,25 @@ const docTemplate = `{
                 },
                 "user_create": {
                     "$ref": "#/definitions/models.UserCreate"
+                }
+            }
+        },
+        "models.UpdatePay": {
+            "type": "object",
+            "required": [
+                "list_ids"
+            ],
+            "properties": {
+                "list_ids": {
+                    "type": "array",
+                    "minItems": 1,
+                    "items": {
+                        "type": "string"
+                    },
+                    "example": [
+                        "123e4567-e89b-12d3-a456-426614174000",
+                        "123e4567-e89b-12d3-a456-426614174000"
+                    ]
                 }
             }
         },

@@ -11,7 +11,7 @@ import (
 type Attendance struct {
 	ID         string    `gorm:"primaryKey;size:36" json:"id"`
 	EmployeeID string    `gorm:"size:36" json:"employee_id"`
-	Attendance string    `gorm:"not null" json:"role" validate:"oneof=presente tarde parcial ausente"`
+	Attendance string    `gorm:"not null" json:"attendance" validate:"oneof=presente tarde parcial ausente"`
 	Hours      int       `gorm:"not null;" json:"hours" validate:"max=24"`
 	Date       string    `gorm:"not null" json:"date"`
 	Amount     float32   `gorm:"not null" json:"amount"`
@@ -25,7 +25,7 @@ type Attendance struct {
 
 type AttendanceCreate struct {
 	EmployeeID string  `json:"employee_id" validate:"required" example:"123e4567-e89b-12d3-a456-426614174000"`
-	Attendance string  `json:"role" validate:"oneof=presente tarde parcial ausente"`
+	Attendance string  `json:"attendance" validate:"oneof=presente tarde parcial ausente"`
 	Hours      int     `json:"hours" validate:"max=24"`
 	Date       string  `json:"date" validate:"required" example:"2022-01-01"`
 	Amount     float32 `json:"amount" validate:"required" example:"1234.56"`
@@ -50,7 +50,7 @@ func (e *AttendanceCreate) Validate() error {
 type AttendanceUpdate struct {
 	ID         string  `json:"id" example:"123e4567-e89b-12d3-a456-426614174000" validate:"required"`
 	EmployeeID string  `json:"employee_id" validate:"required" example:"123e4567-e89b-12d3-a456-426614174000"`
-	Attendance string  `json:"role" validate:"oneof=presente tarde parcial ausente"`
+	Attendance string  `json:"attendance" validate:"oneof=presente tarde parcial ausente"`
 	Hours      int     `json:"hours" validate:"max=24"`
 	Date       string  `json:"date" validate:"required" example:"2022-01-01"`
 	Amount     float32 `json:"amount" validate:"required" example:"1234.56"`
@@ -91,3 +91,50 @@ func (e *DateBetween) Validate() error {
 
 	return fmt.Errorf("campo %s es invalido, revisar: (%s) (%s)", field, tag, param)
 }
+
+type UpdatePay struct {
+	ListIDs []string `json:"list_ids" validate:"required,min=1" example:"123e4567-e89b-12d3-a456-426614174000,123e4567-e89b-12d3-a456-426614174000"`
+}
+
+func (e *UpdatePay) Validate() error {
+	validate := validator.New()
+	err := validate.Struct(e)
+	if err == nil {
+		return nil
+	}
+
+	validationErr := err.(validator.ValidationErrors)[0]
+	field := validationErr.Field()
+	tag := validationErr.Tag()
+	param := validationErr.Param()
+
+	return fmt.Errorf("campo %s es invalido, revisar: (%s) (%s)", field, tag, param)
+}
+
+type AttendanceDTO struct {
+	ID         string    `json:"id"`
+	EmployeeID string    `json:"employee_id"`
+	Attendance string    `json:"attendance"`
+	Hours      int       `json:"hours"`
+	Date       string    `json:"date"`
+	Amount     float32   `json:"amount"`
+	IsHoliday  bool      `json:"is_holiday"`
+	IsPaid     bool      `json:"is_paid"`
+	CreatedAt  time.Time `json:"created_at"`
+	UpdatedAt  time.Time `json:"updated_at"`
+}
+
+
+
+// type AttendanceResponse struct {
+// 	ID         string    `json:"id"`
+// 	EmployeeID string    `json:"employee_id"`
+// 	Attendance string    `json:"attendance"`
+// 	Hours      int       `json:"hours" validate:"max=24"`
+// 	Date       string    `json:"date"`
+// 	Amount     float32   `json:"amount"`
+// 	IsHoliday  bool      `json:"is_holiday"`
+// 	IsPaid     bool      `json:"is_paid"`
+// 	CreatedAt  time.Time `json:"created_at"`
+// 	UpdatedAt  time.Time `json:"updated_at"`
+// }

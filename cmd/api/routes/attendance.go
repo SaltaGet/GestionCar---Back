@@ -24,6 +24,10 @@ func AttendanceRoutes(app *fiber.App) {
 	att.Put("/update", GetController("AttendanceController", func(c *fiber.Ctx, ctrl *controllers.AttendanceController) error {
 		return ctrl.UpdateAttendance(c)
 	}))
+	
+	att.Put("/update_pay", GetController("AttendanceController", func(c *fiber.Ctx, ctrl *controllers.AttendanceController) error {
+		return ctrl.UpdatePay(c)
+	}))
 
 	att.Get("/get_by_employee/:employee_id", GetController("AttendanceController", func(c *fiber.Ctx, ctrl *controllers.AttendanceController) error {
 		return ctrl.GetAttendanceByEmployeeID(c)

@@ -15,12 +15,12 @@ import (
 //	@Accept			json
 //	@Produce		json
 //	@Security		BearerAuth
-//	@Param			id	path		string									true	"ID of Expense"
+//	@Param			id	path		string											true	"ID of Expense"
 //	@Success		200	{object}	models.Response{body=models.ExpenseResponse}	"Expense obtained successfully"
-//	@Failure		400	{object}	models.Response							"Bad Request"
-//	@Failure		401	{object}	models.Response							"Auth is required"
-//	@Failure		403	{object}	models.Response							"Not Authorized"
-//	@Failure		404	{object}	models.Response							"Expense not found"
+//	@Failure		400	{object}	models.Response									"Bad Request"
+//	@Failure		401	{object}	models.Response									"Auth is required"
+//	@Failure		403	{object}	models.Response									"Not Authorized"
+//	@Failure		404	{object}	models.Response									"Expense not found"
 //	@Failure		500	{object}	models.Response
 //	@Router			/expense/{id} [get]
 func (e *ExpenseController) GetExpenseByID(c *fiber.Ctx) error {
@@ -68,13 +68,13 @@ func (e *ExpenseController) GetExpenseByID(c *fiber.Ctx) error {
 //	@Accept			json
 //	@Produce		json
 //	@Security		BearerAuth
-//	@Param			page	query		int	false	"Page number"	default(1)
-//	@Param			limit	query		int	false	"Number of items per page"	default(20)
-//	@Success		200	{object}	models.Response{body=[]models.ExpenseDTO}	"List of expenses"
-//	@Failure		400	{object}	models.Response							"Bad Request"
-//	@Failure		401	{object}	models.Response							"Auth is required"
-//	@Failure		403	{object}	models.Response							"Not Authorized"
-//	@Failure		500	{object}	models.Response							"Internal server error"
+//	@Param			page	query		int											false	"Page number"				default(1)
+//	@Param			limit	query		int											false	"Number of items per page"	default(20)
+//	@Success		200		{object}	models.Response{body=[]models.ExpenseDTO}	"List of expenses"
+//	@Failure		400		{object}	models.Response								"Bad Request"
+//	@Failure		401		{object}	models.Response								"Auth is required"
+//	@Failure		403		{object}	models.Response								"Not Authorized"
+//	@Failure		500		{object}	models.Response								"Internal server error"
 //	@Router			/expense/get_all [get]
 func (e *ExpenseController) GetAllExpenses(c *fiber.Ctx) error {
 	logging.INFO("Obtener todos los egresos")
@@ -123,13 +123,13 @@ func (e *ExpenseController) GetAllExpenses(c *fiber.Ctx) error {
 //	@Accept			json
 //	@Produce		json
 //	@Security		BearerAuth
-//	@Param			page	query		int	false	"Page number"	default(1)
-//	@Param			limit	query		int	false	"Number of items per page"	default(20)
-//	@Success		200	{object}	models.Response{body=[]models.ExpenseDTO}	"List of expenses"
-//	@Failure		400	{object}	models.Response							"Bad Request"
-//	@Failure		401	{object}	models.Response							"Auth is required"
-//	@Failure		403	{object}	models.Response							"Not Authorized"
-//	@Failure		500	{object}	models.Response							"Internal server error"
+//	@Param			page	query		int											false	"Page number"				default(1)
+//	@Param			limit	query		int											false	"Number of items per page"	default(20)
+//	@Success		200		{object}	models.Response{body=[]models.ExpenseDTO}	"List of expenses"
+//	@Failure		400		{object}	models.Response								"Bad Request"
+//	@Failure		401		{object}	models.Response								"Auth is required"
+//	@Failure		403		{object}	models.Response								"Not Authorized"
+//	@Failure		500		{object}	models.Response								"Internal server error"
 //	@Router			/expense/get_today [get]
 func (e *ExpenseController) GetExpenseToday(c *fiber.Ctx) error {
 	logging.INFO("Obtener todos los egresos de hoy")

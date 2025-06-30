@@ -47,23 +47,22 @@ func main() {
 		log.Fatal("DATABASE_URI no está configurada en el archivo .env")
 	}
 
-	// Ruta absoluta a tu directorio de migraciones
-	// Asegúrate de que esta ruta sea correcta en tu entorno de despliegue
 	currentDir, err := os.Getwd()
 	if err != nil {
 		log.Fatalf("Error al obtener el directorio de trabajo actual: %v", err)
 	}
+
+	local := os.Getenv("LOCAL")
+	if local == "true" {
+		if err := jobs.GenerateSwagger(); err != nil {
+			log.Fatalf("Error ejecutando swag init: %v", err)
+		}
+	}
+
 	projectRoot := filepath.Dir(filepath.Dir(currentDir))
 
 	migrationPath := filepath.Join(projectRoot, "pkg", "migrations")
 
-	// 1. Aplicar migraciones primero
-	// err = database.ApplyMigrations(dbURI, migrationPath)
-	// if err != nil {
-	// 	log.Fatalf("Fallo al aplicar migraciones: %v", err)
-	// }
-
-	// 2. Luego, inicializar GORM
 	db, err := database.ConnectDB(dbURI)
 	if err != nil {
 		log.Fatalf("Error al conectar con la base de datos: %v", err)

@@ -3,6 +3,13 @@ definitions:
     properties:
       amount:
         type: number
+      attendance:
+        enum:
+        - presente
+        - tarde
+        - parcial
+        - ausente
+        type: string
       created_at:
         type: string
       date:
@@ -18,13 +25,8 @@ definitions:
         type: string
       is_holiday:
         type: boolean
-      role:
-        enum:
-        - presente
-        - tarde
-        - parcial
-        - ausente
-        type: string
+      is_paid:
+        type: boolean
       updated_at:
         type: string
     type: object
@@ -33,6 +35,13 @@ definitions:
       amount:
         example: 1234.56
         type: number
+      attendance:
+        enum:
+        - presente
+        - tarde
+        - parcial
+        - ausente
+        type: string
       date:
         example: "2022-01-01"
         type: string
@@ -46,23 +55,46 @@ definitions:
         default: false
         example: false
         type: boolean
-      role:
-        enum:
-        - presente
-        - tarde
-        - parcial
-        - ausente
-        type: string
     required:
     - amount
     - date
     - employee_id
+    type: object
+  models.AttendanceDTO:
+    properties:
+      amount:
+        type: number
+      attendance:
+        type: string
+      created_at:
+        type: string
+      date:
+        type: string
+      employee_id:
+        type: string
+      hours:
+        type: integer
+      id:
+        type: string
+      is_holiday:
+        type: boolean
+      is_paid:
+        type: boolean
+      updated_at:
+        type: string
     type: object
   models.AttendanceUpdate:
     properties:
       amount:
         example: 1234.56
         type: number
+      attendance:
+        enum:
+        - presente
+        - tarde
+        - parcial
+        - ausente
+        type: string
       date:
         example: "2022-01-01"
         type: string
@@ -79,13 +111,6 @@ definitions:
         default: false
         example: false
         type: boolean
-      role:
-        enum:
-        - presente
-        - tarde
-        - parcial
-        - ausente
-        type: string
     required:
     - amount
     - date
@@ -997,6 +1022,19 @@ definitions:
     - tenant_create
     - user_create
     type: object
+  models.UpdatePay:
+    properties:
+      list_ids:
+        example:
+        - 123e4567-e89b-12d3-a456-426614174000
+        - 123e4567-e89b-12d3-a456-426614174000
+        items:
+          type: string
+        minItems: 1
+        type: array
+    required:
+    - list_ids
+    type: object
   models.UserCreate:
     properties:
       email:
@@ -1142,7 +1180,7 @@ paths:
             - $ref: '#/definitions/models.Response'
             - properties:
                 body:
-                  $ref: '#/definitions/models.Attendance'
+                  $ref: '#/definitions/models.AttendanceDTO'
               type: object
         "400":
           description: Bad Request
@@ -1276,7 +1314,7 @@ paths:
             - properties:
                 body:
                   items:
-                    $ref: '#/definitions/models.Attendance'
+                    $ref: '#/definitions/models.AttendanceDTO'
                   type: array
               type: object
         "400":
@@ -1328,7 +1366,7 @@ paths:
             - properties:
                 body:
                   items:
-                    $ref: '#/definitions/models.Attendance'
+                    $ref: '#/definitions/models.AttendanceDTO'
                   type: array
               type: object
         "400":
@@ -1373,7 +1411,14 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.Response'
+            allOf:
+            - $ref: '#/definitions/models.Response'
+            - properties:
+                body:
+                  items:
+                    $ref: '#/definitions/models.AttendanceDTO'
+                  type: array
+              type: object
         "400":
           description: Bad Request
           schema:
@@ -1445,6 +1490,54 @@ paths:
       security:
       - BearerAuth: []
       summary: Update Attendance
+      tags:
+      - Attendance
+  /attendance/update_pay:
+    put:
+      consumes:
+      - application/json
+      description: Update Pay Attendance by listID
+      parameters:
+      - description: listID of Attendance
+        in: body
+        name: listIds
+        required: true
+        schema:
+          $ref: '#/definitions/models.UpdatePay'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.Response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.Response'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/models.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.Response'
+        "422":
+          description: Unprocessable Entity
+          schema:
+            $ref: '#/definitions/models.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.Response'
+      security:
+      - BearerAuth: []
+      summary: Update Pay Attendance
       tags:
       - Attendance
   /auth/login:
