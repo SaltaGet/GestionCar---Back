@@ -11,6 +11,7 @@ type AttendanceService interface {
 	AttendanceUpdate(attendance *models.AttendanceUpdate) (err error)
 	AttendanceDelete(id string) (err error)
 	AttendanceUpdatePay(listIDs []string) (err error)
+	AttendancePay(listIDs *[]models.AttendancePay) (err error)
 }
 
 type AttendanceRespository interface {
@@ -22,4 +23,5 @@ type AttendanceRespository interface {
 	AttendanceUpdate(attendance *models.AttendanceUpdate) (err error)
 	AttendanceDelete(id string) (err error)
 	AttendanceUpdatePay(listIDs []string) (err error)
+	AttendancePay(listIDs *[]models.AttendancePay) (err error)
 }

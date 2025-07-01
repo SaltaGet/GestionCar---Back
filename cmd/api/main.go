@@ -47,21 +47,12 @@ func main() {
 		log.Fatal("DATABASE_URI no está configurada en el archivo .env")
 	}
 
-	// currentDir, err := os.Getwd()
-	// if err != nil {
-	// 	log.Fatalf("Error al obtener el directorio de trabajo actual: %v", err)
-	// }
-
 	local := os.Getenv("LOCAL")
 	if local == "true" {
 		if err := jobs.GenerateSwagger(); err != nil {
 			log.Fatalf("Error ejecutando swag init: %v", err)
 		}
 	}
-
-	// projectRoot := filepath.Dir(filepath.Dir(currentDir))
-
-	// migrationPath := filepath.Join(projectRoot, "pkg", "migrations")
 
 	db, err := database.ConnectDB(dbURI)
 	if err != nil {

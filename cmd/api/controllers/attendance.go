@@ -389,7 +389,6 @@ func (a *AttendanceController) DeleteAttendance(c *fiber.Ctx) error {
 	})
 }
 
-
 // UpdatePayAttendance godoc
 //	@Summary		Update Pay Attendance
 //	@Description	Update Pay Attendance by listID
@@ -397,7 +396,7 @@ func (a *AttendanceController) DeleteAttendance(c *fiber.Ctx) error {
 //	@Accept			json
 //	@Produce		json
 //	@Security		BearerAuth
-//	@Param			listIds	body		models.UpdatePay	true	"listID of Attendance"
+//	@Param			list_ids	body		models.UpdatePay	true	"listID of Attendance"
 //	@Success		200		{object}	models.Response
 //	@Failure		400		{object}	models.Response
 //	@Failure		401		{object}	models.Response
@@ -427,6 +426,70 @@ func (a *AttendanceController) UpdatePay(c *fiber.Ctx) error {
 	}
 
 	err := a.AttendanceService.AttendanceUpdatePay(updatePay.ListIDs)
+	if err != nil {
+		if errResp, ok := err.(*models.ErrorStruc); ok {
+			logging.ERROR("Error: %s", errResp.Err.Error())
+			return c.Status(errResp.StatusCode).JSON(models.Response{
+				Status:  false,
+				Body:    nil,
+				Message: errResp.Message,
+			})
+		}
+		logging.ERROR("Error: %s", err.Error())
+		return c.Status(fiber.StatusInternalServerError).JSON(models.Response{
+			Status:  false,
+			Body:    nil,
+			Message: "Error interno",
+		})
+	}
+
+	logging.INFO("Pago de las Asistencias actualizada con éxito")
+	return c.Status(200).JSON(models.Response{
+		Status:  true,
+		Body:    nil,
+		Message: "Pagos actualizados con éxito",
+	})
+}
+
+// PayAttendance godoc
+//	@Summary		Pay Attendance
+//	@Description	Pay Attendance by listID
+//	@Tags			Attendance
+//	@Accept			json
+//	@Produce		json
+//	@Security		BearerAuth
+//	@Param			attendance_pay	body		models.AttendancePay	true	"listID of Attendance"
+//	@Success		200		{object}	models.Response
+//	@Failure		400		{object}	models.Response
+//	@Failure		401		{object}	models.Response
+//	@Failure		403		{object}	models.Response
+//	@Failure		404		{object}	models.Response
+//	@Failure		422		{object}	models.Response
+//	@Failure		500		{object}	models.Response
+//	@Router			/attendance/pay [put]
+func (a *AttendanceController) PayAttendance(c *fiber.Ctx) error {
+	logging.INFO("Pagando asistencia")
+	var attendancesPay []models.AttendancePay
+	if err := c.BodyParser(&attendancesPay); err != nil {
+		logging.ERROR("Error: %s", err.Error())
+		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
+			Status:  false,
+			Body:    nil,
+			Message: "Invalid request" + err.Error(),
+		})
+	}
+	for _, attendancePay := range attendancesPay {
+		if err := attendancePay.Validate(); err != nil {
+			logging.ERROR("Error: %s", err.Error())
+			return c.Status(fiber.StatusBadRequest).JSON(models.Response{
+				Status:  false,
+				Body:    nil,
+				Message: err.Error(),
+			})
+		}
+	}
+
+	err := a.AttendanceService.AttendancePay(attendancesPay)
 	if err != nil {
 		if errResp, ok := err.(*models.ErrorStruc); ok {
 			logging.ERROR("Error: %s", errResp.Err.Error())

@@ -2,6 +2,7 @@ package repositories
 
 import (
 	"errors"
+	"fmt"
 
 	"github.com/DanielChachagua/GestionCar/pkg/models"
 	"github.com/google/uuid"
@@ -111,4 +112,38 @@ func (r *AttendanceRepository) AttendanceUpdatePay(listIDs []string) error {
 	}
 
 	return nil
+}
+
+func (r *AttendanceRepository) AttendancePay(listIDs *[]models.AttendancePay) error {
+	return r.DB.Transaction(func(tx *gorm.DB) error {
+		var values [][]any
+	
+		for _, attendance := range *listIDs {
+			values = append(values, []any{attendance.AttendanceID, attendance.EmployeeID})
+		}
+
+		var count int64
+		if err := tx.
+			Model(&models.Attendance{}).
+			Where("(id, employee_id) IN ?", values).
+			Where("is_paid = ?", true).
+			Count(&count).
+			Error; err != nil {
+			return models.ErrorResponse(500, "Error interno al verificar las asistencias", err)
+		}
+	
+		if count > 0 {
+			return models.ErrorResponse(400, "existen asistencias que ya fueron pagadas", fmt.Errorf("existen asistencias que ya fueron pagadas"))
+		}
+	
+		if err := tx.
+			Model(&models.Attendance{}).
+			Where("(id, employee_id) IN ?", values).
+			Update("is_paid = ?", true).
+			Error; err != nil {
+			return models.ErrorResponse(500, "Error interno al marcar las asistencias como pagadas", err)
+		}
+	
+		return nil
+	})
 }

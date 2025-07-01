@@ -111,6 +111,30 @@ func (e *UpdatePay) Validate() error {
 	return fmt.Errorf("campo %s es invalido, revisar: (%s) (%s)", field, tag, param)
 }
 
+type AttendancePay struct {
+	AttendanceID string `json:"attendance_id" example:"123e4567-e89b-12d3-a456-426614174000,123e4567-e89b-12d3-a456-426614174000"`
+	EmployeeID string `json:"employee_id" example:"123e4567-e89b-12d3-a456-426614174000,123e4567-e89b-12d3-a456-426614174000"`
+}
+
+// type AttendancePayList struct {
+// 	ListAttendanceEmployee []AttendancePay `json:"list_attendance_employee" validate:"required,min=1" example:"[{attendance_id: 123e4567-e89b-12d3-a456-426614174000,123e4567-e89b-12d3-a456-426614174000, employee_id: 123e4567-e89b-12d3-a456-426614174000,123e4567-e89b-12d3-a456-426614174000}]"`
+// }
+
+func (e *AttendancePay) Validate() error {
+	validate := validator.New()
+	err := validate.Struct(e)
+	if err == nil {
+		return nil
+	}
+
+	validationErr := err.(validator.ValidationErrors)[0]
+	field := validationErr.Field()
+	tag := validationErr.Tag()
+	param := validationErr.Param()
+
+	return fmt.Errorf("campo %s es invalido, revisar: (%s) (%s)", field, tag, param)
+}
+
 type AttendanceDTO struct {
 	ID         string    `json:"id"`
 	EmployeeID string    `json:"employee_id"`

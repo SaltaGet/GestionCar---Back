@@ -62,6 +62,24 @@ func (s *AttendanceService) AttendanceUpdatePay(listIDs []string) error {
 	return nil
 }
 
+func (s *AttendanceService) AttendancePay(listIDs *[]models.AttendancePay) error {
+	err := s.AttendanceRepository.AttendancePay(listIDs)
+	if err != nil {
+		return err
+	}
+
+	// aqui si me gustaria hacer que si no ha errores crear la expense
+	err = s.ExpenseService.ExpenseCreate(listIDs)
+	if err != nil {
+		err := s.AttendanceRepository.AttendanceRevertPay(listIDs)
+		return err
+	}
+
+	// aqui si no hubiera error en crear la expenserecien guardar los cambios, o confirmarlos, caso contrario hacer un rollback 
+
+	return nil
+}
+
 func (s *AttendanceService) AttendanceDelete(id string) error {
 	err := s.AttendanceRepository.AttendanceDelete(id)
 	if err != nil {
